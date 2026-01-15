@@ -21,6 +21,20 @@ data class User(
     val name: String,
     val email: String,
     val phone: String,
+    val vehicleNumber: String,
     val membershipType: String,
     val createdDate: String
 )
+
+data class QRCodeData(
+    val code: String,
+    val generatedAt: Long,
+    val expiresAt: Long,
+    val userId: String,
+    val securityHash: String
+)
+
+data class ParkingStatus(
+    val isParked: Boolean,
+    val parkedSince: String? = null,
+    val location: String? = null)
