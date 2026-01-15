@@ -37,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -48,14 +49,17 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kushan.vaultpark.model.User
+import com.kushan.vaultpark.model.UserRole
 import com.kushan.vaultpark.viewmodel.AuthViewModel
 
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    onLoginSuccess: () -> Unit
+    onLoginSuccess: (User) -> Unit
 ) {
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
+    val currentUser by authViewModel.currentUser.collectAsState()
     val isLoading by authViewModel.isLoading.collectAsState()
     val errorMessage by authViewModel.errorMessage.collectAsState()
     
@@ -63,10 +67,11 @@ fun LoginScreen(
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
     
-    // Navigate on successful login
-    if (isAuthenticated) {
-        onLoginSuccess()
-        return
+    // Navigate when both authenticated AND user is loaded
+    LaunchedEffect(isAuthenticated, currentUser) {
+        if (isAuthenticated && currentUser != null) {
+            onLoginSuccess(currentUser!!)
+        }
     }
     
     Box(

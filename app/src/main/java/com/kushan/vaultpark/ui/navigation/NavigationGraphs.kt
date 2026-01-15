@@ -12,6 +12,7 @@ import com.kushan.vaultpark.ui.screens.ProfileScreen
 import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
 import com.kushan.vaultpark.ui.screens.SecurityReportsScreen
 import com.kushan.vaultpark.ui.screens.SecurityScannerScreen
+import com.kushan.vaultpark.viewmodel.AuthViewModel
 
 /**
  * Driver Navigation Graph
@@ -19,7 +20,8 @@ import com.kushan.vaultpark.ui.screens.SecurityScannerScreen
  */
 fun NavGraphBuilder.driverNavGraph(
     navController: NavHostController,
-    currentUser: User?
+    currentUser: User?,
+    authViewModel: AuthViewModel
 ) {
     navigation(
         route = DRIVER_GRAPH,
@@ -55,6 +57,12 @@ fun NavGraphBuilder.driverNavGraph(
                 currentUser = currentUser,
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(NavScreen.Login.route) {
+                        popUpTo(DRIVER_GRAPH) { inclusive = true }
+                    }
                 }
             )
         }
@@ -67,7 +75,8 @@ fun NavGraphBuilder.driverNavGraph(
  */
 fun NavGraphBuilder.securityNavGraph(
     navController: NavHostController,
-    currentUser: User?
+    currentUser: User?,
+    authViewModel: AuthViewModel
 ) {
     navigation(
         route = SECURITY_GRAPH,
@@ -98,6 +107,12 @@ fun NavGraphBuilder.securityNavGraph(
                 currentUser = currentUser,
                 onBackPressed = {
                     navController.popBackStack()
+                },
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(NavScreen.Login.route) {
+                        popUpTo(SECURITY_GRAPH) { inclusive = true }
+                    }
                 }
             )
         }

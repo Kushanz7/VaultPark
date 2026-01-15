@@ -83,7 +83,9 @@ class AuthViewModel(
             
             // Extract name from email (e.g., "john.driver" -> "John Driver")
             val nameParts = email.split("@")[0].split(".")
-            val name = nameParts.joinToString(" ") { it.capitalize() }
+            val name = nameParts.joinToString(" ") { part ->
+                part.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
+            }
             
             // Create new user document
             val newUser = User(

@@ -34,14 +34,12 @@ fun VaultParkNavHost(
         composable(NavScreen.Login.route) {
             LoginScreen(
                 authViewModel = authViewModel,
-                onLoginSuccess = {
-                    navController.navigate(
-                        if (currentUser?.role == UserRole.DRIVER) {
-                            DRIVER_GRAPH
-                        } else {
-                            SECURITY_GRAPH
-                        }
-                    ) {
+                onLoginSuccess = { user ->
+                    val destination = when (user.role) {
+                        UserRole.DRIVER -> DRIVER_GRAPH
+                        UserRole.SECURITY -> SECURITY_GRAPH
+                    }
+                    navController.navigate(destination) {
                         popUpTo(NavScreen.Login.route) { inclusive = true }
                     }
                 }
@@ -51,13 +49,15 @@ fun VaultParkNavHost(
         // Driver Navigation Graph
         driverNavGraph(
             navController = navController,
-            currentUser = currentUser
+            currentUser = currentUser,
+            authViewModel = authViewModel
         )
         
         // Security Navigation Graph
         securityNavGraph(
             navController = navController,
-            currentUser = currentUser
+            currentUser = currentUser,
+            authViewModel = authViewModel
         )
     }
 }
