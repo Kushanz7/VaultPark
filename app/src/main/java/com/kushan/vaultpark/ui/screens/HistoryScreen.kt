@@ -1,5 +1,6 @@
 package com.kushan.vaultpark.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -11,8 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -24,7 +24,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.kushan.vaultpark.ui.components.MindMirrorCard
+import com.kushan.vaultpark.ui.theme.DarkBackground
+import com.kushan.vaultpark.ui.theme.NeonLime
+import com.kushan.vaultpark.ui.theme.Poppins
+import com.kushan.vaultpark.ui.theme.TextLight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -33,39 +40,50 @@ fun HistoryScreen(onBackPressed: (() -> Unit)? = null) {
         topBar = {
             TopAppBar(
                 title = {
-                    Text("Parking History", style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        "Parking History",
+                        fontFamily = Poppins,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    )
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                navigationIcon = if (onBackPressed != null) {{
-                    IconButton(onClick = onBackPressed) {
+                navigationIcon = {
+                    if (onBackPressed != null) {
+                        IconButton(onClick = onBackPressed) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { }) {
                         Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More options"
                         )
                     }
-                }} else {{}}
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = DarkBackground,
+                    titleContentColor = TextLight,
+                    actionIconContentColor = TextLight,
+                    navigationIconContentColor = TextLight
+                )
             )
-        }
+        },
+        containerColor = DarkBackground
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(DarkBackground)
                 .padding(paddingValues)
-                .padding(16.dp),
+                .fillMaxSize()
+                .padding(0.dp),
             contentPadding = PaddingValues(bottom = 16.dp)
         ) {
-            item {
-                Text(
-                    "📋 Entry/Exit Log",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = MaterialTheme.colorScheme.primary,
-                    modifier = Modifier.padding(bottom = 16.dp)
-                )
-            }
-            
             items(5) { index ->
                 ParkingHistoryCard(index + 1)
                 Spacer(modifier = Modifier.height(12.dp))
@@ -76,32 +94,47 @@ fun HistoryScreen(onBackPressed: (() -> Unit)? = null) {
 
 @Composable
 fun ParkingHistoryCard(itemIndex: Int) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
-        ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+    MindMirrorCard(
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier.padding(16.dp)
+            modifier = Modifier.fillMaxWidth()
         ) {
             Text(
-                "Entry ${itemIndex}",
-                style = MaterialTheme.typography.titleMedium,
-                color = MaterialTheme.colorScheme.primary
+                "Parking #${itemIndex}",
+                fontFamily = Poppins,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 16.sp,
+                color = NeonLime,
+                modifier = Modifier.padding(bottom = 8.dp)
             )
+            
             Spacer(modifier = Modifier.height(8.dp))
+            
             Text(
-                "Entry: 10:${itemIndex}0 AM | Exit: 02:${itemIndex}0 PM",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                "Entry: 10:${itemIndex}0 AM",
+                fontFamily = Poppins,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 4.dp)
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                "Exit: 02:${itemIndex}0 PM",
+                fontFamily = Poppins,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+            
             Text(
                 "Duration: 4 hours",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.outline
+                fontFamily = Poppins,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp,
+                color = NeonLime
             )
         }
     }

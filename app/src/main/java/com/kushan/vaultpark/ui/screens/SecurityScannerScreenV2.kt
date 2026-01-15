@@ -57,6 +57,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kushan.vaultpark.model.ParkingSession
+import com.kushan.vaultpark.ui.theme.DarkBackground
+import com.kushan.vaultpark.ui.theme.Poppins
+import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.viewmodel.SecurityViewModel
 import java.text.SimpleDateFormat
 import java.util.Locale
@@ -97,7 +100,14 @@ fun SecurityScannerScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Scan Driver QR Code") },
+                title = {
+                    Text(
+                        "Scan Driver QR Code",
+                        fontFamily = Poppins,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    )
+                },
                 navigationIcon = {
                     if (onBackPressed != null) {
                         IconButton(onClick = onBackPressed) {
@@ -109,16 +119,18 @@ fun SecurityScannerScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = DarkBackground,
+                    titleContentColor = TextLight,
+                    navigationIconContentColor = TextLight
                 )
             )
-        }
+        },
+        containerColor = DarkBackground
     ) { innerPadding ->
         Column(
             modifier = modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
+                .background(DarkBackground)
                 .padding(innerPadding)
                 .padding(16.dp)
                 .verticalScroll(rememberScrollState()),

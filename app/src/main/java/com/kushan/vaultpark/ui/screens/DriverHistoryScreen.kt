@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -51,11 +52,10 @@ import com.kushan.vaultpark.ui.components.SessionDetailBottomSheet
 import com.kushan.vaultpark.ui.components.ShimmerCard
 import com.kushan.vaultpark.ui.components.StatCard
 import com.kushan.vaultpark.ui.components.StatsCardContainer
-import com.kushan.vaultpark.ui.theme.DarkBackground
-import com.kushan.vaultpark.ui.theme.DarkSurface
+import com.kushan.vaultpark.ui.components.MindMirrorCard
+import com.kushan.vaultpark.ui.components.MindMirrorCardElevated
 import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.SoftMintGreen
 import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.utils.formatAmount
 import com.kushan.vaultpark.viewmodel.HistoryViewModel
@@ -116,80 +116,97 @@ fun DriverHistoryScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBackground,
-                    titleContentColor = TextLight,
-                    actionIconContentColor = TextLight,
-                    navigationIconContentColor = TextLight
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = DarkBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DarkBackground)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues),
             contentPadding = PaddingValues(bottom = 20.dp)
         ) {
             // Stats Card
             item {
-                StatsCardContainer(
+                MindMirrorCardElevated(
                     modifier = Modifier
+                        .fillMaxWidth()
                         .padding(horizontal = 16.dp)
                         .padding(top = 20.dp, bottom = 24.dp)
                 ) {
-                    StatCard(
-                        icon = Icons.Default.Layers,
-                        value = totalSessions.toString(),
-                        label = "Total Sessions"
-                    )
-                    StatCard(
-                        icon = Icons.Default.Timer,
-                        value = "${totalHours}h",
-                        label = "Total Hours"
-                    )
-                    StatCard(
-                        icon = Icons.Default.LocalOffer,
-                        value = formatAmount(thisMonthAmount),
-                        label = "This Month"
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(12.dp)
+                        ) {
+                            StatCard(
+                                icon = Icons.Default.Layers,
+                                value = totalSessions.toString(),
+                                label = "Total Sessions",
+                                modifier = Modifier.weight(1f)
+                            )
+                            StatCard(
+                                icon = Icons.Default.Timer,
+                                value = "${totalHours}h",
+                                label = "Total Hours",
+                                modifier = Modifier.weight(1f)
+                            )
+                            StatCard(
+                                icon = Icons.Default.LocalOffer,
+                                value = formatAmount(thisMonthAmount),
+                                label = "This Month",
+                                modifier = Modifier.weight(1f)
+                            )
+                        }
+                    }
                 }
             }
 
             // Filter Section
             item {
-                Column(
+                MindMirrorCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(bottom = 20.dp)
+                        .padding(horizontal = 0.dp)
                 ) {
-                    Text(
-                        text = "Filter",
-                        fontFamily = Poppins,
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        color = com.kushan.vaultpark.ui.theme.TextSecondaryDark,
-                        modifier = Modifier.padding(start = 16.dp, bottom = 12.dp)
-                    )
-
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        HistoryViewModel.DateFilter.values().forEach { filter ->
-                            FilterChip(
-                                label = filter.displayName,
-                                isSelected = filter == selectedFilter,
-                                onClick = {
-                                    viewModel.fetchParkingSessions(
-                                        currentUser?.uid ?: "",
-                                        filter
-                                    )
-                                }
-                            )
+                        Text(
+                            text = "Filter by Date",
+                            fontFamily = Poppins,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth(),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            HistoryViewModel.DateFilter.values().forEach { filter ->
+                                FilterChip(
+                                    label = filter.displayName,
+                                    isSelected = filter == selectedFilter,
+                                    onClick = {
+                                        viewModel.fetchParkingSessions(
+                                            currentUser?.uid ?: "",
+                                            filter
+                                        )
+                                    }
+                                )
+                            }
                         }
                     }
                 }
@@ -220,29 +237,24 @@ fun DriverHistoryScreen(
                 // Load More Button
                 if (hasMore && !isLoading) {
                     item {
-                        Box(
+                        MindMirrorCard(
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .padding(16.dp)
+                                .padding(horizontal = 16.dp),
+                            onClick = {
+                                viewModel.loadMoreSessions(currentUser?.uid ?: "")
+                            }
                         ) {
-                            androidx.compose.material3.Button(
-                                onClick = {
-                                    viewModel.loadMoreSessions(currentUser?.uid ?: "")
-                                },
-                                modifier = Modifier
-                                    .align(Alignment.Center)
-                                    .height(44.dp),
-                                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = NeonLime
-                                ),
-                                shape = MaterialTheme.shapes.medium
+                            Box(
+                                modifier = Modifier.fillMaxWidth(),
+                                contentAlignment = Alignment.Center
                             ) {
                                 Text(
-                                    text = "Load More",
+                                    text = "Load More Sessions",
                                     fontFamily = Poppins,
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.sp,
-                                    color = com.kushan.vaultpark.ui.theme.TextDarkLight
+                                    color = NeonLime
                                 )
                             }
                         }
@@ -259,21 +271,17 @@ fun DriverHistoryScreen(
             // Error Message
             if (!errorMessage.isNullOrEmpty()) {
                 item {
-                    Box(
+                    MindMirrorCard(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .background(
-                                color = com.kushan.vaultpark.ui.theme.StatusError.copy(alpha = 0.1f),
-                                shape = MaterialTheme.shapes.medium
-                            )
-                            .padding(16.dp)
+                            .padding(horizontal = 16.dp)
                     ) {
                         Text(
                             text = errorMessage ?: "",
                             fontFamily = Poppins,
                             fontWeight = FontWeight.Normal,
-                            fontSize = 12.sp,
-                            color = com.kushan.vaultpark.ui.theme.StatusError
+                            fontSize = 13.sp,
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -286,8 +294,8 @@ fun DriverHistoryScreen(
         ModalBottomSheet(
             onDismissRequest = { selectedSession = null },
             sheetState = bottomSheetState,
-            containerColor = DarkBackground,
-            scrimColor = com.kushan.vaultpark.ui.theme.MidnightBlack.copy(alpha = 0.5f)
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f)
         ) {
             SessionDetailBottomSheet(
                 session = selectedSession!!,
@@ -307,15 +315,15 @@ fun EmptyState(
     description: String,
     icon: String = ""
 ) {
-    Box(
+    MindMirrorCardElevated(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(32.dp),
-        contentAlignment = Alignment.Center
+            .padding(horizontal = 16.dp)
     ) {
         Column(
+            modifier = Modifier.fillMaxWidth(),
             horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(
                 text = icon,
@@ -333,8 +341,8 @@ fun EmptyState(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp,
-                color = com.kushan.vaultpark.ui.theme.TextSecondaryDark,
-                modifier = Modifier.padding(horizontal = 16.dp)
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
             )
         }
     }

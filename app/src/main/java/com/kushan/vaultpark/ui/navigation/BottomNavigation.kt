@@ -55,8 +55,11 @@ fun NeonDarkBottomNavigation(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(MaterialTheme.colorScheme.surface)
-            .padding(horizontal = 12.dp, vertical = 8.dp)
+            .background(
+                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                shape = RoundedCornerShape(topStart = 24.dp, topEnd = 24.dp)
+            )
+            .padding(horizontal = 8.dp, vertical = 8.dp)
     ) {
         Row(
             modifier = Modifier
@@ -85,7 +88,7 @@ fun BottomNavItemComponent(
     label: String
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) NeonLime.copy(alpha = 0.15f) else Color.Transparent,
+        targetValue = if (isSelected) NeonLime.copy(alpha = 0.12f) else Color.Transparent,
         animationSpec = tween(200), label = ""
     )
     
@@ -93,35 +96,21 @@ fun BottomNavItemComponent(
         targetValue = if (isSelected) NeonLime else MaterialTheme.colorScheme.onSurfaceVariant,
         animationSpec = tween(200), label = ""
     )
-    
-    val textColor by animateColorAsState(
-        targetValue = if (isSelected) NeonLime else MaterialTheme.colorScheme.onSurfaceVariant,
-        animationSpec = tween(200), label = ""
-    )
 
     Column(
         modifier = Modifier
-            .clip(RoundedCornerShape(16.dp))
+            .clip(RoundedCornerShape(20.dp))
             .background(backgroundColor)
             .clickable(onClick = onClick)
-            .padding(horizontal = 12.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 10.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
         Icon(
             imageVector = item.icon,
             contentDescription = label,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(28.dp),
             tint = iconColor
-        )
-        
-        Text(
-            text = label,
-            fontFamily = Poppins,
-            fontWeight = FontWeight.Medium,
-            fontSize = 10.sp,
-            color = textColor,
-            modifier = Modifier.padding(top = 4.dp)
         )
     }
 }

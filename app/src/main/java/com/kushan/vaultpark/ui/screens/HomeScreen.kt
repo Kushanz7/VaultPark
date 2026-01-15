@@ -54,6 +54,9 @@ import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.ui.components.BadgeStatus
 import com.kushan.vaultpark.ui.components.MembershipBadge
 import com.kushan.vaultpark.ui.components.ModernCard
+import com.kushan.vaultpark.ui.components.MindMirrorCard
+import com.kushan.vaultpark.ui.components.MindMirrorCardElevated
+import com.kushan.vaultpark.ui.components.StandardCard
 import com.kushan.vaultpark.ui.theme.AccentLime
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.NeonLime
@@ -163,7 +166,7 @@ fun UserGreetingCard(
     membershipType: String,
     modifier: Modifier = Modifier
 ) {
-    ModernCard(
+    MindMirrorCard(
         modifier = modifier
             .fillMaxWidth()
             .height(140.dp)
@@ -171,7 +174,7 @@ fun UserGreetingCard(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(20.dp),
+                .padding(0.dp),
             verticalArrangement = Arrangement.SpaceBetween
         ) {
             Column {
@@ -232,7 +235,7 @@ fun QRCodeCard(
         label = "countdown_color"
     )
 
-    ModernCard(
+    MindMirrorCardElevated(
         modifier = modifier
             .fillMaxWidth()
             .height(420.dp)
@@ -313,10 +316,13 @@ fun ParkingStatusCard(
     isActive: Boolean,
     modifier: Modifier = Modifier
 ) {
-    ModernCard(
+    StandardCard(
         modifier = modifier
             .fillMaxWidth()
-            .height(if (isActive) 130.dp else 100.dp)
+            .height(if (isActive) 130.dp else 100.dp),
+        cornerRadius = 24,
+        elevation = 4,
+        padding = 0
     ) {
         Row(
             modifier = Modifier

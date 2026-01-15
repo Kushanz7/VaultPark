@@ -1,6 +1,7 @@
 package com.kushan.vaultpark.ui.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -345,5 +346,226 @@ fun EmptyState(
             Spacer(modifier = Modifier.height(24.dp))
             action()
         }
+    }
+}
+/**
+ * EnhancedInputField - Modern input with 16.dp rounded corners, 1.dp border, 56.dp height
+ * Matches the MindMirror design specifications
+ */
+@Composable
+fun EnhancedInputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    label: String = "",
+    placeholder: String = "",
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    isError: Boolean = false,
+    errorMessage: String? = null,
+    enabled: Boolean = true,
+    singleLine: Boolean = true,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
+    visualTransformation: VisualTransformation = VisualTransformation.None,
+    height: Dp = 56.dp
+) {
+    Column(modifier = modifier) {
+        if (label.isNotEmpty()) {
+            Text(
+                text = label,
+                fontFamily = Poppins,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.padding(bottom = 8.dp)
+            )
+        }
+        
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(height),
+            placeholder = {
+                Text(
+                    text = placeholder,
+                    color = TextSecondary,
+                    fontFamily = Poppins,
+                    fontSize = 14.sp
+                )
+            },
+            leadingIcon = leadingIcon,
+            trailingIcon = trailingIcon,
+            isError = isError,
+            enabled = enabled,
+            singleLine = singleLine,
+            keyboardOptions = keyboardOptions,
+            visualTransformation = visualTransformation,
+            shape = com.kushan.vaultpark.ui.theme.GlassCardShape,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedContainerColor = InputBackground,
+                unfocusedContainerColor = InputBackground,
+                disabledContainerColor = InputBackground.copy(alpha = 0.5f),
+                focusedBorderColor = NeonLime,
+                unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
+                errorBorderColor = StatusError,
+                focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+            ),
+            textStyle = TextStyle(
+                fontFamily = Poppins,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Normal
+            )
+        )
+        
+        if (isError && errorMessage != null) {
+            Text(
+                text = errorMessage,
+                color = StatusError,
+                fontSize = 12.sp,
+                fontFamily = Poppins,
+                modifier = Modifier.padding(start = 16.dp, top = 4.dp)
+            )
+        }
+    }
+}
+
+/**
+ * SmallInputField - Compact input field with 44.dp height
+ */
+@Composable
+fun SmallInputField(
+    value: String,
+    onValueChange: (String) -> Unit,
+    modifier: Modifier = Modifier,
+    placeholder: String = "",
+    leadingIcon: @Composable (() -> Unit)? = null,
+    trailingIcon: @Composable (() -> Unit)? = null,
+    keyboardOptions: KeyboardOptions = KeyboardOptions.Default
+) {
+    OutlinedTextField(
+        value = value,
+        onValueChange = onValueChange,
+        modifier = modifier
+            .fillMaxWidth()
+            .height(44.dp),
+        placeholder = {
+            Text(
+                text = placeholder,
+                color = TextSecondary,
+                fontFamily = Poppins,
+                fontSize = 13.sp
+            )
+        },
+        leadingIcon = leadingIcon,
+        trailingIcon = trailingIcon,
+        singleLine = true,
+        keyboardOptions = keyboardOptions,
+        shape = com.kushan.vaultpark.ui.theme.GlassCardShape,
+        colors = OutlinedTextFieldDefaults.colors(
+            focusedContainerColor = InputBackground,
+            unfocusedContainerColor = InputBackground,
+            focusedBorderColor = NeonLime,
+            unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
+            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+        ),
+        textStyle = TextStyle(
+            fontFamily = Poppins,
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Normal
+        )
+    )
+}
+
+/**
+ * PillButton - Capsule/pill-style button with CircleShape
+ * Used for primary actions with rounded pill appearance
+ */
+@Composable
+fun PillButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    isLoading: Boolean = false,
+    backgroundColor: Color = NeonLime,
+    contentColor: Color = MidnightBlack,
+    icon: @Composable (() -> Unit)? = null
+) {
+    Button(
+        onClick = onClick,
+        modifier = modifier.height(48.dp),
+        enabled = enabled && !isLoading,
+        shape = com.kushan.vaultpark.ui.theme.PillShape,
+        colors = ButtonDefaults.buttonColors(
+            containerColor = backgroundColor,
+            contentColor = contentColor,
+            disabledContainerColor = backgroundColor.copy(alpha = 0.5f)
+        ),
+        elevation = ButtonDefaults.buttonElevation(
+            defaultElevation = 4.dp,
+            pressedElevation = 2.dp
+        )
+    ) {
+        if (isLoading) {
+            CircularProgressIndicator(
+                modifier = Modifier.size(20.dp),
+                color = contentColor,
+                strokeWidth = 2.dp
+            )
+        } else {
+            if (icon != null) {
+                icon()
+                Spacer(modifier = Modifier.width(8.dp))
+            }
+            Text(
+                text = text,
+                fontFamily = Poppins,
+                fontWeight = FontWeight.SemiBold,
+                fontSize = 14.sp
+            )
+        }
+    }
+}
+
+/**
+ * OutlinedPillButton - Outlined pill-style button with border
+ */
+@Composable
+fun OutlinedPillButton(
+    text: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    enabled: Boolean = true,
+    borderColor: Color = NeonLime,
+    textColor: Color = NeonLime,
+    icon: @Composable (() -> Unit)? = null
+) {
+    OutlinedButton(
+        onClick = onClick,
+        modifier = modifier.height(48.dp),
+        enabled = enabled,
+        shape = com.kushan.vaultpark.ui.theme.PillShape,
+        border = BorderStroke(
+            width = 2.dp,
+            color = borderColor
+        ),
+        colors = ButtonDefaults.outlinedButtonColors(
+            contentColor = textColor
+        )
+    ) {
+        if (icon != null) {
+            icon()
+            Spacer(modifier = Modifier.width(8.dp))
+        }
+        Text(
+            text = text,
+            fontFamily = Poppins,
+            fontWeight = FontWeight.SemiBold,
+            fontSize = 14.sp
+        )
     }
 }

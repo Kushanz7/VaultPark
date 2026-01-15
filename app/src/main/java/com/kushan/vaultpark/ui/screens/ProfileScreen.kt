@@ -1,8 +1,11 @@
 package com.kushan.vaultpark.ui.screens
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,16 +13,16 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -37,10 +40,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.kushan.vaultpark.model.User
+import com.kushan.vaultpark.ui.components.MindMirrorCard
 import com.kushan.vaultpark.ui.theme.isDarkThemeEnabled
 import com.kushan.vaultpark.ui.theme.setDarkTheme
+import com.kushan.vaultpark.ui.theme.NeonLime
+import com.kushan.vaultpark.ui.theme.Poppins
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -55,201 +63,239 @@ fun ProfileScreen(
         topBar = {
             TopAppBar(
                 title = {
-                    Text("User Profile", style = MaterialTheme.typography.headlineSmall)
+                    Text(
+                        "User Profile",
+                        fontFamily = Poppins,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    )
+                },
+                navigationIcon = {
+                    if (onBackPressed != null) {
+                        IconButton(onClick = onBackPressed) {
+                            Icon(
+                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                                contentDescription = "Back"
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { }) {
+                        Icon(
+                            imageVector = Icons.Default.MoreVert,
+                            contentDescription = "More options"
+                        )
+                    }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                navigationIcon = if (onBackPressed != null) {{
-                    IconButton(onClick = onBackPressed) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }} else {{}}
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
+                )
             )
-        }
+        },
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(bottom = 20.dp)
         ) {
-            // Profile Avatar
-            Card(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .padding(top = 16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Text(
-                    "👤",
-                    style = MaterialTheme.typography.displayLarge,
-                    modifier = Modifier.padding(32.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // User Info Card
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.Start
+            item {
+                // Profile Avatar Card
+                Box(
+                    modifier = Modifier.fillMaxWidth(),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text(
-                        "Profile Information",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(12.dp))
-                    
-                    ProfileInfoItem("Name", currentUser?.name ?: "User")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    ProfileInfoItem("Email", currentUser?.email ?: "N/A")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    ProfileInfoItem("Role", currentUser?.role?.name ?: "N/A")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    if (currentUser?.vehicleNumber != null) {
-                        ProfileInfoItem("Vehicle", currentUser.vehicleNumber)
-                        Spacer(modifier = Modifier.height(8.dp))
-                    }
-                    
-                    ProfileInfoItem("Membership", currentUser?.membershipType ?: "Standard")
-                }
-            }
-
-            // Settings Section
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.surfaceVariant
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp)
-                ) {
-                    Text(
-                        "Settings",
-                        style = MaterialTheme.typography.titleMedium,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                    
-                    // Theme Toggle
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp),
-                        horizontalArrangement = Arrangement.SpaceBetween,
-                        verticalAlignment = Alignment.CenterVertically
+                    MindMirrorCard(
+                        modifier = Modifier.padding(0.dp)
                     ) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.weight(1f)
-                        ) {
-                            Icon(
-                                imageVector = if (isDarkTheme) Icons.Filled.DarkMode else Icons.Filled.LightMode,
-                                contentDescription = "Theme Icon",
-                                modifier = Modifier.size(20.dp),
-                                tint = MaterialTheme.colorScheme.primary
-                            )
-                            Spacer(modifier = Modifier.size(12.dp))
-                            Column {
-                                Text(
-                                    text = "Dark Theme",
-                                    style = MaterialTheme.typography.bodyMedium,
-                                    color = MaterialTheme.colorScheme.onSurface
-                                )
-                                Text(
-                                    text = if (isDarkTheme) "Enabled" else "Disabled",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.outline
-                                )
-                            }
-                        }
-                        
-                        Switch(
-                            checked = isDarkTheme,
-                            onCheckedChange = { newValue ->
-                                isDarkTheme = newValue
-                                setDarkTheme(newValue)
-                            },
-                            colors = SwitchDefaults.colors(
-                                checkedThumbColor = MaterialTheme.colorScheme.primary,
-                                checkedTrackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-                                uncheckedThumbColor = MaterialTheme.colorScheme.outline,
-                                uncheckedTrackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
-                            )
+                        Text(
+                            "👤",
+                            style = MaterialTheme.typography.displayLarge,
+                            modifier = Modifier.padding(16.dp)
                         )
                     }
-                    
-                    Spacer(modifier = Modifier.height(8.dp))
-                    SettingsItem("🔔 Notifications", "Manage alerts")
-                    Spacer(modifier = Modifier.height(8.dp))
-                    
-                    SettingsItem("🔒 Security", "Change password")
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Logout Button
-            Button(
-                onClick = { onLogout?.invoke() },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.errorContainer
-                )
-            ) {
-                Text(
-                    "Sign Out",
-                    color = MaterialTheme.colorScheme.error,
-                    style = MaterialTheme.typography.labelLarge
-                )
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            item {
+                // User Info Card
+                MindMirrorCard(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalAlignment = Alignment.Start
+                    ) {
+                        Text(
+                            "Profile Information",
+                            fontFamily = Poppins,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = NeonLime,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        
+                        ProfileInfoItem("Name", currentUser?.name ?: "User")
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        ProfileInfoItem("Email", currentUser?.email ?: "N/A")
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        ProfileInfoItem("Role", currentUser?.role?.name ?: "N/A")
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        if (currentUser?.vehicleNumber != null) {
+                            ProfileInfoItem("Vehicle", currentUser.vehicleNumber)
+                            Spacer(modifier = Modifier.height(12.dp))
+                        }
+                        
+                        ProfileInfoItem("Membership", currentUser?.membershipType ?: "Standard")
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            item {
+                // Settings Section
+                MindMirrorCard(
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            "Settings",
+                            fontFamily = Poppins,
+                            fontWeight = FontWeight.SemiBold,
+                            fontSize = 16.sp,
+                            color = NeonLime,
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                        
+                        // Theme Toggle
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 12.dp),
+                            horizontalArrangement = Arrangement.SpaceBetween,
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Icon(
+                                    imageVector = if (isDarkTheme) Icons.Filled.DarkMode else Icons.Filled.LightMode,
+                                    contentDescription = "Theme Icon",
+                                    modifier = Modifier.size(20.dp),
+                                    tint = NeonLime
+                                )
+                                Spacer(modifier = Modifier.size(12.dp))
+                                Column {
+                                    Text(
+                                        text = "Dark Theme",
+                                        fontFamily = Poppins,
+                                        fontWeight = FontWeight.Medium,
+                                        fontSize = 14.sp,
+                                        color = MaterialTheme.colorScheme.onSurface
+                                    )
+                                    Text(
+                                        text = if (isDarkTheme) "Enabled" else "Disabled",
+                                        fontFamily = Poppins,
+                                        fontWeight = FontWeight.Normal,
+                                        fontSize = 12.sp,
+                                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                                    )
+                                }
+                            }
+                            
+                            Switch(
+                                checked = isDarkTheme,
+                                onCheckedChange = { newValue ->
+                                    isDarkTheme = newValue
+                                    setDarkTheme(newValue)
+                                },
+                                colors = SwitchDefaults.colors(
+                                    checkedThumbColor = NeonLime,
+                                    checkedTrackColor = NeonLime.copy(alpha = 0.3f),
+                                    uncheckedThumbColor = MaterialTheme.colorScheme.outline,
+                                    uncheckedTrackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+                                )
+                            )
+                        }
+                        
+                        Spacer(modifier = Modifier.height(16.dp))
+                        SettingsItem("🔔 Notifications", "Manage alerts")
+                        Spacer(modifier = Modifier.height(12.dp))
+                        
+                        SettingsItem("🔒 Security", "Change password")
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+
+            item {
+                // Sign Out Button
+                Button(
+                    onClick = { onLogout?.invoke() },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.errorContainer
+                    )
+                ) {
+                    Text(
+                        "Sign Out",
+                        color = MaterialTheme.colorScheme.error,
+                        fontFamily = Poppins,
+                        fontWeight = FontWeight.SemiBold,
+                        fontSize = 14.sp
+                    )
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(32.dp))
+            }
         }
     }
 }
 
 @Composable
 fun ProfileInfoItem(label: String, value: String) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             label,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline
+            fontFamily = Poppins,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
             value,
-            style = MaterialTheme.typography.bodyMedium,
+            fontFamily = Poppins,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface
         )
     }
@@ -257,17 +303,21 @@ fun ProfileInfoItem(label: String, value: String) {
 
 @Composable
 fun SettingsItem(title: String, description: String) {
-    Column {
+    Column(modifier = Modifier.fillMaxWidth()) {
         Text(
             title,
-            style = MaterialTheme.typography.bodyMedium,
+            fontFamily = Poppins,
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp,
             color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(2.dp))
         Text(
             description,
-            style = MaterialTheme.typography.bodySmall,
-            color = MaterialTheme.colorScheme.outline
+            fontFamily = Poppins,
+            fontWeight = FontWeight.Normal,
+            fontSize = 12.sp,
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

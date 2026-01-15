@@ -21,6 +21,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.kushan.vaultpark.ui.theme.DarkBackground
+import com.kushan.vaultpark.ui.theme.Poppins
+import com.kushan.vaultpark.ui.theme.TextLight
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -31,7 +34,14 @@ fun SecurityLogsScreenLegacy(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Scan Logs") },
+                title = {
+                    Text(
+                        "Scan Logs",
+                        fontFamily = Poppins,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    )
+                },
                 navigationIcon = {
                     if (onBackPressed != null) {
                         IconButton(onClick = onBackPressed) {
@@ -43,11 +53,13 @@ fun SecurityLogsScreenLegacy(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = DarkBackground,
+                    titleContentColor = TextLight,
+                    navigationIconContentColor = TextLight
                 )
             )
-        }
+        },
+        containerColor = DarkBackground
     ) { innerPadding ->
         Column(
             modifier = modifier
@@ -84,7 +96,14 @@ fun SecurityReportsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Reports") },
+                title = {
+                    Text(
+                        "Reports",
+                        fontFamily = Poppins,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 28.sp
+                    )
+                },
                 navigationIcon = {
                     if (onBackPressed != null) {
                         IconButton(onClick = onBackPressed) {
@@ -96,11 +115,13 @@ fun SecurityReportsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
+                    containerColor = DarkBackground,
+                    titleContentColor = TextLight,
+                    navigationIconContentColor = TextLight
                 )
             )
-        }
+        },
+        containerColor = DarkBackground
     ) { innerPadding ->
         Column(
             modifier = modifier
