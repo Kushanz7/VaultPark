@@ -50,6 +50,7 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -60,16 +61,30 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.viewmodel.HomeViewModel
+import com.kushan.vaultpark.viewmodel.ParkingViewModel
 import androidx.compose.foundation.Image
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
     onBackPressed: (() -> Unit)? = null,
-    viewModel: HomeViewModel = viewModel()
+    currentUser: User? = null,
+    viewModel: HomeViewModel = viewModel(),
+    parkingViewModel: ParkingViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val activeSession by parkingViewModel.activeSession.collectAsState()
+    val sessionDuration by parkingViewModel.sessionDuration.collectAsState()
+    
+    // Observe real-time parking session when user is available
+    LaunchedEffect(currentUser?.id) {
+        currentUser?.id?.let { userId ->
+            parkingViewModel.observeActiveSession(userId)
+        }
+    }
+    
     val infiniteTransition = rememberInfiniteTransition(label = "pulsing")
     val pulseScale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -120,11 +135,12 @@ fun HomeScreen(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // User Greeting Card
-            if (uiState.user != null) {
+            val displayUser = currentUser ?: uiState.user
+            if (displayUser != null) {
                 WelcomeCard(
-                    userName = uiState.user!!.name,
-                    vehicleNumber = uiState.user!!.vehicleNumber,
-                    membershipType = uiState.user!!.membershipType,
+                    userName = displayUser.name,
+                    vehicleNumber = displayUser.vehicleNumber,
+                    membershipType = displayUser.membershipType,
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(16.dp)
@@ -143,14 +159,22 @@ fun HomeScreen(
 
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Parking Status Card
-            ParkingStatusCard(
-                isParked = uiState.parkingStatus.isParked,
-                parkedSince = uiState.parkingStatus.parkedSince,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp)
-            )
+            // Real-time Parking Status Card (from Firebase)
+            if (activeSession != null) {
+                RealtimeParkingStatusCard(
+                    session = activeSession!!,
+                    sessionDuration = sessionDuration,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+            } else {
+                IdleParkingStatusCard(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                )
+            }
 
             Spacer(modifier = Modifier.height(24.dp))
         }
@@ -372,6 +396,184 @@ private fun QRCodeSection(
                 fontSize = 11.sp
             )
         }
+    }
+}
+
+@Composable
+private fun RealtimeParkingStatusCard(
+    session: com.kushan.vaultpark.model.ParkingSession,
+    sessionDuration: String,
+    modifier: Modifier = Modifier
+) {
+    val statusColor = Color(0xFF4CAF50) // Green for active session
+
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = statusColor.copy(alpha = 0.1f)
+        ),
+        border = BorderStroke(
+            1.dp,
+            statusColor.copy(alpha = 0.3f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp)
+        ) {
+            Text(
+                text = "Parking Session (Live)",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            // Active status indicator
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .background(
+                            color = statusColor,
+                            shape = CircleShape
+                        )
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Active - ${session.gateLocation}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            // Session details grid
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surface,
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .padding(12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(
+                        text = "Vehicle",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                    Text(
+                        text = session.vehicleNumber,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Duration",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                    Text(
+                        text = sessionDuration,
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4CAF50)
+                    )
+                }
+                Column(
+                    horizontalAlignment = Alignment.End
+                ) {
+                    Text(
+                        text = "Entry",
+                        style = MaterialTheme.typography.labelSmall,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+                    )
+                    Text(
+                        text = formatTime(session.entryTime),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontWeight = FontWeight.SemiBold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+private fun IdleParkingStatusCard(
+    modifier: Modifier = Modifier
+) {
+    val statusColor = Color(0xFFFF9800) // Orange for idle
+
+    Card(
+        modifier = modifier,
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = statusColor.copy(alpha = 0.1f)
+        ),
+        border = BorderStroke(
+            1.dp,
+            statusColor.copy(alpha = 0.3f)
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Parking Status",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.onSurface
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(12.dp)
+                        .background(
+                            color = statusColor,
+                            shape = CircleShape
+                        )
+                )
+                Spacer(modifier = Modifier.width(12.dp))
+                Text(
+                    text = "Not Currently Parked",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurface,
+                    fontWeight = FontWeight.SemiBold
+                )
+            }
+        }
+    }
+}
+
+private fun formatTime(timestamp: Any?): String {
+    return if (timestamp is com.google.firebase.Timestamp) {
+        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+        sdf.format(timestamp.toDate())
+    } else if (timestamp is java.util.Date) {
+        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
+        sdf.format(timestamp)
+    } else {
+        "--:--"
     }
 }
 

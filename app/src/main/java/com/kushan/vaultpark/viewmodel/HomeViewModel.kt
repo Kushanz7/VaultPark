@@ -48,8 +48,7 @@ class HomeViewModel : ViewModel() {
             email = "kushan@vaultpark.com",
             phone = "+1-555-0123",
             vehicleNumber = "KA-01-AB-1234",
-            membershipType = "Premium",
-            createdDate = "2025-01-01"
+            membershipType = "Premium"
         )
         _uiState.value = _uiState.value.copy(user = mockUser)
     }

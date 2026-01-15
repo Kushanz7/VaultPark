@@ -48,14 +48,15 @@ val bottomNavItems = listOf(
 @Composable
 fun VaultParkBottomNavigation(
     currentRoute: String?,
-    onNavigate: (NavScreen) -> Unit
+    onNavigate: (NavScreen) -> Unit,
+    items: List<BottomNavItem> = bottomNavItems
 ) {
     NavigationBar(
         modifier = Modifier.height(80.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {
-        bottomNavItems.forEach { item ->
+        items.forEach { item ->
             NavigationBarItem(
                 selected = currentRoute == item.screen.route,
                 onClick = { onNavigate(item.screen) },

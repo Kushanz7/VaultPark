@@ -4,50 +4,60 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.kushan.vaultpark.ui.screens.HomeScreen
-import com.kushan.vaultpark.ui.screens.HistoryScreen
-import com.kushan.vaultpark.ui.screens.BillingScreen
-import com.kushan.vaultpark.ui.screens.ProfileScreen
+import com.kushan.vaultpark.model.User
+import com.kushan.vaultpark.model.UserRole
+import com.kushan.vaultpark.ui.screens.LoginScreen
+import com.kushan.vaultpark.viewmodel.AuthViewModel
 
 @Composable
 fun VaultParkNavHost(
     navController: NavHostController,
-    startDestination: String = NavScreen.Home.route
+    authViewModel: AuthViewModel,
+    isAuthenticated: Boolean,
+    currentUser: User?
 ) {
+    val startDestination = if (isAuthenticated) {
+        when (currentUser?.role) {
+            UserRole.DRIVER -> DRIVER_GRAPH
+            UserRole.SECURITY -> SECURITY_GRAPH
+            else -> NavScreen.Login.route
+        }
+    } else {
+        NavScreen.Login.route
+    }
+    
     NavHost(
         navController = navController,
         startDestination = startDestination
     ) {
-        composable(NavScreen.Home.route) {
-            HomeScreen(
-                onBackPressed = {
-                    navController.popBackStack()
+        // Login Screen
+        composable(NavScreen.Login.route) {
+            LoginScreen(
+                authViewModel = authViewModel,
+                onLoginSuccess = {
+                    navController.navigate(
+                        if (currentUser?.role == UserRole.DRIVER) {
+                            DRIVER_GRAPH
+                        } else {
+                            SECURITY_GRAPH
+                        }
+                    ) {
+                        popUpTo(NavScreen.Login.route) { inclusive = true }
+                    }
                 }
             )
         }
         
-        composable(NavScreen.History.route) {
-            HistoryScreen(
-                onBackPressed = {
-                    navController.popBackStack()
-                }
-            )
-        }
+        // Driver Navigation Graph
+        driverNavGraph(
+            navController = navController,
+            currentUser = currentUser
+        )
         
-        composable(NavScreen.Billing.route) {
-            BillingScreen(
-                onBackPressed = {
-                    navController.popBackStack()
-                }
-            )
-        }
-        
-        composable(NavScreen.Profile.route) {
-            ProfileScreen(
-                onBackPressed = {
-                    navController.popBackStack()
-                }
-            )
-        }
+        // Security Navigation Graph
+        securityNavGraph(
+            navController = navController,
+            currentUser = currentUser
+        )
     }
 }

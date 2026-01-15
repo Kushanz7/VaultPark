@@ -26,10 +26,15 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.kushan.vaultpark.model.User
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ProfileScreen(onBackPressed: (() -> Unit)? = null) {
+fun ProfileScreen(
+    onBackPressed: (() -> Unit)? = null,
+    currentUser: User? = null,
+    onLogout: (() -> Unit)? = null
+) {
     Scaffold(
         topBar = {
             TopAppBar(
@@ -99,16 +104,21 @@ fun ProfileScreen(onBackPressed: (() -> Unit)? = null) {
                     )
                     Spacer(modifier = Modifier.height(12.dp))
                     
-                    ProfileInfoItem("Name", "John Doe")
+                    ProfileInfoItem("Name", currentUser?.name ?: "User")
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    ProfileInfoItem("Email", "john.doe@example.com")
+                    ProfileInfoItem("Email", currentUser?.email ?: "N/A")
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    ProfileInfoItem("Phone", "+1 (555) 123-4567")
+                    ProfileInfoItem("Role", currentUser?.role?.name ?: "N/A")
                     Spacer(modifier = Modifier.height(8.dp))
                     
-                    ProfileInfoItem("Membership", "Premium VIP")
+                    if (currentUser?.vehicleNumber != null) {
+                        ProfileInfoItem("Vehicle", currentUser.vehicleNumber)
+                        Spacer(modifier = Modifier.height(8.dp))
+                    }
+                    
+                    ProfileInfoItem("Membership", currentUser?.membershipType ?: "Standard")
                 }
             }
 
@@ -147,16 +157,17 @@ fun ProfileScreen(onBackPressed: (() -> Unit)? = null) {
 
             // Logout Button
             Button(
-                onClick = {},
+                onClick = { onLogout?.invoke() },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(48.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.secondary
+                    containerColor = MaterialTheme.colorScheme.errorContainer
                 )
             ) {
                 Text(
                     "Sign Out",
+                    color = MaterialTheme.colorScheme.error,
                     style = MaterialTheme.typography.labelLarge
                 )
             }
