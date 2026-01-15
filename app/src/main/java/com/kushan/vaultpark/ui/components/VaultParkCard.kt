@@ -11,18 +11,17 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.kushan.vaultpark.ui.theme.Surface
-import com.kushan.vaultpark.ui.theme.SurfaceVariant
+import com.kushan.vaultpark.ui.theme.CardShape
 
 /**
- * VaultParkCard - A reusable card component with Surface color background,
- * optional gradient overlay, and elevation shadow
+ * VaultParkCard - Modern card component with rounded corners and elevation
+ * Updated to match the new minimalistic UI design
  */
 @Composable
 fun VaultParkCard(
     modifier: Modifier = Modifier,
-    cornerRadius: Dp = 24.dp,
-    elevation: Dp = 4.dp,
+    cornerRadius: Dp = 20.dp,
+    elevation: Dp = 2.dp,
     gradient: Brush? = null,
     content: @Composable () -> Unit
 ) {
@@ -30,15 +29,14 @@ fun VaultParkCard(
         modifier = modifier,
         shape = RoundedCornerShape(cornerRadius),
         colors = CardDefaults.cardColors(
-            containerColor = Surface
+            containerColor = MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = elevation
         )
     ) {
         if (gradient != null) {
-            val contentModifier = Modifier
-                .background(gradient)
+            val contentModifier = Modifier.background(gradient)
             content()
         } else {
             content()
@@ -47,20 +45,20 @@ fun VaultParkCard(
 }
 
 /**
- * Elevated Card variant with SurfaceVariant background for secondary importance
+ * Elevated Card variant for secondary importance
  */
 @Composable
 fun ElevatedVaultParkCard(
     modifier: Modifier = Modifier,
     cornerRadius: Dp = 20.dp,
-    elevation: Dp = 8.dp,
+    elevation: Dp = 4.dp,
     content: @Composable () -> Unit
 ) {
     Card(
         modifier = modifier,
         shape = RoundedCornerShape(cornerRadius),
         colors = CardDefaults.cardColors(
-            containerColor = SurfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),
         elevation = CardDefaults.cardElevation(
             defaultElevation = elevation

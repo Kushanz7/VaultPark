@@ -58,6 +58,11 @@ class QRScannerViewModel(
     }
     
     fun scanQRCode(qrString: String) {
+        // Prevent scanning if already processing or showing result
+        if (_scanState.value !is ScanState.Idle) {
+            return
+        }
+        
         // Debounce: prevent scanning same QR code within 3 seconds
         if (qrString == lastScannedQR && System.currentTimeMillis() - lastScannedTime < scanDebounceMs) {
             return
@@ -133,7 +138,6 @@ class QRScannerViewModel(
             
             _scanState.value = ScanState.Success(savedSession)
             loadRecentScans()
-            resetScanAfterDelay(3000)
         } catch (e: Exception) {
             _scanState.value = ScanState.Error("Failed to create parking session: ${e.message}")
             resetScanAfterDelay(2000)
@@ -162,7 +166,6 @@ class QRScannerViewModel(
             
             _scanState.value = ScanState.Success(updatedSession)
             loadRecentScans()
-            resetScanAfterDelay(3000)
         } catch (e: Exception) {
             _scanState.value = ScanState.Error("Failed to complete parking session: ${e.message}")
             resetScanAfterDelay(2000)

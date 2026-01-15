@@ -17,8 +17,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kushan.vaultpark.ui.theme.PrimaryPurple
-import com.kushan.vaultpark.ui.theme.SecondaryGold
+import com.kushan.vaultpark.ui.theme.NeonLime
+import com.kushan.vaultpark.ui.theme.DarkGrey
 import com.kushan.vaultpark.ui.theme.StatusActive
 import com.kushan.vaultpark.ui.theme.StatusError
 import com.kushan.vaultpark.ui.theme.StatusInactive
@@ -93,7 +93,7 @@ fun MembershipBadge(
     Row(
         modifier = modifier
             .clip(RoundedCornerShape(16.dp))
-            .background(SecondaryGold.copy(alpha = 0.2f))
+            .background(NeonLime.copy(alpha = 0.2f))
             .padding(horizontal = 12.dp, vertical = 6.dp),
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
@@ -103,7 +103,7 @@ fun MembershipBadge(
             fontSize = 12.sp,
             fontWeight = FontWeight.SemiBold,
             fontFamily = Poppins,
-            color = SecondaryGold
+            color = NeonLime
         )
     }
 }

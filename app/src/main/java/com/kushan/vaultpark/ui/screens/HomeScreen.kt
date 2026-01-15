@@ -42,6 +42,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -52,20 +53,15 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.ui.components.BadgeStatus
 import com.kushan.vaultpark.ui.components.MembershipBadge
-import com.kushan.vaultpark.ui.components.VaultParkCard
-import com.kushan.vaultpark.ui.theme.Background
+import com.kushan.vaultpark.ui.components.ModernCard
+import com.kushan.vaultpark.ui.theme.AccentLime
 import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.PrimaryPurple
-import com.kushan.vaultpark.ui.theme.SecondaryGold
+import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.StatusActive
-import com.kushan.vaultpark.ui.theme.StatusInactive
-import com.kushan.vaultpark.ui.theme.Surface
-import com.kushan.vaultpark.ui.theme.TextPrimary
-import com.kushan.vaultpark.ui.theme.TextSecondary
-import com.kushan.vaultpark.ui.theme.TextTertiary
 import com.kushan.vaultpark.viewmodel.HomeViewModel
 import com.kushan.vaultpark.viewmodel.ParkingViewModel
 import androidx.compose.foundation.Image
+import androidx.compose.material3.MaterialTheme
 import kotlinx.coroutines.delay
 
 
@@ -113,14 +109,14 @@ fun HomeScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
-                .padding(top = 20.dp, bottom = 100.dp),
+                .padding(horizontal = 16.dp)
+                .padding(top = 16.dp, bottom = 100.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // User Greeting Card
@@ -167,12 +163,10 @@ fun UserGreetingCard(
     membershipType: String,
     modifier: Modifier = Modifier
 ) {
-    VaultParkCard(
+    ModernCard(
         modifier = modifier
             .fillMaxWidth()
-            .height(140.dp),
-        cornerRadius = 24.dp,
-        elevation = 4.dp
+            .height(140.dp)
     ) {
         Column(
             modifier = Modifier
@@ -186,14 +180,14 @@ fun UserGreetingCard(
                     fontSize = 14.sp,
                     fontWeight = FontWeight.Normal,
                     fontFamily = Poppins,
-                    color = TextSecondary
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Text(
                     text = userName,
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
                     fontFamily = Poppins,
-                    color = TextPrimary
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
             
@@ -207,7 +201,7 @@ fun UserGreetingCard(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium,
                     fontFamily = Poppins,
-                    color = PrimaryPurple
+                    color = NeonLime
                 )
                 MembershipBadge(membershipType = membershipType)
             }
@@ -233,17 +227,15 @@ fun QRCodeCard(
     )
     
     val textColor by animateColorAsState(
-        targetValue = if (secondsRemaining < 5) SecondaryGold else TextTertiary,
+        targetValue = if (secondsRemaining < 5) AccentLime else MaterialTheme.colorScheme.onSurfaceVariant,
         animationSpec = tween(500),
         label = "countdown_color"
     )
 
-    VaultParkCard(
+    ModernCard(
         modifier = modifier
             .fillMaxWidth()
-            .height(420.dp),
-        cornerRadius = 28.dp,
-        elevation = 4.dp
+            .height(420.dp)
     ) {
         Column(
             modifier = Modifier
@@ -258,7 +250,7 @@ fun QRCodeCard(
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Normal,
                 fontFamily = Poppins,
-                color = TextSecondary
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
             // QR Code with Glow Effect
@@ -267,11 +259,11 @@ fun QRCodeCard(
                     .size(240.dp)
                     .border(
                         width = 2.dp,
-                        color = PrimaryPurple.copy(alpha = glowOpacity),
+                        color = NeonLime.copy(alpha = glowOpacity),
                         shape = RoundedCornerShape(12.dp)
                     )
                     .clip(RoundedCornerShape(12.dp))
-                    .background(TextPrimary),
+                    .background(Color.White),
                 contentAlignment = Alignment.Center
             ) {
                 if (qrCodeBitmap != null) {
@@ -291,7 +283,7 @@ fun QRCodeCard(
                 } else {
                     CircularProgressIndicator(
                         modifier = Modifier.size(60.dp),
-                        color = PrimaryPurple,
+                        color = NeonLime,
                         strokeWidth = 4.dp
                     )
                 }
@@ -321,12 +313,10 @@ fun ParkingStatusCard(
     isActive: Boolean,
     modifier: Modifier = Modifier
 ) {
-    VaultParkCard(
+    ModernCard(
         modifier = modifier
             .fillMaxWidth()
-            .height(if (isActive) 130.dp else 100.dp),
-        cornerRadius = 24.dp,
-        elevation = 4.dp
+            .height(if (isActive) 130.dp else 100.dp)
     ) {
         Row(
             modifier = Modifier
@@ -348,7 +338,7 @@ fun ParkingStatusCard(
                         .size(dotSize)
                         .clip(CircleShape)
                         .background(
-                            if (isActive) StatusActive else StatusInactive
+                            if (isActive) StatusActive else MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.5f)
                         )
                 )
                 
@@ -360,7 +350,7 @@ fun ParkingStatusCard(
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         fontFamily = Poppins,
-                        color = if (isActive) StatusActive else TextSecondary
+                        color = if (isActive) StatusActive else MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     
                     if (isActive) {
@@ -369,7 +359,7 @@ fun ParkingStatusCard(
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Normal,
                             fontFamily = Poppins,
-                            color = TextSecondary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     } else {
                         Text(
@@ -377,7 +367,7 @@ fun ParkingStatusCard(
                             fontSize = 12.sp,
                             fontWeight = FontWeight.Normal,
                             fontFamily = Poppins,
-                            color = TextTertiary
+                            color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
                         )
                     }
                 }

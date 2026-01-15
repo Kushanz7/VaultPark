@@ -95,11 +95,11 @@ fun QRScanResultDialog(
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
-                InfoRow("Driver", session.driverName)
+                InfoRow("Driver", session.driverName.ifEmpty { "Unknown" })
                 Spacer(modifier = Modifier.height(8.dp))
-                InfoRow("Vehicle", session.vehicleNumber)
+                InfoRow("Vehicle", session.vehicleNumber.ifEmpty { "Unknown" })
                 Spacer(modifier = Modifier.height(8.dp))
-                InfoRow("Gate", session.gateLocation)
+                InfoRow("Gate", session.gateLocation.ifEmpty { "Unknown" })
                 
                 if (isExit && session.entryTime != null) {
                     Spacer(modifier = Modifier.height(8.dp))

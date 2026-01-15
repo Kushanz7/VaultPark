@@ -2,41 +2,66 @@ package com.kushan.vaultpark.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-// ============ NEON-DARK MINIMAL PALETTE ============
+// ============ MODERN PARKING APP PALETTE ============
 
-// Background Colors
-val Background = Color(0xFF121212)           // Off-black
-val Surface = Color(0xFF1E1E1E)              // Card surface
-val SurfaceVariant = Color(0xFF2A2A2A)       // Elevated cards
+// Primary Brand Colors
+val NeonLime = Color(0xFFA4FF07)            // Primary accent - Pay Now buttons, active states
+val SoftMintGreen = Color(0xFF50C878)       // Success/Safe - Free spots, confirmations
 
-// Brand Colors - Neon Accent
-val PrimaryPurple = Color(0xFF7F00FF)        // Electric Violet
-val SecondaryGold = Color(0xFFFFD700)        // Gold/Yellow
+// Surface Colors
+val DarkGrey = Color(0xFF6E6E6E)            // Secondary surface - Unselected buttons, inactive tabs
+val MidnightBlack = Color(0xFF1A1B1E)       // Main app background (Dark mode)
+val OffWhite = Color(0xFFF2F2F2)            // Card/Text color (Light mode)
 
-// Status Colors
-val StatusActive = Color(0xFF00C853)         // Green - Active parking
-val StatusInactive = Color(0xFF9E9E9E)       // Grey - Inactive
-val StatusError = Color(0xFFFF5252)          // Red - Errors
+// Light Theme Colors
+val LightBackground = Color(0xFFFAFAFA)     // Light gray background
+val LightSurface = Color(0xFFFFFFFF)        // White surface/cards
+val LightSurfaceVariant = Color(0xFFF5F5F5) // Light gray variant
 
-// Text Colors
-val TextPrimary = Color(0xFFFFFFFF)          // White
-val TextSecondary = Color(0xFFB0B0B0)        // Light grey
-val TextTertiary = Color(0xFF707070)         // Medium grey
+// Dark Theme Colors (Primary)
+val DarkBackground = MidnightBlack          // #1A1B1E - Deep background
+val DarkSurface = Color(0xFF2A2B2E)         // Slightly lighter than background
+val DarkSurfaceVariant = Color(0xFF3A3B3E)  // Even lighter variant
 
-// Utility Colors (Legacy support)
-val DeepBlue = PrimaryPurple
-val DeepBlueDark = Color(0xFF0D1B4F)
-val DeepBlueLight = Color(0xFF3D5AFE)
+// Text Colors - Light Theme
+val TextDarkLight = Color(0xFF1A1B1E)       // Dark text for light mode
+val TextSecondaryLight = Color(0xFF666666)  // Secondary text
+val TextTertiaryLight = Color(0xFF999999)   // Tertiary/hint text
 
-val PurpleAccent = PrimaryPurple
-val PurpleLight = Color(0xFFB39DDB)
-val PurpleDark = Color(0xFF512DA8)
+// Text Colors - Dark Theme
+val TextLight = Color(0xFFF2F2F2)           // Off-white text for dark mode
+val TextSecondaryDark = Color(0xFFCCCCCC)   // Secondary text dark modeval TextTertiaryDark = Color(0xFF999999)    // Tertiary text dark modeval TextTertiaryDark = Color(0xFF999999)    // Tertiary text dark mode
 
-val DarkBackground = Background
-val SurfaceColor = Surface
-val CardColor = SurfaceVariant
+// Status & Utility Colors
+val StatusSuccess = SoftMintGreen           // #50C878 - Green success
+val StatusError = Color(0xFFFF6B6B)         // Red - Errors
+val StatusWarning = Color(0xFFFFB84D)       // Orange - Warning
+val StatusInfo = Color(0xFF4DA6FF)          // Blue - Info
+
+// Neutral Colors
+val GrayLight = Color(0xFFE8E8E8)           // Light gray
+val GrayMedium = DarkGrey                   // #6E6E6E - Medium gray
+val GrayDark = Color(0xFF4A4A4A)            // Dark gray
+val Divider = Color(0xFFE0E0E0)             // Divider color
+
+// Component Background Colors
+val InputBackground = Color(0xFFFAFAFA)    // Input field background (light)
+val InputBackgroundDark = Color(0xFF3A3B3E) // Input field background (dark)
+
+// Legacy Support (mapped to new colors)
+val Background = DarkBackground
+val Surface = DarkSurface
+val SurfaceVariant = DarkSurfaceVariant
+val PrimaryAccent = NeonLime
+val SecondaryAccent = SoftMintGreen
+val StatusInactive = GrayMedium
+val StatusActive = SoftMintGreen             // Active states use SoftMintGreen
+val TextPrimary = TextLight
+val TextSecondary = TextSecondaryLight
+val TextTertiary = TextTertiaryLight
+val AccentLime = NeonLime                    // Mapped to NeonLime
 
 val ErrorColor = StatusError
-val SuccessColor = StatusActive
-val WarningColor = SecondaryGold
-val InfoColor = Color(0xFF2196F3)
+val SuccessColor = StatusSuccess
+val WarningColor = StatusWarning
+val InfoColor = StatusInfo

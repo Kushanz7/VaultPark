@@ -49,17 +49,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kushan.vaultpark.model.User
-import com.kushan.vaultpark.ui.components.GradientButton
-import com.kushan.vaultpark.ui.theme.Background
+import com.kushan.vaultpark.ui.components.ModernPrimaryButton
+import com.kushan.vaultpark.ui.components.ModernTextField
+import com.kushan.vaultpark.ui.components.ModernCard
+import com.kushan.vaultpark.ui.theme.AccentLime
 import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.PrimaryPurple
-import com.kushan.vaultpark.ui.theme.SecondaryGold
+import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.StatusError
-import com.kushan.vaultpark.ui.theme.Surface
-import com.kushan.vaultpark.ui.theme.SurfaceVariant
-import com.kushan.vaultpark.ui.theme.TextPrimary
-import com.kushan.vaultpark.ui.theme.TextSecondary
-import com.kushan.vaultpark.ui.theme.TextTertiary
 import com.kushan.vaultpark.viewmodel.AuthViewModel
 
 @Composable
@@ -74,7 +70,6 @@ fun LoginScreen(
     
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
-    var passwordVisible by remember { mutableStateOf(false) }
     
     LaunchedEffect(isAuthenticated, currentUser) {
         if (isAuthenticated && currentUser != null) {
@@ -85,18 +80,18 @@ fun LoginScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Background)
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp)
+                .padding(horizontal = 24.dp)
                 .padding(top = 60.dp, bottom = 40.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Top
         ) {
-            // VaultPark Logo with Gradient
+            // VaultPark Logo with Modern Gradient
             AnimatedVisibility(
                 visible = true,
                 enter = fadeIn() + slideInVertically(initialOffsetY = { -30 })
@@ -105,36 +100,21 @@ fun LoginScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(bottom = 48.dp)
                 ) {
-                    // Gradient text logo
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .background(
-                                brush = Brush.linearGradient(
-                                    colors = listOf(PrimaryPurple, SecondaryGold)
-                                )
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = "VaultPark",
-                            fontSize = 40.sp,
-                            fontWeight = FontWeight.Bold,
-                            fontFamily = Poppins,
-                            color = Color.Transparent,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(vertical = 12.dp),
-                            textAlign = TextAlign.Center
-                        )
-                    }
+                    Text(
+                        text = "VaultPark",
+                        fontSize = 42.sp,
+                        fontWeight = FontWeight.Bold,
+                        fontFamily = Poppins,
+                        color = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.padding(vertical = 12.dp)
+                    )
                     
-                    Spacer(modifier = Modifier.height(12.dp))
+                    Spacer(modifier = Modifier.height(8.dp))
                     
                     Text(
                         text = "Premium Parking Access",
-                        fontSize = 14.sp,
-                        color = TextSecondary,
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontWeight = FontWeight.Normal,
                         fontFamily = Poppins
                     )
@@ -146,95 +126,64 @@ fun LoginScreen(
                 visible = true,
                 enter = fadeIn() + slideInVertically(initialOffsetY = { 30 })
             ) {
-                Card(
+                ModernCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = 8.dp),
-                    shape = RoundedCornerShape(24.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = Surface
-                    ),
-                    elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+                        .padding(vertical = 8.dp)
                 ) {
                     Column(
                         modifier = Modifier.padding(24.dp),
-                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                        verticalArrangement = Arrangement.spacedBy(20.dp)
                     ) {
+                        Text(
+                            text = "Sign In",
+                            fontSize = 24.sp,
+                            fontWeight = FontWeight.Bold,
+                            fontFamily = Poppins,
+                            color = MaterialTheme.colorScheme.onSurface
+                        )
+                        
                         // Email Field
-                        OutlinedTextField(
+                        ModernTextField(
                             value = email,
                             onValueChange = { email = it },
-                            label = { Text("Email", fontFamily = Poppins) },
-                            placeholder = { Text("Enter your email", fontFamily = Poppins) },
-                            modifier = Modifier.fillMaxWidth(),
+                            label = "Email",
+                            placeholder = "Enter your email",
+                            enabled = !isLoading,
                             keyboardOptions = KeyboardOptions(
                                 keyboardType = KeyboardType.Email,
                                 imeAction = ImeAction.Next
-                            ),
-                            singleLine = true,
-                            enabled = !isLoading,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = SurfaceVariant,
-                                unfocusedContainerColor = SurfaceVariant,
-                                focusedIndicatorColor = PrimaryPurple,
-                                unfocusedIndicatorColor = TextTertiary,
-                                focusedLabelColor = PrimaryPurple,
-                                unfocusedLabelColor = TextTertiary,
-                                cursorColor = PrimaryPurple,
-                                focusedTextColor = TextPrimary,
-                                unfocusedTextColor = TextPrimary
                             )
                         )
                         
                         // Password Field
-                        OutlinedTextField(
+                        var showPassword by remember { mutableStateOf(false) }
+                        ModernTextField(
                             value = password,
                             onValueChange = { password = it },
-                            label = { Text("Password", fontFamily = Poppins) },
-                            placeholder = { Text("Enter your password", fontFamily = Poppins) },
-                            modifier = Modifier.fillMaxWidth(),
-                            visualTransformation = if (passwordVisible) {
+                            label = "Password",
+                            placeholder = "Enter your password",
+                            enabled = !isLoading,
+                            visualTransformation = if (showPassword) {
                                 VisualTransformation.None
                             } else {
                                 PasswordVisualTransformation()
                             },
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Password,
-                                imeAction = ImeAction.Done
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onDone = {
-                                    if (email.isNotBlank() && password.isNotBlank() && !isLoading) {
-                                        authViewModel.login(email, password)
-                                    }
-                                }
-                            ),
                             trailingIcon = {
                                 IconButton(
-                                    onClick = { passwordVisible = !passwordVisible },
+                                    onClick = { showPassword = !showPassword },
                                     enabled = !isLoading
                                 ) {
                                     Icon(
-                                        imageVector = if (passwordVisible) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
+                                        imageVector = if (showPassword) Icons.Filled.Visibility else Icons.Filled.VisibilityOff,
                                         contentDescription = "Toggle password visibility",
-                                        tint = PrimaryPurple
+                                        tint = MaterialTheme.colorScheme.primary
                                     )
                                 }
                             },
-                            singleLine = true,
-                            enabled = !isLoading,
-                            shape = RoundedCornerShape(16.dp),
-                            colors = TextFieldDefaults.colors(
-                                focusedContainerColor = SurfaceVariant,
-                                unfocusedContainerColor = SurfaceVariant,
-                                focusedIndicatorColor = PrimaryPurple,
-                                unfocusedIndicatorColor = TextTertiary,
-                                focusedLabelColor = PrimaryPurple,
-                                unfocusedLabelColor = TextTertiary,
-                                cursorColor = PrimaryPurple,
-                                focusedTextColor = TextPrimary,
-                                unfocusedTextColor = TextPrimary
+                            keyboardOptions = KeyboardOptions(
+                                keyboardType = KeyboardType.Password,
+                                imeAction = ImeAction.Done
                             )
                         )
                         
@@ -244,14 +193,14 @@ fun LoginScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = StatusError.copy(alpha = 0.15f)
+                                    containerColor = StatusError.copy(alpha = 0.1f)
                                 )
                             ) {
                                 Text(
                                     text = errorMessage!!,
                                     modifier = Modifier.padding(12.dp),
                                     color = StatusError,
-                                    fontSize = 12.sp,
+                                    fontSize = 13.sp,
                                     fontWeight = FontWeight.Medium,
                                     fontFamily = Poppins
                                 )
@@ -261,7 +210,7 @@ fun LoginScreen(
                         Spacer(modifier = Modifier.height(8.dp))
                         
                         // Sign In Button
-                        GradientButton(
+                        ModernPrimaryButton(
                             text = "Sign In",
                             onClick = {
                                 authViewModel.login(email, password)
@@ -274,38 +223,38 @@ fun LoginScreen(
             }
             
             // Demo Credentials Info
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(24.dp))
             
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = PrimaryPurple.copy(alpha = 0.12f)
+                    containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f)
                 )
             ) {
                 Column(
-                    modifier = Modifier.padding(16.dp),
+                    modifier = Modifier.padding(20.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text(
                         text = "Demo Credentials",
                         fontWeight = FontWeight.SemiBold,
-                        fontSize = 14.sp,
-                        color = TextPrimary,
+                        fontSize = 15.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontFamily = Poppins
                     )
                     
                     Text(
                         text = "Driver: john.driver@vaultpark.com",
-                        fontSize = 12.sp,
-                        color = TextSecondary,
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontFamily = Poppins
                     )
                     
                     Text(
                         text = "Security: guard1@vaultpark.com",
-                        fontSize = 12.sp,
-                        color = TextSecondary,
+                        fontSize = 13.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontFamily = Poppins
                     )
                     
@@ -313,8 +262,8 @@ fun LoginScreen(
                     
                     Text(
                         text = "Password: Use same credentials in Firebase Console",
-                        fontSize = 11.sp,
-                        color = TextTertiary,
+                        fontSize = 12.sp,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
                         fontFamily = Poppins
                     )
                 }

@@ -21,22 +21,21 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Description
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kushan.vaultpark.model.UserRole
-import com.kushan.vaultpark.ui.theme.Background
 import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.PrimaryPurple
-import com.kushan.vaultpark.ui.theme.Surface
-import com.kushan.vaultpark.ui.theme.TextTertiary
+import com.kushan.vaultpark.ui.theme.NeonLime
 
 enum class BottomNavItem(val icon: ImageVector, val driverLabel: String, val securityLabel: String) {
     Home(Icons.Default.Home, "Home", "Scanner"),
@@ -56,7 +55,7 @@ fun NeonDarkBottomNavigation(
         modifier = modifier
             .fillMaxWidth()
             .height(80.dp)
-            .background(Surface)
+            .background(MaterialTheme.colorScheme.surface)
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Row(
@@ -86,18 +85,18 @@ fun BottomNavItemComponent(
     label: String
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) PrimaryPurple.copy(alpha = 0.2f) else Background,
-        animationSpec = tween(200)
+        targetValue = if (isSelected) NeonLime.copy(alpha = 0.15f) else Color.Transparent,
+        animationSpec = tween(200), label = ""
     )
     
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) PrimaryPurple else TextTertiary,
-        animationSpec = tween(200)
+        targetValue = if (isSelected) NeonLime else MaterialTheme.colorScheme.onSurfaceVariant,
+        animationSpec = tween(200), label = ""
     )
     
     val textColor by animateColorAsState(
-        targetValue = if (isSelected) PrimaryPurple else TextTertiary,
-        animationSpec = tween(200)
+        targetValue = if (isSelected) NeonLime else MaterialTheme.colorScheme.onSurfaceVariant,
+        animationSpec = tween(200), label = ""
     )
 
     Column(
