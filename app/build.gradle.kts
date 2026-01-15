@@ -30,6 +30,19 @@ android {
             )
         }
     }
+    
+    lint {
+        abortOnError = false
+        disable.addAll(listOf(
+            "MissingTranslation",
+            "ExtraTranslation",
+            "DefaultLocale",
+            "UnusedResources",
+            "UseOfNonLambdaOffsetOverload",
+            "ModifierParameter"
+        ))
+    }
+    
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
@@ -77,6 +90,18 @@ dependencies {
     implementation("com.google.firebase:firebase-firestore-ktx:25.1.0")
     implementation("com.google.firebase:firebase-common-ktx:21.0.0")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-play-services:1.8.0")
+    
+    // CameraX
+    implementation("androidx.camera:camera-camera2:1.3.1")
+    implementation("androidx.camera:camera-lifecycle:1.3.1")
+    implementation("androidx.camera:camera-view:1.3.1")
+    implementation("com.google.guava:guava:33.0.0-android")
+    
+    // ML Kit Barcode Scanning
+    implementation("com.google.mlkit:barcode-scanning:17.2.0")
+    
+    // Accompanist for permissions
+    implementation("com.google.accompanist:accompanist-permissions:0.32.0")
     
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

@@ -45,9 +45,8 @@ data class ParkingSession(
     val driverId: String = "",
     val driverName: String = "",
     val vehicleNumber: String = "",
-    @ServerTimestamp
-    val entryTime: Date? = null,
-    val exitTime: Date? = null,
+    val entryTime: Long = 0L,
+    val exitTime: Long? = null,
     val gateLocation: String = "",
     val scannedByGuardId: String? = null,
     val guardName: String? = null,

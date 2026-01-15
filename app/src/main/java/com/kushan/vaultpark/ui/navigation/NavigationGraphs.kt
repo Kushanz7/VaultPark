@@ -83,7 +83,7 @@ fun NavGraphBuilder.securityNavGraph(
         startDestination = NavScreen.Scanner.route
     ) {
         composable(NavScreen.Scanner.route) {
-            SecurityScannerScreen()
+            SecurityScannerScreen(currentGuardId = currentUser?.id ?: "")
         }
         
         composable(NavScreen.Logs.route) {

@@ -45,6 +45,16 @@ class FirestoreRepository(
     // ==================== User Operations ====================
 
     /**
+     * Get user by ID (non-Result version)
+     */
+    suspend fun getUserById(userId: String): User? = try {
+        val doc = db.collection("users").document(userId).get().await()
+        doc.toObject(User::class.java)?.copy(id = userId)
+    } catch (e: Exception) {
+        null
+    }
+
+    /**
      * Get user data by ID
      */
     suspend fun getUserData(userId: String): Result<User> = try {
@@ -91,10 +101,23 @@ class FirestoreRepository(
     // ==================== Parking Session Operations ====================
 
     /**
-     * Create a new parking session
+     * Create a new parking session (overloaded version)
+     * Returns the created session object
+     */
+    suspend fun createParkingSession(session: ParkingSession): ParkingSession = try {
+        val docRef = db.collection("parkingSessions").document()
+        val sessionWithId = session.copy(id = docRef.id)
+        docRef.set(sessionWithId).await()
+        sessionWithId
+    } catch (e: Exception) {
+        throw Exception("Failed to create parking session: ${e.message}")
+    }
+
+    /**
+     * Create a new parking session (legacy version)
      * Returns the session ID
      */
-    suspend fun createParkingSession(
+    suspend fun createParkingSessionLegacy(
         driverId: String,
         driverName: String,
         vehicleNumber: String,
@@ -120,7 +143,18 @@ class FirestoreRepository(
     /**
      * Update parking session with exit time and mark as completed
      */
-    suspend fun updateParkingSession(
+    suspend fun updateParkingSession(session: ParkingSession) {
+        try {
+            db.collection("parkingSessions").document(session.id).set(session).await()
+        } catch (e: Exception) {
+            throw Exception("Failed to update parking session: ${e.message}")
+        }
+    }
+
+    /**
+     * Update parking session (legacy version)
+     */
+    suspend fun updateParkingSessionLegacy(
         sessionId: String,
         exitTime: Date,
         duration: Long?
@@ -137,9 +171,29 @@ class FirestoreRepository(
     }
 
     /**
-     * Get active session for a driver
+     * Get active session for a driver (non-Result version)
      */
-    suspend fun getActiveSessionForDriver(driverId: String): Result<ParkingSession?> = try {
+    suspend fun getActiveSessionForDriver(driverId: String): ParkingSession? = try {
+        val query = db.collection("parkingSessions")
+            .whereEqualTo("driverId", driverId)
+            .whereEqualTo("status", SessionStatus.ACTIVE.name)
+            .limit(1)
+            .get()
+            .await()
+
+        if (query.documents.isNotEmpty()) {
+            query.documents[0].toObject(ParkingSession::class.java)
+        } else {
+            null
+        }
+    } catch (e: Exception) {
+        null
+    }
+
+    /**
+     * Get active session for a driver (Result version)
+     */
+    suspend fun getActiveSessionForDriverResult(driverId: String): Result<ParkingSession?> = try {
         val query = db.collection("parkingSessions")
             .whereEqualTo("driverId", driverId)
             .whereEqualTo("status", SessionStatus.ACTIVE.name)
@@ -222,7 +276,21 @@ class FirestoreRepository(
     /**
      * Get recent parking sessions (last N records)
      */
-    suspend fun getRecentSessions(limit: Long = 5): Result<List<ParkingSession>> = try {
+    suspend fun getRecentSessions(limit: Long = 5): List<ParkingSession> = try {
+        db.collection("parkingSessions")
+            .orderBy("entryTime", Query.Direction.DESCENDING)
+            .limit(limit)
+            .get()
+            .await()
+            .toObjects(ParkingSession::class.java)
+    } catch (e: Exception) {
+        emptyList()
+    }
+
+    /**
+     * Get recent parking sessions (Result version)
+     */
+    suspend fun getRecentSessionsResult(limit: Long = 5): Result<List<ParkingSession>> = try {
         val sessions = db.collection("parkingSessions")
             .orderBy("entryTime", Query.Direction.DESCENDING)
             .limit(limit)
@@ -252,5 +320,79 @@ class FirestoreRepository(
         } catch (e: Exception) {
             // Handle error
         }
+    }
+    
+    // Legacy methods for backward compatibility
+    suspend fun createParkingSessionLegacy2(
+        driverId: String,
+        driverName: String,
+        vehicleNumber: String,
+        gateLocation: String,
+        qrCodeData: String = ""
+    ): Result<String> = try {
+        val docRef = db.collection("parkingSessions").document()
+        val session = ParkingSession(
+            id = docRef.id,
+            driverId = driverId,
+            driverName = driverName,
+            vehicleNumber = vehicleNumber,
+            entryTime = System.currentTimeMillis(),
+            gateLocation = gateLocation,
+            status = SessionStatus.ACTIVE.name,
+            qrCodeDataUsed = qrCodeData
+        )
+        docRef.set(session).await()
+        Result.success(docRef.id)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+    
+    suspend fun updateParkingSessionLegacy2(
+        sessionId: String,
+        exitTime: Long,
+        duration: Long?
+    ): Result<Unit> = try {
+        val updates = mapOf(
+            "exitTime" to exitTime,
+            "status" to SessionStatus.COMPLETED.name,
+            "duration" to (duration?.toString() ?: "")
+        )
+        db.collection("parkingSessions").document(sessionId).update(updates).await()
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+    
+    suspend fun getActiveSessionForDriverLegacy(driverId: String): Result<ParkingSession?> = try {
+        val query = db.collection("parkingSessions")
+            .whereEqualTo("driverId", driverId)
+            .whereEqualTo("status", SessionStatus.ACTIVE.name)
+            .limit(1)
+            .get()
+            .await()
+
+        val session = if (query.documents.isNotEmpty()) {
+            query.documents[0].toObject(ParkingSession::class.java)
+        } else {
+            null
+        }
+        
+        Result.success(session)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+    
+    suspend fun getUserParkingSessionsLegacy(userId: String, limit: Long = 20): Result<List<ParkingSession>> = try {
+        val sessions = db.collection("parkingSessions")
+            .whereEqualTo("driverId", userId)
+            .orderBy("entryTime", Query.Direction.DESCENDING)
+            .limit(limit)
+            .get()
+            .await()
+            .toObjects(ParkingSession::class.java)
+
+        Result.success(sessions)
+    } catch (e: Exception) {
+        Result.failure(e)
     }
 }

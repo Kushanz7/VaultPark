@@ -393,9 +393,9 @@ private fun ParkingSessionCardForSecurity(session: ParkingSession) {
     }
 }
 
-private fun formatSessionTime(date: java.util.Date?): String {
-    if (date == null) return "N/A"
+private fun formatSessionTime(timeInMillis: Long): String {
+    if (timeInMillis == 0L) return "N/A"
     val formatter = SimpleDateFormat("HH:mm", Locale.getDefault())
-    return formatter.format(date)
+    return formatter.format(java.util.Date(timeInMillis))
 }
 

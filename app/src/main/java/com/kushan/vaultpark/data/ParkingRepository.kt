@@ -42,7 +42,7 @@ class DefaultParkingRepository : ParkingRepository {
         // TODO: Implement session creation
         return ParkingSession(
             id = "1",
-            entryTime = java.util.Date()
+            entryTime = System.currentTimeMillis()
         )
     }
 

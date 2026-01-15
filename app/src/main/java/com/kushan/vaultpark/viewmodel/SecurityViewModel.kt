@@ -40,11 +40,11 @@ class SecurityViewModel(
             _errorMessage.value = null
             
             try {
-                val result = firestoreRepository.getRecentSessions(limit = 10)
+                val result = firestoreRepository.getRecentSessionsResult(limit = 10)
                 if (result.isSuccess) {
-                    val sessions = result.getOrNull()?.filter { 
+                    val sessions = (result.getOrNull() ?: emptyList()).filter { 
                         it.status == "ACTIVE" 
-                    } ?: emptyList()
+                    }
                     _activeSessions.value = sessions
                 } else {
                     _errorMessage.value = result.exceptionOrNull()?.message
@@ -63,7 +63,7 @@ class SecurityViewModel(
             _errorMessage.value = null
             
             try {
-                val result = firestoreRepository.getRecentSessions(limit = 5)
+                val result = firestoreRepository.getRecentSessionsResult(limit = 5)
                 if (result.isSuccess) {
                     _recentSessions.value = result.getOrNull() ?: emptyList()
                 } else {

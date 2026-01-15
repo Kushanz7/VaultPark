@@ -32,7 +32,7 @@ class ParkingViewModel(
         viewModelScope.launch {
             try {
                 // First, get the current session
-                val result = firestoreRepository.getActiveSessionForDriver(driverId)
+                val result = firestoreRepository.getActiveSessionForDriverLegacy(driverId)
                 if (result.isSuccess) {
                     _activeSession.value = result.getOrNull()
                 }
@@ -54,7 +54,7 @@ class ParkingViewModel(
             _errorMessage.value = null
             
             try {
-                val result = firestoreRepository.createParkingSession(
+                val result = firestoreRepository.createParkingSessionLegacy2(
                     driverId = driverId,
                     driverName = driverName,
                     vehicleNumber = vehicleNumber,
@@ -86,14 +86,14 @@ class ParkingViewModel(
             
             try {
                 val session = _activeSession.value
-                if (session != null && session.entryTime != null) {
+                if (session != null && session.entryTime > 0L) {
                     val duration = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(
-                        Date().time - session.entryTime!!.time
+                        System.currentTimeMillis() - session.entryTime
                     )
                     
-                    val result = firestoreRepository.updateParkingSession(
+                    val result = firestoreRepository.updateParkingSessionLegacy2(
                         sessionId,
-                        Date(),
+                        System.currentTimeMillis(),
                         duration
                     )
                     
@@ -115,8 +115,8 @@ class ParkingViewModel(
     fun updateSessionDuration() {
         viewModelScope.launch {
             val session = _activeSession.value
-            if (session != null && session.entryTime != null) {
-                val diffMs = Date().time - session.entryTime!!.time
+            if (session != null && session.entryTime > 0L) {
+                val diffMs = System.currentTimeMillis() - session.entryTime
                 val minutes = java.util.concurrent.TimeUnit.MILLISECONDS.toMinutes(diffMs)
                 val hours = minutes / 60
                 val mins = minutes % 60
