@@ -40,18 +40,14 @@ fun ProfileScreen(onBackPressed: (() -> Unit)? = null) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                navigationIcon = if (onBackPressed != null) {
-                    {
-                        IconButton(onClick = onBackPressed) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
+                navigationIcon = if (onBackPressed != null) {{
+                    IconButton(onClick = onBackPressed) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
-                } else {
-                    null as (@Composable () -> Unit)?
-                }
+                }} else {{}}
             )
         }
     ) { paddingValues ->

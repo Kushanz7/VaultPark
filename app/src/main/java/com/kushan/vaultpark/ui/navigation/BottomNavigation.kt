@@ -14,6 +14,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.foundation.layout.height
+import androidx.compose.ui.Modifier
 
 data class BottomNavItem(
     val screen: NavScreen,
@@ -50,7 +51,7 @@ fun VaultParkBottomNavigation(
     onNavigate: (NavScreen) -> Unit
 ) {
     NavigationBar(
-        modifier = androidx.compose.foundation.layout.Modifier.height(80.dp),
+        modifier = Modifier.height(80.dp),
         containerColor = MaterialTheme.colorScheme.surface,
         contentColor = MaterialTheme.colorScheme.onSurface
     ) {

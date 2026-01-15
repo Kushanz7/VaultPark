@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
@@ -38,18 +39,14 @@ fun HistoryScreen(onBackPressed: (() -> Unit)? = null) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                navigationIcon = if (onBackPressed != null) {
-                    {
-                        IconButton(onClick = onBackPressed) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
+                navigationIcon = if (onBackPressed != null) {{
+                    IconButton(onClick = onBackPressed) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
-                } else {
-                    null as (@Composable () -> Unit)?
-                }
+                }} else {{}}
             )
         }
     ) { paddingValues ->
@@ -80,7 +77,7 @@ fun HistoryScreen(onBackPressed: (() -> Unit)? = null) {
 @Composable
 fun ParkingHistoryCard(itemIndex: Int) {
     Card(
-        modifier = Modifier.fillMaxSize(),
+        modifier = Modifier.fillMaxWidth(),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant
         ),

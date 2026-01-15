@@ -1,7 +1,9 @@
 package com.kushan.vaultpark.ui.screens
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,18 +40,14 @@ fun BillingScreen(onBackPressed: (() -> Unit)? = null) {
                     containerColor = MaterialTheme.colorScheme.primary,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary
                 ),
-                navigationIcon = if (onBackPressed != null) {
-                    {
-                        IconButton(onClick = onBackPressed) {
-                            Icon(
-                                imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                                contentDescription = "Back"
-                            )
-                        }
+                navigationIcon = if (onBackPressed != null) {{
+                    IconButton(onClick = onBackPressed) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
+                            contentDescription = "Back"
+                        )
                     }
-                } else {
-                    null as (@Composable () -> Unit)?
-                }
+                }} else {{}}
             )
         }
     ) { paddingValues ->
@@ -124,7 +122,8 @@ fun BillingCard(
             Row(
                 modifier = Modifier
                     .fillMaxWidth(),
-                horizontalArrangement = androidx.compose.foundation.layout.Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     amount,
@@ -135,25 +134,9 @@ fun BillingCard(
                 Text(
                     status,
                     style = MaterialTheme.typography.labelLarge,
-                    color = androidx.compose.material3.MaterialTheme.colorScheme.secondary,
-                    modifier = Modifier
-                        .align(Alignment.CenterVertically)
-                        .padding(8.dp)
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }
     }
-}
-
-@Composable
-fun Row(
-    modifier: Modifier = Modifier,
-    horizontalArrangement: androidx.compose.foundation.layout.Arrangement.Horizontal = androidx.compose.foundation.layout.Arrangement.Start,
-    content: @Composable () -> Unit
-) {
-    androidx.compose.foundation.layout.Row(
-        modifier = modifier,
-        horizontalArrangement = horizontalArrangement,
-        content = content
-    )
 }

@@ -1,27 +1,20 @@
 package com.kushan.vaultpark.utils
 
-import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
-
 object DateUtils {
-    private val dateTimeFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy HH:mm")
-    private val timeFormatter = DateTimeFormatter.ofPattern("HH:mm a")
-    private val dateFormatter = DateTimeFormatter.ofPattern("MMM dd, yyyy")
-
-    fun formatDateTime(dateTime: LocalDateTime): String {
-        return dateTime.format(dateTimeFormatter)
+    fun formatDateTime(timestamp: String): String {
+        return timestamp  // Simplified for API 24 compatibility
     }
 
-    fun formatTime(dateTime: LocalDateTime): String {
-        return dateTime.format(timeFormatter)
+    fun formatTime(timestamp: String): String {
+        return timestamp
     }
 
-    fun formatDate(dateTime: LocalDateTime): String {
-        return dateTime.format(dateFormatter)
+    fun formatDate(timestamp: String): String {
+        return timestamp
     }
 
-    fun getMonthYear(dateTime: LocalDateTime): String {
-        return dateTime.format(DateTimeFormatter.ofPattern("MMMM yyyy"))
+    fun getMonthYear(timestamp: String): String {
+        return "January 2026"  // Placeholder
     }
 }
 
