@@ -395,4 +395,70 @@ class FirestoreRepository(
     } catch (e: Exception) {
         Result.failure(e)
     }
+
+    // ==================== History & Logs Operations ====================
+
+    /**
+     * Get completed parking sessions for a driver with date range filtering
+     */
+    suspend fun getParkingSessionsByDriver(
+        driverId: String,
+        status: String = "COMPLETED",
+        limit: Int = 20,
+        offset: Int = 0,
+        startTime: Long? = null,
+        endTime: Long? = null
+    ): List<ParkingSession> = try {
+        var query = db.collection("parkingSessions")
+            .whereEqualTo("driverId", driverId)
+            .whereEqualTo("status", status)
+
+        if (startTime != null && endTime != null) {
+            query = query
+                .whereGreaterThanOrEqualTo("entryTime", startTime)
+                .whereLessThanOrEqualTo("entryTime", endTime)
+        }
+
+        val sessions = query
+            .orderBy("exitTime", Query.Direction.DESCENDING)
+            .limit(limit.toLong())
+            .get()
+            .await()
+            .toObjects(ParkingSession::class.java)
+
+        sessions
+    } catch (e: Exception) {
+        emptyList()
+    }
+
+    /**
+     * Get scan logs for a security guard with date range filtering
+     */
+    suspend fun getParkingSessionsByGuard(
+        guardId: String,
+        limit: Int = 30,
+        offset: Int = 0,
+        startTime: Long? = null,
+        endTime: Long? = null
+    ): List<ParkingSession> = try {
+        var query = db.collection("parkingSessions")
+            .whereEqualTo("scannedByGuardId", guardId)
+
+        if (startTime != null && endTime != null) {
+            query = query
+                .whereGreaterThanOrEqualTo("entryTime", startTime)
+                .whereLessThanOrEqualTo("entryTime", endTime)
+        }
+
+        val sessions = query
+            .orderBy("entryTime", Query.Direction.DESCENDING)
+            .limit(limit.toLong())
+            .get()
+            .await()
+            .toObjects(ParkingSession::class.java)
+
+        sessions
+    } catch (e: Exception) {
+        emptyList()
+    }
 }

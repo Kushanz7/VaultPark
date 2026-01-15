@@ -6,7 +6,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.ui.screens.BillingScreen
-import com.kushan.vaultpark.ui.screens.HistoryScreen
+import com.kushan.vaultpark.ui.screens.DriverHistoryScreen
 import com.kushan.vaultpark.ui.screens.HomeScreen
 import com.kushan.vaultpark.ui.screens.ProfileScreen
 import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
@@ -37,7 +37,7 @@ fun NavGraphBuilder.driverNavGraph(
         }
         
         composable(NavScreen.History.route) {
-            HistoryScreen(
+            DriverHistoryScreen(
                 onBackPressed = {
                     navController.popBackStack()
                 }
@@ -87,7 +87,7 @@ fun NavGraphBuilder.securityNavGraph(
         }
         
         composable(NavScreen.Logs.route) {
-            SecurityLogsScreen(
+            com.kushan.vaultpark.ui.screens.SecurityLogsScreen(
                 onBackPressed = {
                     navController.popBackStack()
                 }

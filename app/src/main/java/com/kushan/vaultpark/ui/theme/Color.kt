@@ -30,7 +30,8 @@ val TextTertiaryLight = Color(0xFF999999)   // Tertiary/hint text
 
 // Text Colors - Dark Theme
 val TextLight = Color(0xFFF2F2F2)           // Off-white text for dark mode
-val TextSecondaryDark = Color(0xFFCCCCCC)   // Secondary text dark modeval TextTertiaryDark = Color(0xFF999999)    // Tertiary text dark modeval TextTertiaryDark = Color(0xFF999999)    // Tertiary text dark mode
+val TextSecondaryDark = Color(0xFFCCCCCC)   // Secondary text dark mode
+val TextTertiaryDark = Color(0xFF999999)    // Tertiary text dark mode
 
 // Status & Utility Colors
 val StatusSuccess = SoftMintGreen           // #50C878 - Green success

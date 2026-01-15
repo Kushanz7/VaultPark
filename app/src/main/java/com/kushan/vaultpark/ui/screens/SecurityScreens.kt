@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.sp
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecurityLogsScreen(
+fun SecurityLogsScreenLegacy(
     onBackPressed: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {

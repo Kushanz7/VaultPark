@@ -1,0 +1,204 @@
+package com.kushan.vaultpark.ui.components
+
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.kushan.vaultpark.model.ParkingSession
+import com.kushan.vaultpark.ui.theme.DarkBackground
+import com.kushan.vaultpark.ui.theme.DarkSurface
+import com.kushan.vaultpark.ui.theme.NeonLime
+import com.kushan.vaultpark.ui.theme.Poppins
+import com.kushan.vaultpark.ui.theme.TextLight
+import com.kushan.vaultpark.ui.theme.TextSecondaryDark
+import com.kushan.vaultpark.ui.utils.formatDateTime
+import com.kushan.vaultpark.ui.utils.formatDuration
+
+/**
+ * Detailed Bottom Sheet for Security Logs
+ */
+@Composable
+fun LogDetailBottomSheet(
+    session: ParkingSession,
+    onDismiss: () -> Unit,
+    onAddNote: (ParkingSession) -> Unit = {}
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(
+                color = DarkBackground,
+                shape = MaterialTheme.shapes.large
+            )
+            .padding(20.dp)
+            .verticalScroll(rememberScrollState())
+    ) {
+        // Header with close button
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Scan Details",
+                fontFamily = Poppins,
+                fontWeight = FontWeight.Bold,
+                fontSize = 22.sp,
+                color = TextLight
+            )
+            IconButton(onClick = onDismiss) {
+                Icon(
+                    imageVector = Icons.Default.Close,
+                    contentDescription = "Close",
+                    tint = TextSecondaryDark,
+                    modifier = Modifier.size(24.dp)
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        // Driver Info
+        DetailSection(
+            title = "Driver",
+            content = session.driverName,
+            icon = "👤"
+        )
+
+        DetailSection(
+            title = "Vehicle",
+            content = session.vehicleNumber,
+            icon = "🚗"
+        )
+
+        DetailSection(
+            title = "Location",
+            content = session.gateLocation,
+            icon = "📍"
+        )
+
+        // Entry Timeline
+        DetailSectionWithTime(
+            title = "Entry Time",
+            time = session.entryTime,
+            icon = "🟢"
+        )
+
+        // Exit Timeline (if exists)
+        if (session.exitTime != null && session.exitTime > 0) {
+            DetailSectionWithTime(
+                title = "Exit Time",
+                time = session.exitTime,
+                icon = "🔴"
+            )
+
+            // Duration
+            val durationMs = session.exitTime - session.entryTime
+            DetailSection(
+                title = "Duration",
+                content = formatDuration(durationMs),
+                icon = "⏱️"
+            )
+
+            // Status
+            DetailSection(
+                title = "Status",
+                content = "COMPLETED",
+                icon = "✅",
+                contentColor = Color(0xFF4CAF50)
+            )
+        } else {
+            DetailSection(
+                title = "Status",
+                content = "ACTIVE (No exit recorded)",
+                icon = "⏳",
+                contentColor = Color(0xFFFFB84D)
+            )
+        }
+
+        // QR Code Data
+        if (session.qrCodeDataUsed.isNotEmpty()) {
+            DetailSection(
+                title = "QR Code Data",
+                content = session.qrCodeDataUsed,
+                icon = "📱"
+            )
+        }
+
+        // Session ID
+        DetailSection(
+            title = "Session ID",
+            content = session.id.take(12) + "...",
+            icon = "🆔"
+        )
+
+        Spacer(modifier = Modifier.height(20.dp))
+
+        // Action Buttons
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 8.dp),
+            horizontalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            androidx.compose.material3.Button(
+                onClick = { onAddNote(session) },
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = NeonLime
+                ),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(
+                    text = "Add Note",
+                    fontFamily = Poppins,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    color = com.kushan.vaultpark.ui.theme.TextDarkLight
+                )
+            }
+
+            androidx.compose.material3.Button(
+                onClick = onDismiss,
+                modifier = Modifier
+                    .weight(1f)
+                    .height(44.dp),
+                colors = androidx.compose.material3.ButtonDefaults.buttonColors(
+                    containerColor = DarkSurface
+                ),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(
+                    text = "Close",
+                    fontFamily = Poppins,
+                    fontWeight = FontWeight.SemiBold,
+                    fontSize = 14.sp,
+                    color = TextLight
+                )
+            }
+        }
+    }
+}
