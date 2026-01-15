@@ -10,13 +10,8 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,33 +22,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Refresh
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
+import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
-import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
@@ -62,11 +50,25 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kushan.vaultpark.model.User
+import com.kushan.vaultpark.ui.components.BadgeStatus
+import com.kushan.vaultpark.ui.components.MembershipBadge
+import com.kushan.vaultpark.ui.components.VaultParkCard
+import com.kushan.vaultpark.ui.theme.Background
+import com.kushan.vaultpark.ui.theme.Poppins
+import com.kushan.vaultpark.ui.theme.PrimaryPurple
+import com.kushan.vaultpark.ui.theme.SecondaryGold
+import com.kushan.vaultpark.ui.theme.StatusActive
+import com.kushan.vaultpark.ui.theme.StatusInactive
+import com.kushan.vaultpark.ui.theme.Surface
+import com.kushan.vaultpark.ui.theme.TextPrimary
+import com.kushan.vaultpark.ui.theme.TextSecondary
+import com.kushan.vaultpark.ui.theme.TextTertiary
 import com.kushan.vaultpark.viewmodel.HomeViewModel
 import com.kushan.vaultpark.viewmodel.ParkingViewModel
 import androidx.compose.foundation.Image
+import kotlinx.coroutines.delay
 
-@OptIn(ExperimentalMaterial3Api::class)
+
 @Composable
 fun HomeScreen(
     onBackPressed: (() -> Unit)? = null,
@@ -78,558 +80,332 @@ fun HomeScreen(
     val activeSession by parkingViewModel.activeSession.collectAsState()
     val sessionDuration by parkingViewModel.sessionDuration.collectAsState()
     
-    // Observe real-time parking session when user is available
+    var secondsRemaining by remember { mutableIntStateOf(30) }
+    var isParked by remember { mutableStateOf(false) }
+    var parkingStartTime by remember { mutableStateOf("") }
+    var parkingDuration by remember { mutableStateOf("") }
+    
     LaunchedEffect(currentUser?.id) {
         currentUser?.id?.let { userId ->
             parkingViewModel.observeActiveSession(userId)
         }
     }
     
-    val infiniteTransition = rememberInfiniteTransition(label = "pulsing")
-    val pulseScale by infiniteTransition.animateFloat(
-        initialValue = 1f,
-        targetValue = 1.15f,
-        animationSpec = InfiniteRepeatableSpec(
-            animation = tween(1500, easing = LinearEasing),
-            repeatMode = RepeatMode.Reverse
-        ),
-        label = "pulse"
-    )
-
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("VaultPark Home", style = MaterialTheme.typography.headlineSmall)
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                ),
-                navigationIcon = if (onBackPressed != null) {{
-                    IconButton(onClick = onBackPressed) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Back"
-                        )
-                    }
-                }} else {{}},
-                actions = {
-                    IconButton(onClick = { viewModel.refreshQRCode() }) {
-                        Icon(
-                            imageVector = Icons.Default.Refresh,
-                            contentDescription = "Refresh QR Code",
-                            tint = MaterialTheme.colorScheme.onPrimary
-                        )
-                    }
-                }
-            )
+    // Countdown timer for QR refresh
+    LaunchedEffect(Unit) {
+        while (true) {
+            delay(1000)
+            secondsRemaining = if (secondsRemaining > 1) secondsRemaining - 1 else 30
         }
-    ) { paddingValues ->
+    }
+    
+    // Update parking status
+    LaunchedEffect(activeSession) {
+        isParked = activeSession != null
+        if (isParked && activeSession != null) {
+            parkingStartTime = "2:30 PM"
+            val durationSeconds = ((sessionDuration as? Number)?.toLong() ?: 0L) / 60
+            val durationMinutes = ((sessionDuration as? Number)?.toLong() ?: 0L) % 60
+            parkingDuration = "${durationSeconds}h ${durationMinutes}m"
+        }
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Background)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues)
-                .background(MaterialTheme.colorScheme.background)
-                .verticalScroll(rememberScrollState()),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 20.dp)
+                .padding(top = 20.dp, bottom = 100.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             // User Greeting Card
-            val displayUser = currentUser ?: uiState.user
-            if (displayUser != null) {
-                WelcomeCard(
-                    userName = displayUser.name,
-                    vehicleNumber = displayUser.vehicleNumber,
-                    membershipType = displayUser.membershipType,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
-                )
-            }
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // QR Code Section with Glassmorphism
-            QRCodeSection(
-                uiState = uiState,
-                pulseScale = pulseScale,
-                viewModel = viewModel,
-                modifier = Modifier.padding(horizontal = 16.dp)
+            UserGreetingCard(
+                userName = currentUser?.name ?: "Guest",
+                vehicleNumber = currentUser?.vehicleNumber ?: "XX-0000",
+                membershipType = "Platinum"
             )
-
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Real-time Parking Status Card (from Firebase)
-            if (activeSession != null) {
-                RealtimeParkingStatusCard(
-                    session = activeSession!!,
-                    sessionDuration = sessionDuration,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // QR Code Card (Main Focus)
+            QRCodeCard(
+                secondsRemaining = secondsRemaining,
+                qrCodeBitmap = uiState.qrCodeBitmap
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            // Parking Status Card
+            if (isParked) {
+                ParkingStatusCard(
+                    status = "Parked at Gate A",
+                    startTime = parkingStartTime,
+                    duration = parkingDuration,
+                    isActive = true
                 )
             } else {
-                IdleParkingStatusCard(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(16.dp)
+                ParkingStatusCard(
+                    status = "Not Currently Parked",
+                    startTime = "",
+                    duration = "",
+                    isActive = false
                 )
             }
-
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
 
 @Composable
-private fun WelcomeCard(
+fun UserGreetingCard(
     userName: String,
     vehicleNumber: String,
     membershipType: String,
     modifier: Modifier = Modifier
 ) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-        ),
-        border = BorderStroke(
-            1.dp,
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-        )
+    VaultParkCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(140.dp),
+        cornerRadius = 24.dp,
+        elevation = 4.dp
     ) {
         Column(
-            modifier = Modifier.padding(20.dp),
-            horizontalAlignment = Alignment.Start
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            Text(
-                text = "Welcome back, $userName",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
-            Spacer(modifier = Modifier.height(12.dp))
+            Column {
+                Text(
+                    text = "Welcome back,",
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = Poppins,
+                    color = TextSecondary
+                )
+                Text(
+                    text = userName,
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    fontFamily = Poppins,
+                    color = TextPrimary
+                )
+            }
+            
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Column {
-                    Text(
-                        text = "Vehicle",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = vehicleNumber,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                Column(
-                    horizontalAlignment = Alignment.End
-                ) {
-                    Text(
-                        text = "Membership",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = membershipType,
-                        style = MaterialTheme.typography.bodyMedium,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.secondary
-                    )
-                }
+                Text(
+                    text = vehicleNumber,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = Poppins,
+                    color = PrimaryPurple
+                )
+                MembershipBadge(membershipType = membershipType)
             }
         }
     }
 }
 
 @Composable
-private fun QRCodeSection(
-    uiState: com.kushan.vaultpark.viewmodel.HomeUiState,
-    pulseScale: Float,
-    viewModel: HomeViewModel,
+fun QRCodeCard(
+    secondsRemaining: Int,
+    qrCodeBitmap: android.graphics.Bitmap? = null,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    val infiniteTransition = rememberInfiniteTransition(label = "qr_glow")
+    val glowOpacity by infiniteTransition.animateFloat(
+        initialValue = 0.3f,
+        targetValue = 0.6f,
+        animationSpec = InfiniteRepeatableSpec(
+            animation = tween(2000, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
+        ),
+        label = "glow_opacity"
+    )
+    
+    val textColor by animateColorAsState(
+        targetValue = if (secondsRemaining < 5) SecondaryGold else TextTertiary,
+        animationSpec = tween(500),
+        label = "countdown_color"
+    )
+
+    VaultParkCard(
         modifier = modifier
             .fillMaxWidth()
-            .background(
-                color = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f),
-                shape = RoundedCornerShape(20.dp)
-            )
-            .padding(24.dp),
-        contentAlignment = Alignment.Center
+            .height(420.dp),
+        cornerRadius = 28.dp,
+        elevation = 4.dp
     ) {
         Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth()
+            verticalArrangement = Arrangement.SpaceBetween
         ) {
-            // Active Status Indicator with Pulsing Effect
-            Row(
+            // Title
+            Text(
+                text = "Your Access Code",
+                fontSize = 14.sp,
+                fontWeight = FontWeight.Normal,
+                fontFamily = Poppins,
+                color = TextSecondary
+            )
+            
+            // QR Code with Glow Effect
+            Box(
                 modifier = Modifier
-                    .align(Alignment.CenterHorizontally)
-                    .padding(bottom = 16.dp),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(
-                            color = Color(0xFF4CAF50),
-                            shape = CircleShape
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(12.dp * pulseScale)
-                            .background(
-                                color = Color(0xFF4CAF50).copy(alpha = 0.3f),
-                                shape = CircleShape
-                            )
+                    .size(240.dp)
+                    .border(
+                        width = 2.dp,
+                        color = PrimaryPurple.copy(alpha = glowOpacity),
+                        shape = RoundedCornerShape(12.dp)
                     )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Active",
-                    style = MaterialTheme.typography.labelMedium,
-                    color = Color(0xFF4CAF50),
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            // QR Code Display with Animation
-            AnimatedContent(
-                targetState = uiState.qrCodeBitmap,
-                transitionSpec = {
-                    (fadeIn(animationSpec = tween(500)) + scaleIn(animationSpec = tween(500)))
-                        .togetherWith(fadeOut(animationSpec = tween(300)))
-                },
-                label = "qrAnimation"
-            ) { bitmap ->
-                if (bitmap != null) {
-                    Box(
-                        modifier = Modifier
-                            .size(280.dp)
-                            .background(
-                                color = Color.White,
-                                shape = RoundedCornerShape(16.dp)
-                            )
-                            .padding(12.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(TextPrimary),
+                contentAlignment = Alignment.Center
+            ) {
+                if (qrCodeBitmap != null) {
+                    AnimatedContent(
+                        targetState = qrCodeBitmap,
+                        label = "qr_animation"
+                    ) { bitmap ->
                         Image(
                             bitmap = bitmap.asImageBitmap(),
-                            contentDescription = "Parking QR Code",
-                            modifier = Modifier.fillMaxSize(),
+                            contentDescription = "QR Code",
+                            modifier = Modifier
+                                .size(220.dp)
+                                .padding(8.dp),
                             contentScale = ContentScale.Fit
                         )
                     }
                 } else {
-                    Box(
-                        modifier = Modifier
-                            .size(280.dp)
-                            .background(
-                                color = MaterialTheme.colorScheme.surfaceVariant,
-                                shape = RoundedCornerShape(16.dp)
-                            ),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(48.dp),
-                            color = MaterialTheme.colorScheme.primary
+                    CircularProgressIndicator(
+                        modifier = Modifier.size(60.dp),
+                        color = PrimaryPurple,
+                        strokeWidth = 4.dp
+                    )
+                }
+            }
+            
+            // Refresh Countdown
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = "Refreshes in: $secondsRemaining seconds",
+                    fontSize = 12.sp,
+                    fontWeight = FontWeight.Normal,
+                    fontFamily = Poppins,
+                    color = textColor
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ParkingStatusCard(
+    status: String,
+    startTime: String,
+    duration: String,
+    isActive: Boolean,
+    modifier: Modifier = Modifier
+) {
+    VaultParkCard(
+        modifier = modifier
+            .fillMaxWidth()
+            .height(if (isActive) 130.dp else 100.dp),
+        cornerRadius = 24.dp,
+        elevation = 4.dp
+    ) {
+        Row(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(20.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Row(
+                modifier = Modifier.weight(1f),
+                horizontalArrangement = Arrangement.Start,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Status Dot
+                val dotSize = if (isActive) 12.dp else 8.dp
+
+                Box(
+                    modifier = Modifier
+                        .size(dotSize)
+                        .clip(CircleShape)
+                        .background(
+                            if (isActive) StatusActive else StatusInactive
+                        )
+                )
+                
+                Spacer(modifier = Modifier.size(12.dp))
+                
+                Column {
+                    Text(
+                        text = status,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = Poppins,
+                        color = if (isActive) StatusActive else TextSecondary
+                    )
+                    
+                    if (isActive) {
+                        Text(
+                            text = "Since $startTime · $duration",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = Poppins,
+                            color = TextSecondary
+                        )
+                    } else {
+                        Text(
+                            text = "Scan QR at gate to enter",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Normal,
+                            fontFamily = Poppins,
+                            color = TextTertiary
                         )
                     }
                 }
             }
-
-            Spacer(modifier = Modifier.height(20.dp))
-
-            // Countdown Timer and Expiry Info
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.08f),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                CircularProgressIndicator(
-                    progress = { uiState.secondsUntilRefresh / 30f },
-                    modifier = Modifier.size(40.dp),
-                    color = MaterialTheme.colorScheme.primary,
-                    strokeWidth = 3.dp
+            
+            if (isActive) {
+                Icon(
+                    imageVector = Icons.Default.ArrowForward,
+                    contentDescription = "View details",
+                    modifier = Modifier.size(20.dp),
+                    tint = StatusActive
                 )
-                Spacer(modifier = Modifier.width(12.dp))
-                Column {
-                    Text(
-                        text = "Expires in",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = "${uiState.secondsUntilRefresh} seconds",
-                        style = MaterialTheme.typography.titleSmall,
-                        fontWeight = FontWeight.Bold,
-                        color = MaterialTheme.colorScheme.primary
-                    )
-                }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            // Tap to Refresh Hint
-            Text(
-                text = "Code refreshes automatically every 30 seconds",
-                style = MaterialTheme.typography.labelSmall,
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f),
-                textAlign = TextAlign.Center,
-                fontSize = 11.sp
-            )
         }
     }
 }
 
 @Composable
-private fun RealtimeParkingStatusCard(
-    session: com.kushan.vaultpark.model.ParkingSession,
-    sessionDuration: String,
-    modifier: Modifier = Modifier
-) {
-    val statusColor = Color(0xFF4CAF50) // Green for active session
-
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = statusColor.copy(alpha = 0.1f)
+fun pulsingScaleAnimation(): Float {
+    val infiniteTransition = rememberInfiniteTransition(label = "pulsing_scale")
+    val scale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.5f,
+        animationSpec = InfiniteRepeatableSpec(
+            animation = tween(1500, easing = LinearEasing),
+            repeatMode = RepeatMode.Reverse
         ),
-        border = BorderStroke(
-            1.dp,
-            statusColor.copy(alpha = 0.3f)
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp)
-        ) {
-            Text(
-                text = "Parking Session (Live)",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            
-            // Active status indicator
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(
-                            color = statusColor,
-                            shape = CircleShape
-                        )
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "Active - ${session.gateLocation}",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-            
-            Spacer(modifier = Modifier.height(12.dp))
-            
-            // Session details grid
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        color = MaterialTheme.colorScheme.surface,
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceBetween
-            ) {
-                Column {
-                    Text(
-                        text = "Vehicle",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = session.vehicleNumber,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Duration",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = sessionDuration,
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4CAF50)
-                    )
-                }
-                Column(
-                    horizontalAlignment = Alignment.End
-                ) {
-                    Text(
-                        text = "Entry",
-                        style = MaterialTheme.typography.labelSmall,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
-                    )
-                    Text(
-                        text = formatTime(session.entryTime),
-                        style = MaterialTheme.typography.bodySmall,
-                        fontWeight = FontWeight.SemiBold,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-        }
-    }
-}
-
-@Composable
-private fun IdleParkingStatusCard(
-    modifier: Modifier = Modifier
-) {
-    val statusColor = Color(0xFFFF9800) // Orange for idle
-
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = statusColor.copy(alpha = 0.1f)
-        ),
-        border = BorderStroke(
-            1.dp,
-            statusColor.copy(alpha = 0.3f)
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Text(
-                text = "Parking Status",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(
-                            color = statusColor,
-                            shape = CircleShape
-                        )
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = "Not Currently Parked",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
-    }
-}
-
-private fun formatTime(timestamp: Any?): String {
-    return if (timestamp is com.google.firebase.Timestamp) {
-        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
-        sdf.format(timestamp.toDate())
-    } else if (timestamp is java.util.Date) {
-        val sdf = java.text.SimpleDateFormat("HH:mm", java.util.Locale.getDefault())
-        sdf.format(timestamp)
-    } else {
-        "--:--"
-    }
-}
-
-@Composable
-private fun ParkingStatusCard(
-    isParked: Boolean,
-    parkedSince: String?,
-    modifier: Modifier = Modifier
-) {
-    val statusColor by animateColorAsState(
-        targetValue = if (isParked) Color(0xFF4CAF50) else Color(0xFFFF9800),
-        label = "statusColor"
+        label = "pulse_scale"
     )
-
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = statusColor.copy(alpha = 0.1f)
-        ),
-        border = BorderStroke(
-            1.dp,
-            statusColor.copy(alpha = 0.3f)
-        )
-    ) {
-        Column(
-            modifier = Modifier.padding(20.dp),
-            horizontalAlignment = Alignment.Start
-        ) {
-            Text(
-                text = "Parking Status",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
-                    modifier = Modifier
-                        .size(12.dp)
-                        .background(
-                            color = statusColor,
-                            shape = CircleShape
-                        )
-                )
-                Spacer(modifier = Modifier.width(12.dp))
-                Text(
-                    text = if (isParked) "Parked since $parkedSince" else "Not in parking",
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-        }
-    }
+    return scale
 }

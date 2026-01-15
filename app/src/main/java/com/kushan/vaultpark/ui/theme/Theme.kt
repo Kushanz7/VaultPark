@@ -7,37 +7,38 @@ import androidx.compose.material3.darkColorScheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 
-private val DarkColorScheme = darkColorScheme(
-    primary = DeepBlue,
-    onPrimary = Color(0xFFFFFFFF),
-    primaryContainer = DeepBlueLight,
-    onPrimaryContainer = DeepBlueDark,
+private val NeonDarkColorScheme = darkColorScheme(
+    primary = PrimaryPurple,
+    onPrimary = TextPrimary,
+    primaryContainer = PrimaryPurple,
+    onPrimaryContainer = TextPrimary,
     
-    secondary = PurpleAccent,
-    onSecondary = Color(0xFFFFFFFF),
-    secondaryContainer = PurpleLight,
-    onSecondaryContainer = PurpleDark,
+    secondary = SecondaryGold,
+    onSecondary = Background,
+    secondaryContainer = SecondaryGold,
+    onSecondaryContainer = Background,
     
-    tertiary = InfoColor,
-    onTertiary = Color(0xFFFFFFFF),
-    tertiaryContainer = Color(0xFF1565C0),
-    onTertiaryContainer = Color(0xFFE3F2FD),
+    tertiary = SecondaryGold,
+    onTertiary = Background,
+    tertiaryContainer = SecondaryGold,
+    onTertiaryContainer = Background,
     
-    error = ErrorColor,
-    onError = Color(0xFF000000),
-    errorContainer = Color(0xFF93000A),
-    onErrorContainer = Color(0xFFF9DEDC),
+    error = StatusError,
+    onError = TextPrimary,
+    errorContainer = StatusError,
+    onErrorContainer = TextPrimary,
     
-    background = DarkBackground,
+    background = Background,
     onBackground = TextPrimary,
     
-    surface = SurfaceColor,
+    surface = Surface,
     onSurface = TextPrimary,
-    surfaceVariant = CardColor,
+    surfaceVariant = SurfaceVariant,
     onSurfaceVariant = TextSecondary,
     
     outline = TextTertiary,
-    outlineVariant = Color(0xFF49454E)
+    outlineVariant = TextTertiary,
+    scrim = Color(0xFF000000)
 )
 
 @Composable
@@ -45,11 +46,12 @@ fun VaultParkTheme(
     darkTheme: Boolean = isSystemInDarkTheme(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = DarkColorScheme
+    val colorScheme = NeonDarkColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,
         typography = VaultParkTypography,
+        shapes = VaultParkShapes,
         content = content
     )
 }

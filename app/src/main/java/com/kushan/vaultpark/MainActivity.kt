@@ -20,9 +20,9 @@ import com.kushan.vaultpark.model.UserRole
 import com.kushan.vaultpark.ui.navigation.DRIVER_GRAPH
 import com.kushan.vaultpark.ui.navigation.SECURITY_GRAPH
 import com.kushan.vaultpark.ui.navigation.NavScreen
-import com.kushan.vaultpark.ui.navigation.VaultParkBottomNavigation
+import com.kushan.vaultpark.ui.navigation.BottomNavItem
+import com.kushan.vaultpark.ui.navigation.NeonDarkBottomNavigation
 import com.kushan.vaultpark.ui.navigation.VaultParkNavHost
-import com.kushan.vaultpark.ui.navigation.bottomNavItems
 import com.kushan.vaultpark.ui.navigation.securityNavScreens
 import com.kushan.vaultpark.ui.theme.VaultParkTheme
 import com.kushan.vaultpark.viewmodel.AuthViewModel
@@ -67,22 +67,26 @@ fun VaultParkApp(context: MainActivity) {
         modifier = Modifier.fillMaxSize(),
         bottomBar = {
             if (shouldShowBottomNav) {
-                val navItems = when (currentUser?.role) {
-                    UserRole.DRIVER -> bottomNavItems
-                    UserRole.SECURITY -> {
-                        listOf(
-                            bottomNavItems[0].copy(screen = NavScreen.Scanner), // Home -> Scanner
-                            bottomNavItems[1].copy(screen = NavScreen.Logs),    // History -> Logs
-                            bottomNavItems[2].copy(screen = NavScreen.Reports), // Billing -> Reports
-                            bottomNavItems[3]                                    // Profile stays
-                        )
-                    }
-                    else -> bottomNavItems
+                var selectedItem by remember { mutableStateOf(BottomNavItem.Home) }
+                
+                // Update selected item based on current route
+                selectedItem = when (currentRoute) {
+                    NavScreen.History.route, NavScreen.Logs.route -> BottomNavItem.History
+                    NavScreen.Billing.route, NavScreen.Reports.route -> BottomNavItem.Billing
+                    NavScreen.Profile.route -> BottomNavItem.Profile
+                    else -> BottomNavItem.Home // Home or Scanner
                 }
                 
-                VaultParkBottomNavigation(
-                    currentRoute = currentRoute,
-                    onNavigate = { navScreen ->
+                NeonDarkBottomNavigation(
+                    selectedItem = selectedItem,
+                    userRole = currentUser?.role ?: UserRole.DRIVER,
+                    onItemSelected = { item ->
+                        val navScreen = when (item) {
+                            BottomNavItem.Home -> if (currentUser?.role == UserRole.SECURITY) NavScreen.Scanner else NavScreen.Home
+                            BottomNavItem.History -> if (currentUser?.role == UserRole.SECURITY) NavScreen.Logs else NavScreen.History
+                            BottomNavItem.Billing -> if (currentUser?.role == UserRole.SECURITY) NavScreen.Reports else NavScreen.Billing
+                            BottomNavItem.Profile -> NavScreen.Profile
+                        }
                         navController.navigate(navScreen.route) {
                             popUpTo(navController.graph.startDestinationId) {
                                 saveState = true
@@ -90,8 +94,7 @@ fun VaultParkApp(context: MainActivity) {
                             launchSingleTop = true
                             restoreState = true
                         }
-                    },
-                    items = navItems
+                    }
                 )
             }
         }
