@@ -41,6 +41,7 @@ class HomeViewModel(
         loadUserData()
         generateNewQRCode()
         startQRRefreshTimer()
+        loadActiveParkingSession()
     }
 
     /**
@@ -68,6 +69,38 @@ class HomeViewModel(
                 _uiState.value = _uiState.value.copy(
                     error = "Failed to load user data: ${e.message}"
                 )
+            }
+        }
+    }
+
+    /**
+     * Load active parking session from database
+     */
+    private fun loadActiveParkingSession() {
+        viewModelScope.launch {
+            try {
+                val currentUser = auth.currentUser
+                if (currentUser != null) {
+                    val activeSession = firestoreRepository.getActiveSessionForDriver(currentUser.uid)
+                    if (activeSession != null) {
+                        // Format the entry time
+                        val parkedSince = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
+                            .format(java.util.Date(activeSession.entryTime))
+                        
+                        val parkingStatus = ParkingStatus(
+                            isParked = true,
+                            parkedSince = parkedSince,
+                            location = activeSession.gateLocation
+                        )
+                        _uiState.value = _uiState.value.copy(parkingStatus = parkingStatus)
+                    } else {
+                        _uiState.value = _uiState.value.copy(
+                            parkingStatus = ParkingStatus(isParked = false)
+                        )
+                    }
+                }
+            } catch (e: Exception) {
+                // Silent fail for parking status check
             }
         }
     }
@@ -152,6 +185,7 @@ class HomeViewModel(
     fun refreshQRCode() {
         countdownJob?.cancel()
         generateNewQRCode()
+        loadActiveParkingSession() // Also check for active parking session
     }
 
     /**

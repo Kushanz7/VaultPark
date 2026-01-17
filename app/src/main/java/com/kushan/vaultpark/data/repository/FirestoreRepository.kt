@@ -420,14 +420,16 @@ class FirestoreRepository(
         }
 
         val sessions = query
-            .orderBy("exitTime", Query.Direction.DESCENDING)
+            .orderBy("entryTime", Query.Direction.DESCENDING)
             .limit(limit.toLong())
             .get()
             .await()
             .toObjects(ParkingSession::class.java)
 
+        android.util.Log.d("FirestoreRepository", "Fetched ${sessions.size} sessions for driver $driverId")
         sessions
     } catch (e: Exception) {
+        android.util.Log.e("FirestoreRepository", "Error fetching driver sessions", e)
         emptyList()
     }
 
@@ -457,8 +459,10 @@ class FirestoreRepository(
             .await()
             .toObjects(ParkingSession::class.java)
 
+        android.util.Log.d("FirestoreRepository", "Fetched ${sessions.size} sessions for guard $guardId")
         sessions
     } catch (e: Exception) {
+        android.util.Log.e("FirestoreRepository", "Error fetching guard sessions", e)
         emptyList()
     }
 }

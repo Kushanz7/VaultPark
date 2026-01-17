@@ -3,6 +3,7 @@ package com.kushan.vaultpark.viewmodel
 import android.app.Application
 import android.os.Vibrator
 import android.os.VibratorManager
+import android.util.Log
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.kushan.vaultpark.data.repository.FirestoreRepository
@@ -30,6 +31,10 @@ class QRScannerViewModel(
     private val firestoreRepository: FirestoreRepository,
     val currentGuardId: String
 ) : AndroidViewModel(application) {
+    
+    companion object {
+        private const val TAG = "QRScannerViewModel"
+    }
     
     private val vibrator = getVibrator(application)
     
@@ -124,6 +129,15 @@ class QRScannerViewModel(
     
     private suspend fun handleEntryScan(driver: User, parsedQR: ParsedQRCode) {
         try {
+            Log.d(TAG, "Creating entry session for driver: ${driver.id}, vehicle: ${parsedQR.vehicleNumber}")
+            
+            // Get guard name from Firestore
+            val guard = firestoreRepository.getUserById(currentGuardId)
+            val guardName = guard?.name ?: "Security Guard"
+            
+            // Generate QR code data string for record
+            val qrCodeData = "VAULTPARK|${parsedQR.userId}|${parsedQR.timestamp}|${parsedQR.vehicleNumber}|${parsedQR.hash}"
+            
             val newSession = ParkingSession(
                 driverId = driver.id,
                 driverName = driver.name,
@@ -131,14 +145,19 @@ class QRScannerViewModel(
                 entryTime = System.currentTimeMillis(),
                 gateLocation = _selectedGate.value,
                 scannedByGuardId = currentGuardId,
+                guardName = guardName,
+                qrCodeDataUsed = qrCodeData,
                 status = SessionStatus.ACTIVE.name
             )
             
+            Log.d(TAG, "Session object created: $newSession")
             val savedSession = firestoreRepository.createParkingSession(newSession)
+            Log.d(TAG, "Session saved successfully with ID: ${savedSession.id}")
             
             _scanState.value = ScanState.Success(savedSession)
             loadRecentScans()
         } catch (e: Exception) {
+            Log.e(TAG, "Failed to create parking session", e)
             _scanState.value = ScanState.Error("Failed to create parking session: ${e.message}")
             resetScanAfterDelay(2000)
         }
@@ -154,11 +173,15 @@ class QRScannerViewModel(
             }
             
             val exitTime = System.currentTimeMillis()
-            val duration = exitTime - activeSession.entryTime
-            val durationMinutes = TimeUnit.MILLISECONDS.toMinutes(duration)
+            val durationMs = exitTime - activeSession.entryTime
+            val durationMinutes = TimeUnit.MILLISECONDS.toMinutes(durationMs)
+            val hours = durationMinutes / 60
+            val minutes = durationMinutes % 60
+            val durationString = if (hours > 0) "${hours}h ${minutes}m" else "${minutes}m"
             
             val updatedSession = activeSession.copy(
                 exitTime = exitTime,
+                duration = durationString,
                 status = SessionStatus.COMPLETED.name
             )
             
