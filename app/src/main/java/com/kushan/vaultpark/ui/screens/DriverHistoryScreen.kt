@@ -354,5 +354,4 @@ val HistoryViewModel.DateFilter.displayName: String
         HistoryViewModel.DateFilter.ALL -> "All"
         HistoryViewModel.DateFilter.THIS_MONTH -> "This Month"
         HistoryViewModel.DateFilter.LAST_MONTH -> "Last Month"
-        HistoryViewModel.DateFilter.CUSTOM_RANGE -> "Custom"
     }

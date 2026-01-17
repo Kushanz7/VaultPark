@@ -120,19 +120,19 @@ fun SecurityLogsScreen(
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkBackground,
-                    titleContentColor = TextLight,
-                    actionIconContentColor = TextLight,
-                    navigationIconContentColor = TextLight
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    actionIconContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = DarkBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
-                .background(DarkBackground)
+                .background(MaterialTheme.colorScheme.background)
                 .padding(paddingValues),
             contentPadding = PaddingValues(bottom = 20.dp)
         ) {
@@ -181,7 +181,7 @@ fun SecurityLogsScreen(
                         fontFamily = Poppins,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
-                        color = TextSecondaryDark,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
 
@@ -219,7 +219,7 @@ fun SecurityLogsScreen(
                         fontFamily = Poppins,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp,
-                        color = TextSecondaryDark,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(start = 16.dp, bottom = 8.dp)
                     )
 
@@ -290,7 +290,7 @@ fun SecurityLogsScreen(
                                     fontFamily = Poppins,
                                     fontWeight = FontWeight.SemiBold,
                                     fontSize = 14.sp,
-                                    color = com.kushan.vaultpark.ui.theme.TextDarkLight
+                                    color = MaterialTheme.colorScheme.onPrimary
                                 )
                             }
                         }
@@ -310,8 +310,9 @@ fun SecurityLogsScreen(
                     Box(
                         modifier = Modifier
                             .fillMaxWidth()
+                            .padding(horizontal = 16.dp)
                             .background(
-                                color = com.kushan.vaultpark.ui.theme.StatusError.copy(alpha = 0.1f),
+                                color = MaterialTheme.colorScheme.errorContainer,
                                 shape = MaterialTheme.shapes.medium
                             )
                             .padding(16.dp)
@@ -321,7 +322,7 @@ fun SecurityLogsScreen(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp,
-                            color = com.kushan.vaultpark.ui.theme.StatusError
+                            color = MaterialTheme.colorScheme.error
                         )
                     }
                 }
@@ -334,8 +335,8 @@ fun SecurityLogsScreen(
         ModalBottomSheet(
             onDismissRequest = { selectedLog = null },
             sheetState = bottomSheetState,
-            containerColor = DarkBackground,
-            scrimColor = com.kushan.vaultpark.ui.theme.MidnightBlack.copy(alpha = 0.5f)
+            containerColor = MaterialTheme.colorScheme.surface,
+            scrimColor = MaterialTheme.colorScheme.scrim.copy(alpha = 0.5f)
         ) {
             LogDetailBottomSheet(
                 session = selectedLog!!,

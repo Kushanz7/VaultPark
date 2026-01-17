@@ -1,5 +1,6 @@
 package com.kushan.vaultpark.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kushan.vaultpark.data.repository.FirestoreRepository
@@ -18,6 +19,10 @@ import java.util.Date
 class LogsViewModel(
     private val firestoreRepository: FirestoreRepository = FirestoreRepository()
 ) : ViewModel() {
+
+    companion object {
+        private const val TAG = "LogsViewModel"
+    }
 
     // State flows
     private val _scanLogs = MutableStateFlow<List<ParkingSession>>(emptyList())
@@ -67,12 +72,14 @@ class LogsViewModel(
     fun fetchScanLogs(guardId: String, dateFilter: DateFilter = DateFilter.ALL) {
         viewModelScope.launch {
             try {
+                android.util.Log.d("LogsViewModel", "Fetching logs for guard: $guardId with filter: $dateFilter")
                 _isLoading.value = true
                 _errorMessage.value = null
                 _selectedDateFilter.value = dateFilter
                 currentPage = 0
 
                 val (startTime, endTime) = getFilterDateRange(dateFilter)
+                android.util.Log.d("LogsViewModel", "Date range: start=$startTime, end=$endTime")
 
                 val logs = firestoreRepository.getParkingSessionsByGuard(
                     guardId = guardId,
@@ -81,6 +88,7 @@ class LogsViewModel(
                     endTime = endTime
                 )
 
+                android.util.Log.d("LogsViewModel", "Fetched ${logs.size} logs")
                 _scanLogs.value = logs
                 _hasMore.value = logs.size >= pageSize
                 currentPage = 1
@@ -88,6 +96,7 @@ class LogsViewModel(
                 // Update statistics
                 updateStatistics(guardId)
             } catch (e: Exception) {
+                android.util.Log.e("LogsViewModel", "Error fetching logs", e)
                 _errorMessage.value = e.message ?: "Failed to fetch logs"
                 _scanLogs.value = emptyList()
             } finally {
@@ -146,8 +155,9 @@ class LogsViewModel(
      */
     fun getFilteredLogs(): List<ParkingSession> {
         val logs = _scanLogs.value
+        android.util.Log.d("LogsViewModel", "getFilteredLogs: Total logs=${logs.size}, filter=${_selectedScanTypeFilter.value}")
 
-        return when (_selectedScanTypeFilter.value) {
+        val filtered = when (_selectedScanTypeFilter.value) {
             ScanTypeFilter.ENTRY_ONLY -> {
                 // Sessions with entry time (entry scans)
                 logs.filter { it.entryTime > 0 }
@@ -158,6 +168,9 @@ class LogsViewModel(
             }
             ScanTypeFilter.ALL_SCANS -> logs
         }
+        
+        android.util.Log.d("LogsViewModel", "getFilteredLogs: Filtered logs=${filtered.size}")
+        return filtered
     }
 
     /**

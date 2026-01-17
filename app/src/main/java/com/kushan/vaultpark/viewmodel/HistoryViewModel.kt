@@ -1,5 +1,6 @@
 package com.kushan.vaultpark.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.kushan.vaultpark.data.repository.FirestoreRepository
@@ -18,6 +19,10 @@ import java.util.Date
 class HistoryViewModel(
     private val firestoreRepository: FirestoreRepository = FirestoreRepository()
 ) : ViewModel() {
+
+    companion object {
+        private const val TAG = "HistoryViewModel"
+    }
 
     // State flows
     private val _parkingSessions = MutableStateFlow<List<ParkingSession>>(emptyList())
@@ -46,11 +51,10 @@ class HistoryViewModel(
 
     private var currentPage = 0
     private val pageSize = 20
-    private var customDateRange: Pair<Long, Long>? = null
     private var lastLoadedSessionId: String? = null
 
     enum class DateFilter {
-        ALL, THIS_MONTH, LAST_MONTH, CUSTOM_RANGE
+        ALL, THIS_MONTH, LAST_MONTH
     }
 
     /**
@@ -59,6 +63,7 @@ class HistoryViewModel(
     fun fetchParkingSessions(driverId: String, filter: DateFilter = DateFilter.ALL) {
         viewModelScope.launch {
             try {
+                Log.d(TAG, "Fetching sessions for driver: $driverId with filter: $filter")
                 _isLoading.value = true
                 _errorMessage.value = null
                 _selectedFilter.value = filter
@@ -66,6 +71,7 @@ class HistoryViewModel(
                 lastLoadedSessionId = null
 
                 val (startTime, endTime) = getFilterDateRange(filter)
+                Log.d(TAG, "Date range: start=$startTime, end=$endTime")
 
                 val sessions = firestoreRepository.getParkingSessionsByDriver(
                     driverId = driverId,
@@ -75,6 +81,7 @@ class HistoryViewModel(
                     endTime = endTime
                 )
 
+                Log.d(TAG, "Fetched ${sessions.size} sessions")
                 _parkingSessions.value = sessions
                 _hasMore.value = sessions.size >= pageSize
                 currentPage = 1
@@ -82,6 +89,7 @@ class HistoryViewModel(
                 // Update statistics
                 updateStatistics(driverId, filter)
             } catch (e: Exception) {
+                Log.e(TAG, "Error fetching sessions", e)
                 _errorMessage.value = e.message ?: "Failed to fetch sessions"
                 _parkingSessions.value = emptyList()
             } finally {
@@ -127,14 +135,6 @@ class HistoryViewModel(
                 _isLoading.value = false
             }
         }
-    }
-
-    /**
-     * Set custom date range filter
-     */
-    fun setCustomDateRange(startTime: Long, endTime: Long) {
-        customDateRange = startTime to endTime
-        _selectedFilter.value = DateFilter.CUSTOM_RANGE
     }
 
     /**
@@ -223,9 +223,6 @@ class HistoryViewModel(
                     add(Calendar.MONTH, 1)
                 }
                 Pair(lastMonthStart, nextMonth.timeInMillis)
-            }
-            DateFilter.CUSTOM_RANGE -> {
-                customDateRange ?: Pair(now - 30L * 24 * 60 * 60 * 1000, now)
             }
         }
     }
