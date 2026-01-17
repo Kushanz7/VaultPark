@@ -10,24 +10,26 @@ import kotlin.math.abs
 object QRCodeUtils {
     
     /**
-     * Generate a secure QR code string with format: PARKELITE|[userId]|[timestamp]|[securityHash]
+     * Generate a secure QR code string with format: VAULTPARK|[userId]|[timestamp]|[vehicleNumber]|[hash]
      */
-    fun generateQRCodeString(userId: String, timestamp: Long = System.currentTimeMillis()): String {
-        val hash = generateSecurityHash(userId, timestamp)
-        return "PARKELITE|$userId|$timestamp|$hash"
+    fun generateQRCodeString(userId: String, vehicleNumber: String, timestamp: Long = System.currentTimeMillis()): String {
+        val dataToHash = "VAULTPARK|$userId|$timestamp|$vehicleNumber"
+        val hash = generateSecurityHash(dataToHash)
+        return "$dataToHash|$hash"
     }
     
     /**
-     * Generate security hash based on userId and timestamp
+     * Generate security hash using SHA-256
      */
-    private fun generateSecurityHash(userId: String, timestamp: Long): String {
-        val combined = "$userId:$timestamp"
-        var hash = 0
-        for (c in combined) {
-            hash = ((hash shl 5) - hash) + c.code
-            hash = hash and hash // Convert to 32-bit integer
+    private fun generateSecurityHash(data: String): String {
+        return try {
+            val digest = java.security.MessageDigest.getInstance("SHA-256")
+            val hashBytes = digest.digest(data.toByteArray())
+            hashBytes.joinToString("") { "%02x".format(it) }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            "invalid_hash"
         }
-        return abs(hash).toString(16).padStart(8, '0')
     }
     
     /**
@@ -66,7 +68,7 @@ object QRCodeUtils {
      */
     fun validateQRCodeFormat(qrCode: String): Boolean {
         val parts = qrCode.split("|")
-        return parts.size == 4 && parts[0] == "PARKELITE"
+        return parts.size == 5 && parts[0] == "VAULTPARK"
     }
     
     /**

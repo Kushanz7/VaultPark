@@ -3,6 +3,8 @@ package com.kushan.vaultpark.viewmodel
 import android.graphics.Bitmap
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.google.firebase.auth.FirebaseAuth
+import com.kushan.vaultpark.data.repository.FirestoreRepository
 import com.kushan.vaultpark.model.ParkingStatus
 import com.kushan.vaultpark.model.QRCodeData
 import com.kushan.vaultpark.model.User
@@ -24,7 +26,10 @@ data class HomeUiState(
     val error: String? = null
 )
 
-class HomeViewModel : ViewModel() {
+class HomeViewModel(
+    private val firestoreRepository: FirestoreRepository = FirestoreRepository(),
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+) : ViewModel() {
     private val _uiState = MutableStateFlow(HomeUiState())
     val uiState: StateFlow<HomeUiState> = _uiState.asStateFlow()
 
@@ -39,18 +44,32 @@ class HomeViewModel : ViewModel() {
     }
 
     /**
-     * Load mock user data
+     * Load user data from Firestore using Firebase Auth
      */
     private fun loadUserData() {
-        val mockUser = User(
-            id = "USER_001",
-            name = "Kushan Sharma",
-            email = "kushan@vaultpark.com",
-            phone = "+1-555-0123",
-            vehicleNumber = "KA-01-AB-1234",
-            membershipType = "Premium"
-        )
-        _uiState.value = _uiState.value.copy(user = mockUser)
+        viewModelScope.launch {
+            try {
+                val currentUser = auth.currentUser
+                if (currentUser != null) {
+                    val user = firestoreRepository.getUserById(currentUser.uid)
+                    if (user != null) {
+                        _uiState.value = _uiState.value.copy(user = user)
+                    } else {
+                        _uiState.value = _uiState.value.copy(
+                            error = "User profile not found. Please complete your profile."
+                        )
+                    }
+                } else {
+                    _uiState.value = _uiState.value.copy(
+                        error = "Please log in to generate QR code"
+                    )
+                }
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to load user data: ${e.message}"
+                )
+            }
+        }
     }
 
     /**
@@ -61,12 +80,14 @@ class HomeViewModel : ViewModel() {
             _uiState.value = _uiState.value.copy(isLoadingQR = true)
             
             try {
-                val userId = _uiState.value.user?.id ?: "USER_UNKNOWN"
+                val user = _uiState.value.user
+                val userId = user?.id ?: "USER_UNKNOWN"
+                val vehicleNumber = user?.vehicleNumber ?: "UNKNOWN"
                 val now = System.currentTimeMillis()
                 val expiresAt = now + QR_REFRESH_INTERVAL
                 
                 // Generate QR code string
-                val qrString = QRCodeUtils.generateQRCodeString(userId, now)
+                val qrString = QRCodeUtils.generateQRCodeString(userId, vehicleNumber, now)
                 
                 // Create bitmap
                 val bitmap = QRCodeUtils.generateQRCodeBitmap(qrString, size = 512)
@@ -76,7 +97,7 @@ class HomeViewModel : ViewModel() {
                     generatedAt = now,
                     expiresAt = expiresAt,
                     userId = userId,
-                    securityHash = qrString.split("|")[3]
+                    securityHash = qrString.split("|")[4]
                 )
                 
                 _uiState.value = _uiState.value.copy(
