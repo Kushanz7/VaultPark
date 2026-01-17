@@ -4,10 +4,12 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.kushan.vaultpark.model.InvoiceNew
 import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.ui.screens.BillingScreen
 import com.kushan.vaultpark.ui.screens.DriverHistoryScreen
 import com.kushan.vaultpark.ui.screens.HomeScreen
+import com.kushan.vaultpark.ui.screens.InvoiceDetailsScreen
 import com.kushan.vaultpark.ui.screens.ProfileScreen
 import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
 import com.kushan.vaultpark.ui.screens.SecurityReportsScreen
@@ -46,6 +48,20 @@ fun NavGraphBuilder.driverNavGraph(
         
         composable(NavScreen.Billing.route) {
             BillingScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+                onInvoiceSelected = { invoiceId ->
+                    navController.navigate(NavScreen.BillingDetails.createRoute(invoiceId))
+                }
+            )
+        }
+        
+        composable(NavScreen.BillingDetails.route) { backStackEntry ->
+            val invoiceId = backStackEntry.arguments?.getString("invoiceId") ?: return@composable
+            InvoiceDetailsScreen(
+                invoice = InvoiceNew(id = invoiceId),
+                sessions = emptyList(),
                 onBackPressed = {
                     navController.popBackStack()
                 }

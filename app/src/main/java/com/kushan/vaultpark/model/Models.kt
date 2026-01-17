@@ -79,6 +79,78 @@ data class Invoice(
     val createdDate: String = ""
 )
 
+// ============ BILLING MODELS ============
+
+@IgnoreExtraProperties
+data class InvoiceNew(
+    val id: String = "",
+    val driverId: String = "",
+    val driverName: String = "",
+    val month: Int = 1,
+    val year: Int = 2026,
+    val totalSessions: Int = 0,
+    val totalHours: Double = 0.0,
+    val totalAmount: Double = 0.0,
+    val sessionIds: List<String> = emptyList(),
+    val status: String = "PENDING", // PENDING, PAID, OVERDUE
+    @ServerTimestamp
+    val generatedAt: Date? = null,
+    val paidAt: Date? = null,
+    val paymentMethod: String? = null
+) {
+    @Exclude
+    fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "driverId" to driverId,
+        "driverName" to driverName,
+        "month" to month,
+        "year" to year,
+        "totalSessions" to totalSessions,
+        "totalHours" to totalHours,
+        "totalAmount" to totalAmount,
+        "sessionIds" to sessionIds,
+        "status" to status,
+        "paidAt" to paidAt,
+        "paymentMethod" to paymentMethod
+    )
+}
+
+@IgnoreExtraProperties
+data class PricingTier(
+    val membershipType: String = "", // Gold, Platinum
+    val hourlyRate: Double = 5.0,
+    val dailyCap: Double = 40.0,
+    val monthlyUnlimited: Double? = null // Only for Platinum
+) {
+    @Exclude
+    fun toMap(): Map<String, Any?> = mapOf(
+        "membershipType" to membershipType,
+        "hourlyRate" to hourlyRate,
+        "dailyCap" to dailyCap,
+        "monthlyUnlimited" to monthlyUnlimited
+    )
+}
+
+@IgnoreExtraProperties
+data class PaymentMethod(
+    val id: String = "",
+    val userId: String = "",
+    val type: String = "", // CARD, BANK, WALLET
+    val lastFourDigits: String = "",
+    val cardBrand: String? = null, // Visa, Mastercard, AmEx
+    val isDefault: Boolean = false
+) {
+    @Exclude
+    fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "userId" to userId,
+        "type" to type,
+        "lastFourDigits" to lastFourDigits,
+        "cardBrand" to cardBrand,
+        "isDefault" to isDefault
+    )
+}
+
 data class QRCodeData(
     val code: String = "",
     val generatedAt: Long = 0,

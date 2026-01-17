@@ -8,6 +8,12 @@ import androidx.compose.ui.graphics.Color
 val NeonLime = Color(0xFFA4FF07)            // Primary accent - Pay Now buttons, active states
 val SoftMintGreen = Color(0xFF50C878)       // Success/Safe - Free spots, confirmations
 
+// Billing Theme Colors (Purple/Gold)
+val PrimaryPurple = Color(0xFF7C3AED)       // Primary purple for billing
+val SecondaryGold = Color(0xFFFCD34D)       // Secondary gold for accents
+val PurpleDark = Color(0xFF6D28D9)          // Darker purple
+val PurpleLight = Color(0xFFA78BFA)         // Lighter purple
+
 // Surface Colors
 val DarkGrey = Color(0xFF6E6E6E)            // Secondary surface - Unselected buttons, inactive tabs
 val MidnightBlack = Color(0xFF1A1B1E)       // Main app background (Dark mode)

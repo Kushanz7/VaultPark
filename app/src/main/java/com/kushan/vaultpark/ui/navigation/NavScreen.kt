@@ -8,6 +8,9 @@ sealed class NavScreen(val route: String) {
     data object Home : NavScreen("home")
     data object History : NavScreen("history")
     data object Billing : NavScreen("billing")
+    data object BillingDetails : NavScreen("billing_details/{invoiceId}") {
+        fun createRoute(invoiceId: String) = "billing_details/$invoiceId"
+    }
     data object Profile : NavScreen("profile")
     
     // Security Screens
