@@ -1,6 +1,7 @@
 package com.kushan.vaultpark.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -55,7 +56,11 @@ import com.kushan.vaultpark.ui.theme.Poppins
 fun ProfileScreen(
     onBackPressed: (() -> Unit)? = null,
     currentUser: User? = null,
-    onLogout: (() -> Unit)? = null
+    onLogout: (() -> Unit)? = null,
+    onNavigateToNotifications: (() -> Unit)? = null,
+    onNavigateToChangePassword: (() -> Unit)? = null,
+    onNavigateToDriverProfile: (() -> Unit)? = null,
+    onNavigateToSecurityProfile: (() -> Unit)? = null
 ) {
     var isDarkTheme by remember { mutableStateOf(isDarkThemeEnabled()) }
     
@@ -240,10 +245,38 @@ fun ProfileScreen(
                         }
                         
                         Spacer(modifier = Modifier.height(16.dp))
-                        SettingsItem("🔔 Notifications", "Manage alerts")
+                        
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .let {
+                                    if (onNavigateToNotifications != null) {
+                                        it.clickable { onNavigateToNotifications() }
+                                    } else {
+                                        it
+                                    }
+                                }
+                                .padding(vertical = 8.dp)
+                        ) {
+                            SettingsItem("🔔 Notifications", "Manage alerts")
+                        }
+                        
                         Spacer(modifier = Modifier.height(12.dp))
                         
-                        SettingsItem("🔒 Security", "Change password")
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .let {
+                                    if (onNavigateToChangePassword != null) {
+                                        it.clickable { onNavigateToChangePassword() }
+                                    } else {
+                                        it
+                                    }
+                                }
+                                .padding(vertical = 8.dp)
+                        ) {
+                            SettingsItem("🔒 Security", "Change password")
+                        }
                     }
                 }
             }

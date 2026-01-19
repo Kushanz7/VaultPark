@@ -4,6 +4,7 @@ import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.kushan.vaultpark.model.InvoiceNew
 import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.ui.screens.BillingScreen
@@ -14,7 +15,13 @@ import com.kushan.vaultpark.ui.screens.ProfileScreen
 import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
 import com.kushan.vaultpark.ui.screens.SecurityReportsScreen
 import com.kushan.vaultpark.ui.screens.SecurityScannerScreen
+import com.kushan.vaultpark.ui.screens.notifications.NotificationsScreen
+import com.kushan.vaultpark.ui.screens.notifications.NotificationsViewModel
+import com.kushan.vaultpark.ui.screens.profile.ChangePasswordScreen
+import com.kushan.vaultpark.ui.screens.profile.DriverProfileScreen
+import com.kushan.vaultpark.ui.screens.profile.SecurityProfileScreen
 import com.kushan.vaultpark.viewmodel.AuthViewModel
+import com.kushan.vaultpark.viewmodel.ProfileViewModel
 
 /**
  * Driver Navigation Graph
@@ -79,6 +86,45 @@ fun NavGraphBuilder.driverNavGraph(
                     navController.navigate(NavScreen.Login.route) {
                         popUpTo(DRIVER_GRAPH) { inclusive = true }
                     }
+                },
+                onNavigateToNotifications = {
+                    navController.navigate(NavScreen.Notifications.route)
+                },
+                onNavigateToChangePassword = {
+                    navController.navigate(NavScreen.ChangePassword.route)
+                },
+                onNavigateToDriverProfile = {
+                    navController.navigate(NavScreen.DriverProfile.route)
+                }
+            )
+        }
+        
+        composable(NavScreen.Notifications.route) {
+            val notificationsViewModel: NotificationsViewModel = viewModel()
+            NotificationsScreen(
+                viewModel = notificationsViewModel,
+                navController = navController
+            )
+        }
+        
+        composable(NavScreen.ChangePassword.route) {
+            val profileViewModel: ProfileViewModel = viewModel()
+            ChangePasswordScreen(
+                viewModel = profileViewModel,
+                navController = navController
+            )
+        }
+        
+        composable(NavScreen.DriverProfile.route) {
+            val profileViewModel: ProfileViewModel = viewModel()
+            DriverProfileScreen(
+                viewModel = profileViewModel,
+                navController = navController,
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(NavScreen.Login.route) {
+                        popUpTo(DRIVER_GRAPH) { inclusive = true }
+                    }
                 }
             )
         }
@@ -124,6 +170,45 @@ fun NavGraphBuilder.securityNavGraph(
                 onBackPressed = {
                     navController.popBackStack()
                 },
+                onLogout = {
+                    authViewModel.logout()
+                    navController.navigate(NavScreen.Login.route) {
+                        popUpTo(SECURITY_GRAPH) { inclusive = true }
+                    }
+                },
+                onNavigateToNotifications = {
+                    navController.navigate(NavScreen.Notifications.route)
+                },
+                onNavigateToChangePassword = {
+                    navController.navigate(NavScreen.ChangePassword.route)
+                },
+                onNavigateToSecurityProfile = {
+                    navController.navigate(NavScreen.SecurityProfile.route)
+                }
+            )
+        }
+        
+        composable(NavScreen.Notifications.route) {
+            val notificationsViewModel: NotificationsViewModel = viewModel()
+            NotificationsScreen(
+                viewModel = notificationsViewModel,
+                navController = navController
+            )
+        }
+        
+        composable(NavScreen.ChangePassword.route) {
+            val profileViewModel: ProfileViewModel = viewModel()
+            ChangePasswordScreen(
+                viewModel = profileViewModel,
+                navController = navController
+            )
+        }
+        
+        composable(NavScreen.SecurityProfile.route) {
+            val profileViewModel: ProfileViewModel = viewModel()
+            SecurityProfileScreen(
+                viewModel = profileViewModel,
+                navController = navController,
                 onLogout = {
                     authViewModel.logout()
                     navController.navigate(NavScreen.Login.route) {

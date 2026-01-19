@@ -12,11 +12,15 @@ sealed class NavScreen(val route: String) {
         fun createRoute(invoiceId: String) = "billing_details/$invoiceId"
     }
     data object Profile : NavScreen("profile")
+    data object Notifications : NavScreen("notifications")
+    data object ChangePassword : NavScreen("change_password")
+    data object DriverProfile : NavScreen("driver_profile")
     
     // Security Screens
     data object Scanner : NavScreen("scanner")
     data object Logs : NavScreen("logs")
     data object Reports : NavScreen("reports")
+    data object SecurityProfile : NavScreen("security_profile")
 }
 
 val driverNavScreens = listOf(

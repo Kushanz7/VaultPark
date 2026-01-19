@@ -108,6 +108,15 @@ dependencies {
     implementation("com.patrykandpatrick.vico:compose-m3:1.13.1")
     implementation("com.patrykandpatrick.vico:core:1.13.1")
     
+    // Image loading for profile pictures
+    implementation("io.coil-kt:coil-compose:2.5.0")
+    
+    // Firebase Cloud Messaging for notifications
+    implementation("com.google.firebase:firebase-messaging-ktx:23.4.1")
+    
+    // Firebase Storage for profile picture uploads
+    implementation("com.google.firebase:firebase-storage-ktx:21.0.0")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
