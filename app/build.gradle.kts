@@ -103,6 +103,11 @@ dependencies {
     // Accompanist for permissions
     implementation("com.google.accompanist:accompanist-permissions:0.32.0")
     
+    // Vico Charts for Compose
+    implementation("com.patrykandpatrick.vico:compose:1.13.1")
+    implementation("com.patrykandpatrick.vico:compose-m3:1.13.1")
+    implementation("com.patrykandpatrick.vico:core:1.13.1")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

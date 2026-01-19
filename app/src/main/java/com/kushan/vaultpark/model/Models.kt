@@ -164,3 +164,33 @@ data class ParkingStatus(
     val parkedSince: String? = null,
     val location: String? = null
 )
+
+// ============ ANALYTICS & REPORTS MODELS ============
+
+data class ReportStats(
+    val totalScans: Int = 0,
+    val totalEntries: Int = 0,
+    val totalExits: Int = 0,
+    val activeNow: Int = 0,
+    val averageDuration: Double = 0.0,
+    val busiestHour: Int = 0,
+    val dateRange: String = ""
+)
+
+data class HourlyData(
+    val hour: Int = 0,
+    val scanCount: Int = 0
+)
+
+data class DailyTrendData(
+    val date: Long = 0, // Timestamp
+    val scanCount: Int = 0
+)
+
+data class TopDriver(
+    val driverId: String = "",
+    val driverName: String = "",
+    val vehicleNumber: String = "",
+    val visitCount: Int = 0,
+    val totalHours: Double = 0.0
+)
