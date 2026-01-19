@@ -6,4 +6,12 @@
     </style>
 
     <style name="Theme.VaultPark" parent="Base.Theme.VaultPark" />
+
+    <!-- Splash Screen Theme -->
+    <style name="Theme.VaultPark.Splash" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_vaultpark_logo</item>
+        <item name="windowSplashScreenAnimationDuration">1000</item>
+        <item name="postSplashScreenTheme">@style/Theme.VaultPark</item>
+    </style>
 </resources>

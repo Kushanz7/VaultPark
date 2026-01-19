@@ -1,3 +1,50 @@
 <resources>
     <string name="app_name">VaultPark</string>
+    <string name="app_tagline">Premium Parking Access</string>
+    
+    <!-- Onboarding -->
+    <string name="onboarding_welcome_title">Welcome to VaultPark</string>
+    <string name="onboarding_welcome_desc">Experience premium parking with secure QR access and seamless management</string>
+    <string name="onboarding_features_title">Quick &amp; Secure Access</string>
+    <string name="onboarding_features_desc">Dynamic QR codes refresh every 30 seconds for maximum security</string>
+    <string name="onboarding_getstarted_title">Track &amp; Pay Easily</string>
+    <string name="onboarding_getstarted_desc">View your parking history, manage billing, and stay informed with instant notifications</string>
+    <string name="onboarding_skip">Skip</string>
+    <string name="onboarding_next">Next</string>
+    <string name="onboarding_getstarted">Get Started</string>
+    
+    <!-- Error States -->
+    <string name="error_no_internet">No Internet Connection</string>
+    <string name="error_no_internet_msg">Please check your connection and try again</string>
+    <string name="error_not_found">Page Not Found</string>
+    <string name="error_not_found_msg">The page you\'re looking for doesn\'t exist</string>
+    <string name="error_server">Something Went Wrong</string>
+    <string name="error_server_msg">We\'re working to fix this. Please try again later</string>
+    <string name="error_permission">Permission Denied</string>
+    <string name="error_permission_msg">VaultPark needs camera access to scan QR codes</string>
+    <string name="error_session_expired">Session Expired</string>
+    <string name="error_session_expired_msg">Please sign in again to continue</string>
+    <string name="btn_retry">Retry</string>
+    <string name="btn_go_home">Go Home</string>
+    <string name="btn_open_settings">Open Settings</string>
+    <string name="btn_sign_in">Sign In</string>
+    
+    <!-- Empty States -->
+    <string name="empty_history">No Parking History</string>
+    <string name="empty_history_msg">Your parking sessions will appear here</string>
+    <string name="empty_logs">No Scans Yet</string>
+    <string name="empty_logs_msg">Start scanning driver QR codes to see activity</string>
+    <string name="empty_invoices">No Invoices Yet</string>
+    <string name="empty_invoices_msg">Your monthly invoices will appear here</string>
+    <string name="empty_notifications">No Notifications</string>
+    <string name="empty_notifications_msg">You\'re all caught up!</string>
+    <string name="empty_search">No Results Found</string>
+    <string name="empty_search_msg">Try adjusting your search or filters</string>
+    
+    <!-- Offline Mode -->
+    <string name="offline_banner">You\'re offline</string>
+    
+    <!-- Loading States -->
+    <string name="loading">Loading...</string>
+    <string name="initializing_camera">Initializing camera...</string>
 </resources>

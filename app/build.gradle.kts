@@ -117,6 +117,15 @@ dependencies {
     // Firebase Storage for profile picture uploads
     implementation("com.google.firebase:firebase-storage-ktx:21.0.0")
     
+    // Splash Screen API
+    implementation("androidx.core:core-splashscreen:1.0.1")
+    
+    // Pager for Onboarding
+    implementation("com.google.accompanist:accompanist-pager:0.32.0")
+    
+    // SwipeRefresh
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.32.0")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

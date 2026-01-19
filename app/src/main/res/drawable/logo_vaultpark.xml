@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="56dp"
+    android:viewportWidth="200"
+    android:viewportHeight="56">
+
+    <!-- VP Icon background with rounded corners -->
+    <path
+        android:fillColor="#7C4DFF"
+        android:pathData="M 12,8 L 44,8 Q 48,8 48,12 L 48,44 Q 48,48 44,48 L 12,48 Q 8,48 8,44 L 8,12 Q 8,8 12,8 Z" />
+
+    <!-- Letter V -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 20,20 L 23,20 L 28,32 L 33,20 L 36,20 L 29.5,36 L 26.5,36 Z" />
+
+    <!-- Letter P -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 17,20 L 21,20 L 21,26 L 24,26 Q 26,26 26,28 Q 26,30 24,30 L 21,30 L 21,36 L 17,36 Z M 21,23 L 21,27 L 24,27 Q 25,27 25,25 Q 25,23 24,23 Z" />
+
+    <!-- VaultPark text as simplified shapes -->
+    <!-- V -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 62,24 L 65,24 L 68,32 L 71,24 L 74,24 L 69.5,36 L 66.5,36 Z" />
+    
+    <!-- a -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 76,28 L 82,28 Q 84,28 84,30 L 84,36 L 81,36 L 81,31 L 79,31 L 79,36 L 76,36 Z" />
+    
+    <!-- u -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 87,28 L 90,28 L 90,34 Q 90,36 92,36 Q 94,36 94,34 L 94,28 L 97,28 L 97,34 Q 97,37 92,37 Q 87,37 87,34 Z" />
+    
+    <!-- l -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 100,24 L 103,24 L 103,36 L 100,36 Z" />
+    
+    <!-- t -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 106,26 L 109,26 L 109,28 L 112,28 L 112,30 L 109,30 L 109,36 L 106,36 L 106,30 L 104,30 L 104,28 L 106,28 Z" />
+    
+    <!-- P -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 115,24 L 118,24 L 118,29 L 121,29 Q 123,29 123,31 Q 123,33 121,33 L 118,33 L 118,36 L 115,36 Z" />
+    
+    <!-- a -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 126,28 L 132,28 Q 134,28 134,30 L 134,36 L 131,36 L 131,31 L 129,31 L 129,36 L 126,36 Z" />
+    
+    <!-- r -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 137,28 L 140,28 L 140,30 Q 140,28 142,28 L 144,28 L 144,31 L 142,31 Q 140,31 140,33 L 140,36 L 137,36 Z" />
+    
+    <!-- k -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M 147,24 L 150,24 L 150,31 L 153,28 L 157,28 L 153,32 L 157,36 L 153,36 L 150,33 L 150,36 L 147,36 Z" />
+
+</vector>

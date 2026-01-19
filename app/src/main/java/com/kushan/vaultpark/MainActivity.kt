@@ -12,8 +12,11 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.rememberNavController
 import com.kushan.vaultpark.model.UserRole
@@ -26,10 +29,26 @@ import com.kushan.vaultpark.ui.navigation.VaultParkNavHost
 import com.kushan.vaultpark.ui.navigation.securityNavScreens
 import com.kushan.vaultpark.ui.theme.VaultParkTheme
 import com.kushan.vaultpark.viewmodel.AuthViewModel
+import com.kushan.vaultpark.util.DataStoreUtils
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
+        // Install splash screen
+        val splashScreen = installSplashScreen()
+        
+        // Keep splash visible while checking auth
+        var keepSplashOnScreen = true
+        splashScreen.setKeepOnScreenCondition { keepSplashOnScreen }
+        
         super.onCreate(savedInstanceState)
+        
+        lifecycleScope.launch {
+            delay(1500) // Minimum splash duration
+            keepSplashOnScreen = false
+        }
+        
         setContent {
             VaultParkTheme {
                 VaultParkApp(this)

@@ -346,7 +346,110 @@ package com.kushan.vaultpark.config
  * 6. Click "Send"
  * 
  * ============================================================
- * FILE STRUCTURE
+ * FILE ST ⚡Kushan ❯❯ gradlew build
+
+> Task :app:compileDebugKotlin
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/ui/screens/EmptyState.kt:16:47 Unresolved reference 'Bell'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/ui/screens/EmptyState.kt:168:30 Unresolved reference 'Bell'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:11:35 Unresolved reference 'slideInDown'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:12:35 Unresolved reference 'slideOutDown'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:13:35 Unresolved reference 'slideInUp'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:14:35 Unresolved reference 'slideOutUp'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:21:39 Unresolved reference 'slideInUp'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:22:37 Unresolved reference 'slideOutDown'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:27:41 Unresolved reference 'slideInDown'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:28:39 Unresolved reference 'slideOutUp'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:39:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:39:27 Not enough information to infer type argument for 'T'.     
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:39:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:48:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:48:27 Not enough information to infer type argument for 'T'.     
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:48:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:66:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:66:27 Not enough information to infer type argument for 'T'.     
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:66:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:84:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:84:27 Not enough information to infer type argument for 'T'.     
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:84:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:102:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:102:27 Not enough information to infer type argument for 'T'.    
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:102:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:111:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:111:27 Not enough information to infer type argument for 'T'.    
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:111:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:121:37 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:123:17 Return type mismatch: expected 'kotlin.Unit', actual 'androidx.datastore.preferences.core.Preferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:136:156 Argument type mismatch: actual type is 'T', but 'kotlin.Any' was expected.
+
+> Task :app:compileReleaseKotlin
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/ui/screens/EmptyState.kt:16:47 Unresolved reference 'Bell'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/ui/screens/EmptyState.kt:168:30 Unresolved reference 'Bell'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:11:35 Unresolved reference 'slideInDown'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:12:35 Unresolved reference 'slideOutDown'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:13:35 Unresolved reference 'slideInUp'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:14:35 Unresolved reference 'slideOutUp'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:21:39 Unresolved reference 'slideInUp'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:22:37 Unresolved reference 'slideOutDown'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:27:41 Unresolved reference 'slideInDown'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/AnimationUtils.kt:28:39 Unresolved reference 'slideOutUp'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:39:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:39:27 Not enough information to infer type argument for 'T'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:39:34 Unresolved reference 'MutablePreferences'.                 
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:48:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:48:27 Not enough information to infer type argument for 'T'.     
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:48:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:66:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:66:27 Not enough information to infer type argument for 'T'.     
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:66:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:84:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:84:27 Not enough information to infer type argument for 'T'.     
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:84:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:102:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:102:27 Not enough information to infer type argument for 'T'.    
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:102:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:111:27 Cannot infer type for this parameter. Please specify it explicitly.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:111:27 Not enough information to infer type argument for 'T'.    
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:111:34 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:121:37 Unresolved reference 'MutablePreferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:123:17 Return type mismatch: expected 'kotlin.Unit', actual 'androidx.datastore.preferences.core.Preferences'.
+e: file:///C:/Users/Kushan/AndroidStudioProjects/VaultPark/app/src/main/java/com/kushan/vaultpark/util/DataStoreUtils.kt:136:156 Argument type mismatch: actual type is 'T', but 'kotlin.Any' was expected.
+
+> Task :app:compileReleaseKotlin FAILED
+> Task :app:compileDebugKotlin FAILED
+
+FAILURE: Build completed with 2 failures.
+
+1: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':app:compileReleaseKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+2: Task failed with an exception.
+-----------
+* What went wrong:
+Execution failed for task ':app:compileDebugKotlin'.
+> A failure occurred while executing org.jetbrains.kotlin.compilerRunner.GradleCompilerRunnerWithWorkers$GradleKotlinCompilerWorkAction
+   > Compilation error. See log for more details
+
+* Try:
+> Run with --stacktrace option to get the stack trace.
+> Run with --info or --debug option to get more log output.
+> Run with --scan to get full insights.
+> Get more help at https://help.gradle.org.
+==============================================================================
+
+BUILD FAILED in 3m 7s
+72 actionable tasks: 17 executed, 55 up-to-date
+RUCTURE
  * ============================================================
  * 
  * app/src/main/java/com/kushan/vaultpark/

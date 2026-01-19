@@ -21,7 +21,8 @@
         android:theme="@style/Theme.VaultPark">
         <activity
             android:name=".MainActivity"
-            android:exported="true">
+            android:exported="true"
+            android:theme="@style/Theme.VaultPark.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
