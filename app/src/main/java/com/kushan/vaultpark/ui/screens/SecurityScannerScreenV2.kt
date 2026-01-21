@@ -21,9 +21,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.MoreVert
@@ -127,130 +125,136 @@ fun SecurityScannerScreen(
         },
         containerColor = DarkBackground
     ) { innerPadding ->
-        Column(
+        LazyColumn(
             modifier = modifier
                 .fillMaxSize()
                 .background(DarkBackground)
                 .padding(innerPadding)
-                .padding(16.dp)
-                .verticalScroll(rememberScrollState()),
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Gate Selector
-            GateSelectorDropdown(
-                selectedGate = selectedGate,
-                onGateSelected = { viewModel.setSelectedGate(it) }
-            )
-            
-            // Camera Preview Placeholder
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(300.dp),
-                shape = RoundedCornerShape(16.dp),
-                colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                ),
-                elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
-                border = BorderStroke(
-                    2.dp,
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                )
-            ) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    // Scan frame border
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.8f)
-                            .height(250.dp)
-                            .border(
-                                2.dp,
-                                MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
-                                RoundedCornerShape(12.dp)
-                            )
-                    )
-                    
-                    // Scan line animation
-                    Box(
-                        modifier = Modifier
-                            .fillMaxWidth(0.75f)
-                            .height(2.dp)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .align(Alignment.Center)
-                            .offset(y = (scanLineProgress * 100 - 50).dp)
-                    )
-                    
-                    // Center icon with pulse
-                    Icon(
-                        imageVector = Icons.Filled.QrCode2,
-                        contentDescription = "QR Code Icon",
-                        modifier = Modifier
-                            .height(80.dp * pulseSize)
-                            .width(80.dp * pulseSize),
-                        tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-                    )
-                }
-            }
-            
-            // Tap to Scan Button
-            Button(
-                onClick = { /* Camera scanning will be added in next step */ },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Text(
-                    "Tap to Scan QR Code",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
+            item {
+                // Gate Selector
+                GateSelectorDropdown(
+                    selectedGate = selectedGate,
+                    onGateSelected = { viewModel.setSelectedGate(it) }
                 )
             }
             
-            // Recent Scans Section
-            Text(
-                text = "Recent Scans (Last 5)",
-                fontSize = 16.sp,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.padding(top = 8.dp)
-            )
-            
-            if (recentSessions.isEmpty()) {
+            item {
+                // Camera Preview Placeholder
                 Card(
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(300.dp),
+                    shape = RoundedCornerShape(16.dp),
                     colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        containerColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                    ),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 8.dp),
+                    border = BorderStroke(
+                        2.dp,
+                        MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
                     )
                 ) {
-                    Text(
-                        "No scans yet",
-                        modifier = Modifier
-                            .padding(20.dp)
-                            .fillMaxWidth(),
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
-                        textAlign = TextAlign.Center
-                    )
-                }
-            } else {
-                LazyColumn(
-                    verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    items(recentSessions) { session ->
-                        ParkingSessionCardForSecurity(session)
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // Scan frame border
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.8f)
+                                .height(250.dp)
+                                .border(
+                                    2.dp,
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.6f),
+                                    RoundedCornerShape(12.dp)
+                                )
+                        )
+                        
+                        // Scan line animation
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth(0.75f)
+                                .height(2.dp)
+                                .background(MaterialTheme.colorScheme.primary)
+                                .align(Alignment.Center)
+                                .offset(y = (scanLineProgress * 100 - 50).dp)
+                        )
+                        
+                        // Center icon with pulse
+                        Icon(
+                            imageVector = Icons.Filled.QrCode2,
+                            contentDescription = "QR Code Icon",
+                            modifier = Modifier
+                                .height(80.dp * pulseSize)
+                                .width(80.dp * pulseSize),
+                            tint = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+                        )
                     }
                 }
             }
             
-            Spacer(modifier = Modifier.height(16.dp))
+            item {
+                // Tap to Scan Button
+                Button(
+                    onClick = { /* Camera scanning will be added in next step */ },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    ),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text(
+                        "Tap to Scan QR Code",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+            
+            item {
+                // Recent Scans Section
+                Text(
+                    text = "Recent Scans (Last 5)",
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = MaterialTheme.colorScheme.onBackground,
+                    modifier = Modifier.padding(top = 8.dp)
+                )
+            }
+            
+            if (recentSessions.isEmpty()) {
+                item {
+                    Card(
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(
+                            containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                        )
+                    ) {
+                        Text(
+                            "No scans yet",
+                            modifier = Modifier
+                                .padding(20.dp)
+                                .fillMaxWidth(),
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center
+                        )
+                    }
+                }
+            } else {
+                items(recentSessions) { session ->
+                    ParkingSessionCardForSecurity(session)
+                }
+            }
+            
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
+            }
         }
     }
 }

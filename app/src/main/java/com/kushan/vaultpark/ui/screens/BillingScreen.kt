@@ -35,6 +35,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -121,7 +122,7 @@ fun BillingScreen(
                 )
             )
         },
-        containerColor = Background
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         if (isLoading) {
             Box(
@@ -304,7 +305,10 @@ private fun CurrentMonthCard(
             .fillMaxWidth()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(DarkSurfaceVariant, DarkSurface)
+                    colors = listOf(
+                        MaterialTheme.colorScheme.surface,
+                        MaterialTheme.colorScheme.surfaceVariant
+                    )
                 ),
                 shape = RoundedCornerShape(28.dp)
             )
@@ -316,7 +320,7 @@ private fun CurrentMonthCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = TextSecondaryDark
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
@@ -324,7 +328,7 @@ private fun CurrentMonthCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 32.sp,
-            color = TextLight
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(12.dp))
         
@@ -350,7 +354,7 @@ private fun CurrentMonthCard(
         
         // Divider
         Divider(
-            color = TextTertiaryDark.copy(alpha = 0.2f),
+            color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.2f),
             thickness = 1.dp
         )
         
@@ -389,7 +393,7 @@ private fun CurrentMonthCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = TextSecondaryDark,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -407,7 +411,7 @@ private fun CurrentMonthCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
-            color = TextTertiaryDark,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         
@@ -428,7 +432,7 @@ private fun PricingInfoCard(pricingTier: com.kushan.vaultpark.model.PricingTier)
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = DarkSurface,
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(20.dp)
             )
             .padding(20.dp)
@@ -438,7 +442,7 @@ private fun PricingInfoCard(pricingTier: com.kushan.vaultpark.model.PricingTier)
             fontFamily = Poppins,
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
-            color = TextLight
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(16.dp))
         

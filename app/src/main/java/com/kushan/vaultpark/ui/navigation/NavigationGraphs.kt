@@ -9,12 +9,12 @@ import com.kushan.vaultpark.model.InvoiceNew
 import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.ui.screens.BillingScreen
 import com.kushan.vaultpark.ui.screens.DriverHistoryScreen
-import com.kushan.vaultpark.ui.screens.HomeScreen
+import com.kushan.vaultpark.ui.screens.DriverHomeScreen
 import com.kushan.vaultpark.ui.screens.InvoiceDetailsScreen
 import com.kushan.vaultpark.ui.screens.ProfileScreen
 import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
 import com.kushan.vaultpark.ui.screens.SecurityReportsScreen
-import com.kushan.vaultpark.ui.screens.SecurityScannerScreen
+import com.kushan.vaultpark.ui.screens.SecurityHomeScreen
 import com.kushan.vaultpark.ui.screens.notifications.NotificationsScreen
 import com.kushan.vaultpark.ui.screens.notifications.NotificationsViewModel
 import com.kushan.vaultpark.ui.screens.profile.ChangePasswordScreen
@@ -37,10 +37,15 @@ fun NavGraphBuilder.driverNavGraph(
         startDestination = NavScreen.Home.route
     ) {
         composable(NavScreen.Home.route) {
-            HomeScreen(
-                currentUser = currentUser,
-                onBackPressed = {
-                    navController.popBackStack()
+            DriverHomeScreen(
+                onNavigateToBilling = {
+                    navController.navigate(NavScreen.Billing.route)
+                },
+                onNavigateToHistory = {
+                    navController.navigate(NavScreen.History.route)
+                },
+                onNavigateToSupport = {
+                    navController.navigate(NavScreen.Notifications.route)
                 }
             )
         }
@@ -145,7 +150,10 @@ fun NavGraphBuilder.securityNavGraph(
         startDestination = NavScreen.Scanner.route
     ) {
         composable(NavScreen.Scanner.route) {
-            SecurityScannerScreen(currentGuardId = currentUser?.id ?: "")
+            SecurityHomeScreen(
+                onNavigateToLogs = { navController.navigate(NavScreen.Logs.route) },
+                onNavigateToReports = { navController.navigate(NavScreen.Reports.route) }
+            )
         }
         
         composable(NavScreen.Logs.route) {
