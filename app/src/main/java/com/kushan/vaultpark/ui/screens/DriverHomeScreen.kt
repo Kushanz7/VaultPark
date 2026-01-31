@@ -84,6 +84,8 @@ import com.kushan.vaultpark.viewmodel.DriverHomeViewModel
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Locale
+import com.kushan.vaultpark.ui.components.*
+import com.google.firebase.auth.FirebaseAuth
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -94,6 +96,7 @@ fun DriverHomeScreen(
     viewModel: DriverHomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    var showSetFavoriteDialog by remember { mutableStateOf(false) }
 
     Box(
         modifier = Modifier
@@ -125,53 +128,56 @@ fun DriverHomeScreen(
                     onGenerateQR = { viewModel.showQRDialog() }
                 )
 
-                Spacer(modifier = Modifier.height(20.dp))
             }
 
             item {
-                // Quick Stats Grid
-                if (uiState.isLoadingStats) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.spacedBy(12.dp)
-                    ) {
-                        repeat(4) { StatCardSkeleton() }
-                    }
-                } else {
-                    QuickStatsGrid(
-                        sessionsCount = uiState.monthlyStats.sessionsCount.toString(),
-                        totalHours = String.format("%.1f", uiState.monthlyStats.totalHours) + "h",
-                        monthlyAmount = "$" + String.format("%.2f", uiState.monthlyStats.totalAmount),
-                        memberSince = uiState.memberSinceDate,
-                        onBillingTap = onNavigateToBilling
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
-            }
-
-            if (uiState.recentSessions.isNotEmpty()) {
-                item {
-                    // Recent Activity Section
-                    RecentActivitySection(
-                        sessions = uiState.recentSessions,
-                        onViewAll = onNavigateToHistory
-                    )
-
-                    Spacer(modifier = Modifier.height(24.dp))
-                }
-            }
-
-            item {
-                // Quick Actions Row
-                QuickActionsRow(
-                    onBillingTap = onNavigateToBilling,
-                    onHistoryTap = onNavigateToHistory,
-                    onSupportTap = onNavigateToSupport
+                // Favorite Gate Card
+                FavoriteGateCard(
+                    favoriteGate = uiState.favoriteGate,
+                    favoriteGateNote = uiState.favoriteGateNote,
+                    onSetFavorite = { showSetFavoriteDialog = true },
+                    onGenerateQRForFavorite = { viewModel.generateQRForFavoriteGate() }
                 )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
+            item {
+                // Recent Gates
+                RecentGatesRow(
+                    recentGates = uiState.recentGates,
+                    onGateClick = { gate ->
+                        // In a real app, this might pre-fill the QR generator or start a flow
+                        // For now we can just show a toast or log it, or perhaps set it as favorite
+                    }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            item {
+                // Quick Stats Widget
+                QuickStatsWidget(
+                    quickStats = uiState.quickStats,
+                    onViewLastSession = onNavigateToHistory
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            item {
+                // Last 3 Sessions
+                LastThreeSessionsCard(
+                    sessions = uiState.lastThreeSessions,
+                    onViewSession = { /* Navigate to details - for now just history */ onNavigateToHistory() }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            item {
+                // One-Tap Actions
+                OneTapActionsCard(
+                    onParkNow = { viewModel.showQRDialog() },
+                    onViewLastSession = onNavigateToHistory,
+                    onPayBill = onNavigateToBilling
+                )
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
@@ -180,6 +186,24 @@ fun DriverHomeScreen(
         if (uiState.error != null) {
             OfflineBannerComponent()
         }
+    }
+
+    // Set Favorite Gate Dialog
+    if (showSetFavoriteDialog) {
+        val userId = FirebaseAuth.getInstance().currentUser?.uid
+        SetFavoriteGateDialog(
+            currentFavorite = uiState.favoriteGate,
+            currentNote = uiState.favoriteGateNote,
+            onDismiss = { showSetFavoriteDialog = false },
+            onConfirm = { gate, note ->
+                if (userId != null) {
+                    viewModel.setFavoriteGate(userId, gate, note)
+                }
+            },
+            onRemoveFavorite = if (uiState.favoriteGate != null) {
+                { if (userId != null) viewModel.removeFavoriteGate(userId) }
+            } else null
+        )
     }
 
     // QR Code Dialog

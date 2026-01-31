@@ -20,6 +20,9 @@ import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Layers
 import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.LocalOffer
+import androidx.compose.material.icons.filled.FileDownload
+import kotlinx.coroutines.delay
+import com.kushan.vaultpark.ui.components.*
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -66,16 +69,10 @@ fun DriverHistoryScreen(
     onBackPressed: (() -> Unit)? = null,
     viewModel: HistoryViewModel = viewModel()
 ) {
-    val parkingSessions by viewModel.parkingSessions.collectAsState()
-    val isLoading by viewModel.isLoading.collectAsState()
-    val hasMore by viewModel.hasMore.collectAsState()
-    val selectedFilter by viewModel.selectedFilter.collectAsState()
-    val totalSessions by viewModel.totalSessions.collectAsState()
-    val totalHours by viewModel.totalHours.collectAsState()
-    val thisMonthAmount by viewModel.thisMonthAmount.collectAsState()
-    val errorMessage by viewModel.errorMessage.collectAsState()
-
+    val uiState by viewModel.uiState.collectAsState()
+    
     var selectedSession by remember { mutableStateOf<ParkingSession?>(null) }
+    var selectedSessionToShare by remember { mutableStateOf<ParkingSession?>(null) }
     val bottomSheetState = rememberModalBottomSheetState()
 
     val currentUser = FirebaseAuth.getInstance().currentUser
@@ -108,6 +105,9 @@ fun DriverHistoryScreen(
                     }
                 },
                 actions = {
+                    IconButton(onClick = { viewModel.showExportDialog() }) {
+                        Icon(Icons.Default.FileDownload, "Export")
+                    }
                     IconButton(onClick = { }) {
                         Icon(
                             imageVector = Icons.Default.MoreVert,
@@ -150,19 +150,19 @@ fun DriverHistoryScreen(
                         ) {
                             StatCard(
                                 icon = Icons.Default.Layers,
-                                value = totalSessions.toString(),
+                                value = uiState.totalSessions.toString(),
                                 label = "Total Sessions",
                                 modifier = Modifier.weight(1f)
                             )
                             StatCard(
                                 icon = Icons.Default.Timer,
-                                value = "${totalHours}h",
+                                value = "${uiState.totalHours}h",
                                 label = "Total Hours",
                                 modifier = Modifier.weight(1f)
                             )
                             StatCard(
                                 icon = Icons.Default.LocalOffer,
-                                value = formatAmount(thisMonthAmount),
+                                value = formatAmount(uiState.thisMonthAmount),
                                 label = "This Month",
                                 modifier = Modifier.weight(1f)
                             )
@@ -198,7 +198,7 @@ fun DriverHistoryScreen(
                             HistoryViewModel.DateFilter.values().forEach { filter ->
                                 FilterChip(
                                     label = filter.displayName,
-                                    isSelected = filter == selectedFilter,
+                                    isSelected = filter == uiState.selectedFilter,
                                     onClick = {
                                         viewModel.fetchParkingSessions(
                                             currentUser?.uid ?: "",
@@ -212,12 +212,32 @@ fun DriverHistoryScreen(
                 }
             }
 
+            // Tag Filter Row
+            item {
+                TagFilterRow(
+                    selectedTags = uiState.selectedTags,
+                    onTagSelected = { tag -> viewModel.toggleTagFilter(tag) },
+                    onClearFilters = { viewModel.clearTagFilters() }
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            // Monthly Category Summary
+            item {
+                if (uiState.tagDistribution.isNotEmpty()) {
+                    MonthlyCategorySummaryCard(
+                        tagDistribution = uiState.tagDistribution
+                    )
+                    Spacer(modifier = Modifier.height(16.dp))
+                }
+            }
+
             // Sessions List or Loading State
-            if (isLoading && parkingSessions.isEmpty()) {
+            if (uiState.isLoading && uiState.parkingSessions.isEmpty()) {
                 items(5) {
                     ShimmerCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp))
                 }
-            } else if (parkingSessions.isEmpty()) {
+            } else if (uiState.filteredSessions.isEmpty() && uiState.parkingSessions.isEmpty()) {
                 item {
                     EmptyState(
                         title = "No Parking History",
@@ -225,17 +245,26 @@ fun DriverHistoryScreen(
                         icon = "🅿️"
                     )
                 }
+            } else if (uiState.filteredSessions.isEmpty() && uiState.parkingSessions.isNotEmpty()) {
+                item {
+                    EmptyState(
+                        title = "No Matches",
+                        description = "No sessions match your selected filters.",
+                        icon = "🔍"
+                    )
+                }
             } else {
-                items(parkingSessions) { session ->
+                items(uiState.filteredSessions) { session ->
                     SessionCard(
                         session = session,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp),
-                        onCardClick = { selectedSession = it }
+                        onCardClick = { selectedSession = it },
+                        onLongPress = { selectedSessionToShare = it }
                     )
                 }
 
                 // Load More Button
-                if (hasMore && !isLoading) {
+                if (uiState.hasMore && !uiState.isLoading) {
                     item {
                         MindMirrorCard(
                             modifier = Modifier
@@ -261,7 +290,7 @@ fun DriverHistoryScreen(
                     }
                 }
 
-                if (isLoading && parkingSessions.isNotEmpty()) {
+                if (uiState.isLoading && uiState.parkingSessions.isNotEmpty()) {
                     items(3) {
                         ShimmerCard(modifier = Modifier.padding(horizontal = 16.dp, vertical = 6.dp))
                     }
@@ -269,7 +298,7 @@ fun DriverHistoryScreen(
             }
 
             // Error Message
-            if (!errorMessage.isNullOrEmpty()) {
+            if (!uiState.errorMessage.isNullOrEmpty()) {
                 item {
                     MindMirrorCard(
                         modifier = Modifier
@@ -277,7 +306,7 @@ fun DriverHistoryScreen(
                             .padding(horizontal = 16.dp)
                     ) {
                         Text(
-                            text = errorMessage ?: "",
+                            text = uiState.errorMessage ?: "",
                             fontFamily = Poppins,
                             fontWeight = FontWeight.Normal,
                             fontSize = 13.sp,
@@ -306,6 +335,32 @@ fun DriverHistoryScreen(
                 }
             )
         }
+    }
+
+    // Add Share Sheet
+    if (selectedSessionToShare != null) {
+        ShareSessionSheet(
+            session = selectedSessionToShare!!,
+            onDismiss = { selectedSessionToShare = null }
+        )
+    }
+
+    // Export Dialog
+    if (uiState.showExportDialog) {
+        ExportOptionsDialog(
+            sessions = uiState.filteredSessions,
+            onDismiss = { viewModel.hideExportDialog() }
+        )
+    }
+
+    // Add Notes Dialog
+    if (uiState.showAddNotesDialog && uiState.sessionToEdit != null) {
+        AddSessionNotesDialog(
+            onDismiss = { viewModel.hideAddNotesDialog() },
+            onSave = { notes, tags ->
+                viewModel.addSessionNotes(uiState.sessionToEdit!!.id, notes, tags)
+            }
+        )
     }
 }
 
