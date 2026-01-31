@@ -73,6 +73,11 @@ data class ParkingSession(
     // ✨ NEW: Session Notes & Tags Feature
     val notes: String = "",
     val tags: List<String> = emptyList(), // Work, Personal, Meeting, Event, Other
+    
+    // NEW: Manual entry tracking
+    val isManualEntry: Boolean = false,
+    val manualEntryBy: String? = null,
+
     @ServerTimestamp
     val createdAt: Date? = null
 ) {
@@ -91,7 +96,9 @@ data class ParkingSession(
         "qrCodeDataUsed" to qrCodeDataUsed,
         "duration" to duration,
         "notes" to notes,
-        "tags" to tags
+        "tags" to tags,
+        "isManualEntry" to isManualEntry,
+        "manualEntryBy" to manualEntryBy
     )
 }
 

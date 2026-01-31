@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material.icons.filled.Description
+import androidx.compose.material.icons.filled.EventNote
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -39,6 +40,7 @@ import com.kushan.vaultpark.ui.theme.NeonLime
 
 enum class BottomNavItem(val icon: ImageVector, val driverLabel: String, val securityLabel: String) {
     Home(Icons.Default.Home, "Home", "Scanner"),
+    Handover(Icons.Default.EventNote, "Notifications", "Handover"),
     History(Icons.Default.Schedule, "History", "Logs"),
     Billing(Icons.Default.Receipt, "Billing", "Reports"),
     Profile(Icons.Default.Person, "Profile", "Profile")

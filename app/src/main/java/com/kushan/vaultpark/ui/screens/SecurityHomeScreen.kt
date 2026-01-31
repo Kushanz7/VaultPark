@@ -75,6 +75,16 @@ import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.StatusError
 import com.kushan.vaultpark.viewmodel.SecurityHomeViewModel
+import com.kushan.vaultpark.viewmodel.AdminToolsViewModel
+import com.kushan.vaultpark.ui.components.EnhancedManualEntryDialog
+import com.kushan.vaultpark.ui.components.EndShiftButton
+import com.kushan.vaultpark.ui.components.ShiftReportDialog
+import androidx.compose.material.icons.filled.ManageAccounts
+import androidx.compose.material.icons.filled.EventNote
+import android.content.Intent
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.material3.Badge
+import androidx.compose.ui.unit.offset
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -85,10 +95,16 @@ import java.util.Locale
 fun SecurityHomeScreen(
     onNavigateToLogs: () -> Unit = {},
     onNavigateToReports: () -> Unit = {},
-    viewModel: SecurityHomeViewModel = viewModel()
+    onNavigateToActiveSessions: () -> Unit = {},
+    onNavigateToHandover: () -> Unit = {},
+    viewModel: SecurityHomeViewModel = viewModel(),
+    adminViewModel: AdminToolsViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val adminState by adminViewModel.uiState.collectAsState()
     var showManualEntryDialog by remember { mutableStateOf(false) }
+    var showReportDialog by remember { mutableStateOf(false) }
+    val context = LocalContext.current
 
     Box(
         modifier = Modifier
@@ -168,9 +184,25 @@ fun SecurityHomeScreen(
                 QuickActionsRowSecurity(
                     onLogsTap = onNavigateToLogs,
                     onReportsTap = onNavigateToReports,
-                    onManualEntry = { showManualEntryDialog = true }
+                    onManualEntry = { showManualEntryDialog = true },
+                    onActiveSessions = onNavigateToActiveSessions,
+                    onHandover = onNavigateToHandover,
+                    unreadNotesCount = adminState.unreadNotesCount
                 )
 
+                Spacer(modifier = Modifier.height(24.dp))
+            }
+            
+            item {
+                 EndShiftButton(
+                    onClick = {
+                        adminViewModel.generateShiftReport()
+                        showReportDialog = true
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                )
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
@@ -196,12 +228,26 @@ fun SecurityHomeScreen(
     }
 
     // Manual Entry Dialog
+    // Manual Entry Dialog
     if (showManualEntryDialog) {
-        ManualEntryDialog(
-            onDismiss = { showManualEntryDialog = false },
-            onSubmit = { driverName, vehicleNumber, entryType, gateLocation, notes ->
-                // Handle manual entry submission
-                showManualEntryDialog = false
+        EnhancedManualEntryDialog(
+            onDismiss = { showManualEntryDialog = false }
+        )
+    }
+    
+    // Shift Report Dialog
+    if (showReportDialog && adminState.currentShiftReport != null) {
+        ShiftReportDialog(
+            report = adminState.currentShiftReport!!,
+            onDismiss = { showReportDialog = false },
+            onShare = { reportText ->
+                 val sendIntent = Intent().apply {
+                    action = Intent.ACTION_SEND
+                    putExtra(Intent.EXTRA_TEXT, reportText)
+                    type = "text/plain"
+                }
+                val shareIntent = Intent.createChooser(sendIntent, "Share Shift Report")
+                context.startActivity(shareIntent)
             }
         )
     }
@@ -612,7 +658,10 @@ private fun RecentScansSection(
 private fun QuickActionsRowSecurity(
     onLogsTap: () -> Unit,
     onReportsTap: () -> Unit,
-    onManualEntry: () -> Unit
+    onManualEntry: () -> Unit,
+    onActiveSessions: () -> Unit,
+    onHandover: () -> Unit,
+    unreadNotesCount: Int = 0
 ) {
     Column(
         modifier = Modifier
@@ -636,6 +685,37 @@ private fun QuickActionsRowSecurity(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
+             QuickActionButton(
+                icon = Icons.Filled.Receipt,
+                label = "Manual Entry",
+                onClick = onManualEntry
+            )
+            
+            QuickActionButton(
+                icon = Icons.Filled.ManageAccounts,
+                label = "Active Sessions",
+                onClick = onActiveSessions
+            )
+            
+            Box {
+                QuickActionButton(
+                    icon = Icons.Filled.EventNote,
+                    label = "Handover",
+                    onClick = onHandover
+                )
+                
+                if (unreadNotesCount > 0) {
+                    Badge(
+                        containerColor = StatusError,
+                        modifier = Modifier
+                            .align(Alignment.TopEnd)
+                            .offset(x = (-4).dp, y = 4.dp)
+                    ) {
+                        Text("$unreadNotesCount")
+                    }
+                }
+            }
+            
             QuickActionButton(
                 icon = Icons.Filled.HistoryEdu,
                 label = "View Logs",
@@ -646,12 +726,6 @@ private fun QuickActionsRowSecurity(
                 icon = Icons.Filled.Assessment,
                 label = "Reports",
                 onClick = onReportsTap
-            )
-
-            QuickActionButton(
-                icon = Icons.Filled.Receipt,
-                label = "Manual Entry",
-                onClick = onManualEntry
             )
         }
     }

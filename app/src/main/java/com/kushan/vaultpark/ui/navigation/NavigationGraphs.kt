@@ -14,7 +14,10 @@ import com.kushan.vaultpark.ui.screens.InvoiceDetailsScreen
 import com.kushan.vaultpark.ui.screens.ProfileScreen
 import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
 import com.kushan.vaultpark.ui.screens.SecurityReportsScreen
+
 import com.kushan.vaultpark.ui.screens.SecurityHomeScreen
+import com.kushan.vaultpark.ui.screens.ActiveSessionsScreen
+import com.kushan.vaultpark.ui.screens.HandoverNotesScreen
 import com.kushan.vaultpark.ui.screens.notifications.NotificationsScreen
 import com.kushan.vaultpark.ui.screens.notifications.NotificationsViewModel
 import com.kushan.vaultpark.ui.screens.profile.ChangePasswordScreen
@@ -170,6 +173,14 @@ fun NavGraphBuilder.securityNavGraph(
                     navController.popBackStack()
                 }
             )
+        }
+        
+        composable(NavScreen.ActiveSessions.route) {
+            ActiveSessionsScreen()
+        }
+        
+        composable(NavScreen.HandoverNotes.route) {
+            HandoverNotesScreen()
         }
         
         composable(NavScreen.Profile.route) {

@@ -80,7 +80,10 @@ fun VaultParkApp(context: MainActivity) {
          currentRoute == NavScreen.Profile.route ||
          currentRoute == NavScreen.Scanner.route ||
          currentRoute == NavScreen.Logs.route ||
-         currentRoute == NavScreen.Reports.route)
+
+         currentRoute == NavScreen.Reports.route ||
+         currentRoute == NavScreen.HandoverNotes.route ||
+         currentRoute == NavScreen.Notifications.route)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -92,7 +95,9 @@ fun VaultParkApp(context: MainActivity) {
                 selectedItem = when (currentRoute) {
                     NavScreen.History.route, NavScreen.Logs.route -> BottomNavItem.History
                     NavScreen.Billing.route, NavScreen.Reports.route -> BottomNavItem.Billing
+
                     NavScreen.Profile.route -> BottomNavItem.Profile
+                    NavScreen.HandoverNotes.route, NavScreen.Notifications.route -> BottomNavItem.Handover
                     else -> BottomNavItem.Home // Home or Scanner
                 }
                 
@@ -104,7 +109,9 @@ fun VaultParkApp(context: MainActivity) {
                             BottomNavItem.Home -> if (currentUser?.role == UserRole.SECURITY) NavScreen.Scanner else NavScreen.Home
                             BottomNavItem.History -> if (currentUser?.role == UserRole.SECURITY) NavScreen.Logs else NavScreen.History
                             BottomNavItem.Billing -> if (currentUser?.role == UserRole.SECURITY) NavScreen.Reports else NavScreen.Billing
+
                             BottomNavItem.Profile -> NavScreen.Profile
+                            BottomNavItem.Handover -> if (currentUser?.role == UserRole.SECURITY) NavScreen.HandoverNotes else NavScreen.Notifications
                         }
                         navController.navigate(navScreen.route) {
                             popUpTo(navController.graph.startDestinationId) {
