@@ -12,8 +12,14 @@ object QRCodeUtils {
     /**
      * Generate a secure QR code string with format: VAULTPARK|[userId]|[timestamp]|[vehicleNumber]|[hash]
      */
-    fun generateQRCodeString(userId: String, vehicleNumber: String, timestamp: Long = System.currentTimeMillis()): String {
-        val dataToHash = "VAULTPARK|$userId|$timestamp|$vehicleNumber"
+    fun generateQRCodeString(
+        userId: String, 
+        vehicleNumber: String, 
+        timestamp: Long = System.currentTimeMillis(),
+        gateHint: String? = null
+    ): String {
+        val gateInfo = if (gateHint != null) "|$gateHint" else ""
+        val dataToHash = "VAULTPARK|$userId|$timestamp|$vehicleNumber$gateInfo"
         val hash = generateSecurityHash(dataToHash)
         return "$dataToHash|$hash"
     }

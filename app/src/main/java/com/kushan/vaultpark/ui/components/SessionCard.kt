@@ -42,16 +42,16 @@ import com.kushan.vaultpark.ui.theme.TextTertiaryDark
 import com.kushan.vaultpark.ui.utils.formatDate
 import com.kushan.vaultpark.ui.utils.formatTime
 import com.kushan.vaultpark.ui.utils.formatDuration
+import androidx.compose.foundation.background
+import androidx.compose.foundation.combinedClickable
 
-/**
- * SessionCard Component
- * Displays a single parking session for driver history
- */
+@OptIn(androidx.compose.foundation.ExperimentalFoundationApi::class)
 @Composable
 fun SessionCard(
     session: ParkingSession,
     modifier: Modifier = Modifier,
-    onCardClick: (ParkingSession) -> Unit = {}
+    onCardClick: (ParkingSession) -> Unit = {},
+    onLongPress: (ParkingSession) -> Unit = {}
 ) {
     val interactionSource = MutableInteractionSource()
 
@@ -62,12 +62,12 @@ fun SessionCard(
                 color = DarkSurface,
                 shape = MaterialTheme.shapes.medium
             )
-            .clickable(
+            .combinedClickable(
                 interactionSource = interactionSource,
-                indication = null
-            ) {
-                onCardClick(session)
-            }
+                indication = null,
+                onClick = { onCardClick(session) },
+                onLongClick = { onLongPress(session) }
+            )
             .padding(16.dp)
     ) {
         Column(

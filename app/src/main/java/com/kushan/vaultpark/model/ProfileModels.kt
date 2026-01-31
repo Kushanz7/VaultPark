@@ -20,6 +20,14 @@ data class UserPreferences(
     val language: String = "English",
     val scanSuccessSound: Boolean = true, // For security guards
     val vibrationFeedback: Boolean = true, // For security guards
+    
+    // Additional preferences
+    val enableDailyReminder: Boolean = false,
+    val reminderTime: String = "09:00", // HH:mm format
+    val defaultExportFormat: String = "CSV", // CSV, PDF
+    val enableWeeklySummary: Boolean = true,
+    val theme: String = "DARK", // DARK, LIGHT, AUTO
+
     @ServerTimestamp
     val updatedAt: Date? = null
 ) {
@@ -33,7 +41,12 @@ data class UserPreferences(
         "darkMode" to darkMode,
         "language" to language,
         "scanSuccessSound" to scanSuccessSound,
-        "vibrationFeedback" to vibrationFeedback
+        "vibrationFeedback" to vibrationFeedback,
+        "enableDailyReminder" to enableDailyReminder,
+        "reminderTime" to reminderTime,
+        "defaultExportFormat" to defaultExportFormat,
+        "enableWeeklySummary" to enableWeeklySummary,
+        "theme" to theme
     )
 }
 

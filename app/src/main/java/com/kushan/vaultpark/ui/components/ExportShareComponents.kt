@@ -224,6 +224,7 @@ private fun ExportOption(
 /**
  * Share Single Session Sheet
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareSessionSheet(
     session: ParkingSession,

@@ -52,24 +52,7 @@ data class User(
     )
 }
 
-// ✨ NEW: User Preferences Model
-@IgnoreExtraProperties
-data class UserPreferences(
-    val enableDailyReminder: Boolean = false,
-    val reminderTime: String = "09:00", // HH:mm format
-    val defaultExportFormat: String = "CSV", // CSV, PDF
-    val enableWeeklySummary: Boolean = true,
-    val theme: String = "DARK" // DARK, LIGHT, AUTO
-) {
-    @Exclude
-    fun toMap(): Map<String, Any> = mapOf(
-        "enableDailyReminder" to enableDailyReminder,
-        "reminderTime" to reminderTime,
-        "defaultExportFormat" to defaultExportFormat,
-        "enableWeeklySummary" to enableWeeklySummary,
-        "theme" to theme
-    )
-}
+// UserPreferences is defined in ProfileModels.kt
 
 // ============ ENHANCED PARKING SESSION MODEL ============
 @IgnoreExtraProperties
