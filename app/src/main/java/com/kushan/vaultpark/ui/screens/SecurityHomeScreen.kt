@@ -84,7 +84,7 @@ import androidx.compose.material.icons.filled.EventNote
 import android.content.Intent
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.material3.Badge
-import androidx.compose.ui.unit.offset
+import androidx.compose.foundation.layout.offset
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Calendar
