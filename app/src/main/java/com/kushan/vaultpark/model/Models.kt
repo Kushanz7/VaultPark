@@ -15,6 +15,7 @@ enum class SessionStatus {
     ACTIVE, COMPLETED
 }
 
+// ============ ENHANCED USER MODEL ============
 @IgnoreExtraProperties
 data class User(
     val id: String = "",
@@ -25,20 +26,52 @@ data class User(
     val vehicleNumber: String = "",
     val membershipType: String = "",
     @ServerTimestamp
-    val createdAt: Date? = null
+    val createdAt: Date? = null,
+    
+    // ✨ NEW: Favorite Gates Feature
+    val favoriteGate: String? = null,
+    val favoriteGateNote: String? = null,
+    val recentGates: List<String> = emptyList(), // Last 5 used gates
+    
+    // ✨ NEW: User Preferences
+    val preferences: UserPreferences = UserPreferences()
 ) {
     @Exclude
-    fun toMap(): Map<String, Any> = mapOf(
+    fun toMap(): Map<String, Any?> = mapOf(
         "id" to id,
         "name" to name,
         "email" to email,
         "phone" to phone,
         "role" to role.name,
         "vehicleNumber" to vehicleNumber,
-        "membershipType" to membershipType
+        "membershipType" to membershipType,
+        "favoriteGate" to favoriteGate,
+        "favoriteGateNote" to favoriteGateNote,
+        "recentGates" to recentGates,
+        "preferences" to preferences.toMap()
     )
 }
 
+// ✨ NEW: User Preferences Model
+@IgnoreExtraProperties
+data class UserPreferences(
+    val enableDailyReminder: Boolean = false,
+    val reminderTime: String = "09:00", // HH:mm format
+    val defaultExportFormat: String = "CSV", // CSV, PDF
+    val enableWeeklySummary: Boolean = true,
+    val theme: String = "DARK" // DARK, LIGHT, AUTO
+) {
+    @Exclude
+    fun toMap(): Map<String, Any> = mapOf(
+        "enableDailyReminder" to enableDailyReminder,
+        "reminderTime" to reminderTime,
+        "defaultExportFormat" to defaultExportFormat,
+        "enableWeeklySummary" to enableWeeklySummary,
+        "theme" to theme
+    )
+}
+
+// ============ ENHANCED PARKING SESSION MODEL ============
 @IgnoreExtraProperties
 data class ParkingSession(
     val id: String = "",
@@ -52,7 +85,13 @@ data class ParkingSession(
     val guardName: String? = null,
     val status: String = SessionStatus.ACTIVE.name,
     val qrCodeDataUsed: String = "",
-    val duration: String = ""
+    val duration: String = "",
+    
+    // ✨ NEW: Session Notes & Tags Feature
+    val notes: String = "",
+    val tags: List<String> = emptyList(), // Work, Personal, Meeting, Event, Other
+    @ServerTimestamp
+    val createdAt: Date? = null
 ) {
     @Exclude
     fun toMap(): Map<String, Any?> = mapOf(
@@ -67,9 +106,52 @@ data class ParkingSession(
         "guardName" to guardName,
         "status" to status,
         "qrCodeDataUsed" to qrCodeDataUsed,
-        "duration" to duration
+        "duration" to duration,
+        "notes" to notes,
+        "tags" to tags
     )
 }
+
+// ✨ NEW: Session Tag Enum
+enum class SessionTag(val displayName: String, val icon: String) {
+    WORK("Work", "💼"),
+    PERSONAL("Personal", "🏠"),
+    MEETING("Meeting", "🤝"),
+    EVENT("Event", "🎉"),
+    GYM("Gym", "💪"),
+    SHOPPING("Shopping", "🛍️"),
+    HOSPITAL("Hospital", "🏥"),
+    OTHER("Other", "📌");
+    
+    companion object {
+        fun fromString(value: String): SessionTag {
+            return values().find { it.name == value } ?: OTHER
+        }
+    }
+}
+
+// ============ GATE INFORMATION MODEL ============
+@IgnoreExtraProperties
+data class GateInfo(
+    val id: String = "",
+    val name: String = "",
+    val location: String = "",
+    val notes: String = "",
+    val isActive: Boolean = true,
+    val totalUsage: Int = 0
+) {
+    @Exclude
+    fun toMap(): Map<String, Any> = mapOf(
+        "id" to id,
+        "name" to name,
+        "location" to location,
+        "notes" to notes,
+        "isActive" to isActive,
+        "totalUsage" to totalUsage
+    )
+}
+
+// ============ EXISTING MODELS (UNCHANGED) ============
 
 data class Invoice(
     val id: String = "",
@@ -78,8 +160,6 @@ data class Invoice(
     val status: String = "",
     val createdDate: String = ""
 )
-
-// ============ BILLING MODELS ============
 
 @IgnoreExtraProperties
 data class InvoiceNew(
@@ -92,7 +172,7 @@ data class InvoiceNew(
     val totalHours: Double = 0.0,
     val totalAmount: Double = 0.0,
     val sessionIds: List<String> = emptyList(),
-    val status: String = "PENDING", // PENDING, PAID, OVERDUE
+    val status: String = "PENDING",
     @ServerTimestamp
     val generatedAt: Date? = null,
     val paidAt: Date? = null,
@@ -117,10 +197,10 @@ data class InvoiceNew(
 
 @IgnoreExtraProperties
 data class PricingTier(
-    val membershipType: String = "", // Gold, Platinum
+    val membershipType: String = "",
     val hourlyRate: Double = 5.0,
     val dailyCap: Double = 40.0,
-    val monthlyUnlimited: Double? = null // Only for Platinum
+    val monthlyUnlimited: Double? = null
 ) {
     @Exclude
     fun toMap(): Map<String, Any?> = mapOf(
@@ -135,9 +215,9 @@ data class PricingTier(
 data class PaymentMethod(
     val id: String = "",
     val userId: String = "",
-    val type: String = "", // CARD, BANK, WALLET
+    val type: String = "",
     val lastFourDigits: String = "",
-    val cardBrand: String? = null, // Visa, Mastercard, AmEx
+    val cardBrand: String? = null,
     val isDefault: Boolean = false
 ) {
     @Exclude
@@ -165,8 +245,6 @@ data class ParkingStatus(
     val location: String? = null
 )
 
-// ============ ANALYTICS & REPORTS MODELS ============
-
 data class ReportStats(
     val totalScans: Int = 0,
     val totalEntries: Int = 0,
@@ -183,7 +261,7 @@ data class HourlyData(
 )
 
 data class DailyTrendData(
-    val date: Long = 0, // Timestamp
+    val date: Long = 0,
     val scanCount: Int = 0
 )
 
@@ -193,4 +271,19 @@ data class TopDriver(
     val vehicleNumber: String = "",
     val visitCount: Int = 0,
     val totalHours: Double = 0.0
+)
+
+// ============ QUICK STATS MODEL ============
+// ✨ NEW: Personal Insights Data
+data class PersonalInsights(
+    val mostUsedGate: String = "",
+    val mostUsedGateCount: Int = 0,
+    val averageDuration: Double = 0.0, // in hours
+    val busiestDayOfWeek: String = "",
+    val totalHoursThisMonth: Double = 0.0,
+    val totalHoursLastMonth: Double = 0.0,
+    val totalAmountThisMonth: Double = 0.0,
+    val totalAmountLastMonth: Double = 0.0,
+    val favoriteTag: String = "",
+    val tagDistribution: Map<String, Int> = emptyMap()
 )
