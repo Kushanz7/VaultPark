@@ -112,9 +112,15 @@ class HistoryViewModel : ViewModel() {
                 )
                 
             } catch (e: Exception) {
+                val errorMsg = when {
+                    e.message?.contains("index", ignoreCase = true) == true -> {
+                        "Database index required. Run: ./gradlew deployFirestoreIndexes or check Firebase Console"
+                    }
+                    else -> "Failed to load sessions: ${e.message}"
+                }
                 _uiState.value = _uiState.value.copy(
                     isLoading = false,
-                    errorMessage = "Failed to load sessions: ${e.message}"
+                    errorMessage = errorMsg
                 )
             }
         }

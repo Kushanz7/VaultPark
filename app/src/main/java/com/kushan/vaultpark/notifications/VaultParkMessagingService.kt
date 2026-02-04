@@ -83,7 +83,7 @@ class VaultParkMessagingService : FirebaseMessagingService() {
             title = title,
             message = body,
             intent = intent,
-            smallIcon = R.drawable.ic_launcher_foreground,
+            smallIcon = R.drawable.logo,
             color = Color.parseColor("#7F00FF"), // PrimaryPurple
             data = data
         )
@@ -107,7 +107,7 @@ class VaultParkMessagingService : FirebaseMessagingService() {
             title = title,
             message = body,
             intent = intent,
-            smallIcon = R.drawable.ic_launcher_foreground,
+            smallIcon = R.drawable.logo,
             color = Color.parseColor("#7F00FF"),
             data = data
         )
@@ -131,7 +131,7 @@ class VaultParkMessagingService : FirebaseMessagingService() {
             title = title,
             message = body,
             intent = intent,
-            smallIcon = R.drawable.ic_launcher_foreground,
+            smallIcon = R.drawable.logo,
             color = Color.parseColor("#FCD34D"), // SecondaryGold
             data = data
         )
@@ -153,7 +153,7 @@ class VaultParkMessagingService : FirebaseMessagingService() {
             title = title,
             message = body,
             intent = intent,
-            smallIcon = R.drawable.ic_launcher_foreground,
+            smallIcon = R.drawable.logo,
             color = Color.parseColor("#4DA6FF"), // StatusInfo
             data = data
         )
@@ -175,7 +175,7 @@ class VaultParkMessagingService : FirebaseMessagingService() {
             title = title,
             message = body,
             intent = intent,
-            smallIcon = R.drawable.ic_launcher_foreground,
+            smallIcon = R.drawable.logo,
             color = android.graphics.Color.parseColor("#7C3AED"),
             data = data
         )

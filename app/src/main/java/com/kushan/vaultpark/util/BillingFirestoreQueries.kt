@@ -62,7 +62,13 @@ object BillingFirestoreQueries {
                 it.toObject(InvoiceNew::class.java)
             }
         } catch (e: Exception) {
-            Log.e(TAG, "Error fetching invoice history", e)
+            when {
+                e.message?.contains("index", ignoreCase = true) == true -> {
+                    Log.e(TAG, "⚠️ Firestore index required! Run: ./gradlew deployFirestoreIndexes", e)
+                    Log.e(TAG, "Or create index at Firebase Console: invoices (driverId ASC, generatedAt DESC)")
+                }
+                else -> Log.e(TAG, "Error fetching invoice history", e)
+            }
             emptyList()
         }
     }

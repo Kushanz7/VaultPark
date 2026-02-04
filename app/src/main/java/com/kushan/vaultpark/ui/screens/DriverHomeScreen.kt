@@ -98,6 +98,14 @@ fun DriverHomeScreen(
     val uiState by viewModel.uiState.collectAsState()
     var showSetFavoriteDialog by remember { mutableStateOf(false) }
 
+    // Fetch data on screen load
+    LaunchedEffect(Unit) {
+        val currentUser = FirebaseAuth.getInstance().currentUser
+        if (currentUser != null) {
+            viewModel.refreshAllData()
+        }
+    }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
