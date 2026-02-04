@@ -255,6 +255,22 @@ class BillingViewModel(
     }
     
     /**
+     * Fetch invoice by ID from Firestore
+     */
+    fun fetchInvoiceById(invoiceId: String) {
+        viewModelScope.launch {
+            try {
+                val invoice = BillingFirestoreQueries.fetchInvoiceById(invoiceId)
+                _uiState.value = _uiState.value.copy(selectedInvoice = invoice)
+            } catch (e: Exception) {
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to fetch invoice: ${e.message}"
+                )
+            }
+        }
+    }
+    
+    /**
      * Select an invoice for details view
      */
     fun selectInvoice(invoice: InvoiceNew) {

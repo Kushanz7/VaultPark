@@ -47,10 +47,6 @@ data class DriverHomeUiState(
     val error: String? = null,
     val isRefreshing: Boolean = false,
     
-    // ✨ NEW: Step 1 - Favorite Gates & Quick Access
-    val favoriteGate: String? = null,
-    val favoriteGateNote: String? = null,
-    val recentGates: List<String> = emptyList(),
     val lastThreeSessions: List<ParkingSession> = emptyList(),
     
     // ✨ NEW: Step 3 - Quick Actions Widget
@@ -94,8 +90,6 @@ class DriverHomeViewModel(
                 fetchRecentSessions(userId)
                 fetchMemberSinceDate(userId)
                 // ✨ NEW: Load enhanced features
-                loadFavoriteGate(userId)
-                loadRecentGates(userId)
                 loadQuickStats(userId)
                 loadPersonalInsights(userId)
             } else {
@@ -251,141 +245,6 @@ class DriverHomeViewModel(
         }
     }
 
-    // ============ ✨ NEW: STEP 1 - FAVORITE GATES FEATURES ============
-
-    private fun loadFavoriteGate(userId: String) {
-        viewModelScope.launch {
-            try {
-                val userDoc = db.collection("users").document(userId).get().await()
-                val favoriteGate = userDoc.getString("favoriteGate")
-                val favoriteGateNote = userDoc.getString("favoriteGateNote")
-                
-                _uiState.value = _uiState.value.copy(
-                    favoriteGate = favoriteGate,
-                    favoriteGateNote = favoriteGateNote
-                )
-            } catch (e: Exception) {
-                // Silently fail, not critical
-            }
-        }
-    }
-
-    private fun loadRecentGates(userId: String) {
-        viewModelScope.launch {
-            try {
-                val userDoc = db.collection("users").document(userId).get().await()
-                val recentGates = userDoc.get("recentGates") as? List<String> ?: emptyList()
-                
-                _uiState.value = _uiState.value.copy(recentGates = recentGates)
-            } catch (e: Exception) {
-                // Silently fail
-            }
-        }
-    }
-
-    fun setFavoriteGate(userId: String, gateName: String, note: String = "") {
-        viewModelScope.launch {
-            try {
-                db.collection("users").document(userId).update(
-                    mapOf(
-                        "favoriteGate" to gateName,
-                        "favoriteGateNote" to note
-                    )
-                ).await()
-                
-                _uiState.value = _uiState.value.copy(
-                    favoriteGate = gateName,
-                    favoriteGateNote = note
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(error = "Failed to set favorite gate: ${e.message}")
-            }
-        }
-    }
-
-    fun removeFavoriteGate(userId: String) {
-        viewModelScope.launch {
-            try {
-                db.collection("users").document(userId).update(
-                    mapOf(
-                        "favoriteGate" to null,
-                        "favoriteGateNote" to null
-                    )
-                ).await()
-                
-                _uiState.value = _uiState.value.copy(
-                    favoriteGate = null,
-                    favoriteGateNote = null
-                )
-            } catch (e: Exception) {
-                _uiState.value = _uiState.value.copy(error = "Failed to remove favorite gate")
-            }
-        }
-    }
-
-    fun addToRecentGates(userId: String, gateName: String) {
-        viewModelScope.launch {
-            try {
-                val currentRecent = _uiState.value.recentGates.toMutableList()
-                
-                // Remove if already exists
-                currentRecent.remove(gateName)
-                
-                // Add to front
-                currentRecent.add(0, gateName)
-                
-                // Keep only last 5
-                val updatedRecent = currentRecent.take(5)
-                
-                db.collection("users").document(userId).update(
-                    "recentGates", updatedRecent
-                ).await()
-                
-                _uiState.value = _uiState.value.copy(recentGates = updatedRecent)
-            } catch (e: Exception) {
-                // Silently fail
-            }
-        }
-    }
-
-    fun generateQRForFavoriteGate(): String {
-        val favoriteGate = _uiState.value.favoriteGate
-        if (favoriteGate == null) {
-            return generateQRCode() // Fallback to normal QR generation
-        }
-        
-        val userId = auth.currentUser?.uid ?: return ""
-        val user = _uiState.value.user ?: return ""
-        val timestamp = System.currentTimeMillis()
-        
-        // Generate QR code string with favorite gate info
-        val qrString = com.kushan.vaultpark.utils.QRCodeUtils.generateQRCodeString(
-            userId, 
-            user.vehicleNumber, 
-            timestamp,
-            gateHint = favoriteGate
-        )
-        
-        val bitmap = com.kushan.vaultpark.utils.QRCodeUtils.generateQRCodeBitmap(qrString, size = 512)
-        var imageUrl: String? = null
-        
-        if (bitmap != null) {
-            try {
-                val cacheDir = com.kushan.vaultpark.VaultParkApplication.instance.cacheDir
-                val file = File(cacheDir, "qr_code_${System.currentTimeMillis()}.png")
-                val outputStream = FileOutputStream(file)
-                bitmap.compress(Bitmap.CompressFormat.PNG, 100, outputStream)
-                outputStream.close()
-                imageUrl = "file://" + file.absolutePath
-            } catch (e: Exception) {
-                e.printStackTrace()
-            }
-        }
-        
-        _uiState.value = _uiState.value.copy(qrCodeData = qrString, qrCodeImageUrl = imageUrl)
-        return qrString
-    }
-
     // ============ ✨ NEW: STEP 3 - QUICK STATS WIDGET ============
 
     private fun loadQuickStats(userId: String) {
@@ -531,8 +390,6 @@ class DriverHomeViewModel(
                     loadUserData(userId)
                     fetchMonthlyStats(userId)
                     fetchRecentSessions(userId)
-                    loadFavoriteGate(userId)
-                    loadRecentGates(userId)
                     loadQuickStats(userId)
                     loadPersonalInsights(userId)
                     delay(500)

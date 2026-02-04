@@ -5,6 +5,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.compose.runtime.LaunchedEffect
 import com.kushan.vaultpark.model.InvoiceNew
 import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.ui.screens.BillingScreen
@@ -74,8 +75,17 @@ fun NavGraphBuilder.driverNavGraph(
         
         composable(NavScreen.BillingDetails.route) { backStackEntry ->
             val invoiceId = backStackEntry.arguments?.getString("invoiceId") ?: return@composable
+            val billingViewModel: com.kushan.vaultpark.viewmodel.BillingViewModel = viewModel()
+            
+            // Fetch the invoice by ID when screen loads
+            LaunchedEffect(invoiceId) {
+                billingViewModel.fetchInvoiceById(invoiceId)
+            }
+            
             InvoiceDetailsScreen(
-                invoice = InvoiceNew(id = invoiceId),
+                invoice = billingViewModel.uiState.value.selectedInvoice,
+                invoiceId = invoiceId,
+                billingViewModel = billingViewModel,
                 sessions = emptyList(),
                 onBackPressed = {
                     navController.popBackStack()

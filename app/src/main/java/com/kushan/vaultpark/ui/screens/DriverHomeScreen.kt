@@ -96,7 +96,7 @@ fun DriverHomeScreen(
     viewModel: DriverHomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    var showSetFavoriteDialog by remember { mutableStateOf(false) }
+
 
     // Fetch data on screen load
     LaunchedEffect(Unit) {
@@ -138,28 +138,7 @@ fun DriverHomeScreen(
 
             }
 
-            item {
-                // Favorite Gate Card
-                FavoriteGateCard(
-                    favoriteGate = uiState.favoriteGate,
-                    favoriteGateNote = uiState.favoriteGateNote,
-                    onSetFavorite = { showSetFavoriteDialog = true },
-                    onGenerateQRForFavorite = { viewModel.generateQRForFavoriteGate() }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
 
-            item {
-                // Recent Gates
-                RecentGatesRow(
-                    recentGates = uiState.recentGates,
-                    onGateClick = { gate ->
-                        // In a real app, this might pre-fill the QR generator or start a flow
-                        // For now we can just show a toast or log it, or perhaps set it as favorite
-                    }
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-            }
 
             item {
                 // Quick Stats Widget
@@ -196,23 +175,7 @@ fun DriverHomeScreen(
         }
     }
 
-    // Set Favorite Gate Dialog
-    if (showSetFavoriteDialog) {
-        val userId = FirebaseAuth.getInstance().currentUser?.uid
-        SetFavoriteGateDialog(
-            currentFavorite = uiState.favoriteGate,
-            currentNote = uiState.favoriteGateNote,
-            onDismiss = { showSetFavoriteDialog = false },
-            onConfirm = { gate, note ->
-                if (userId != null) {
-                    viewModel.setFavoriteGate(userId, gate, note)
-                }
-            },
-            onRemoveFavorite = if (uiState.favoriteGate != null) {
-                { if (userId != null) viewModel.removeFavoriteGate(userId) }
-            } else null
-        )
-    }
+
 
     // QR Code Dialog
     if (uiState.isShowQRDialog) {

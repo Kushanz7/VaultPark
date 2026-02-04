@@ -212,6 +212,22 @@ object BillingFirestoreQueries {
     }
     
     /**
+     * Fetch invoice by ID
+     */
+    suspend fun fetchInvoiceById(invoiceId: String): InvoiceNew? {
+        return try {
+            db.collection("invoices")
+                .document(invoiceId)
+                .get()
+                .await()
+                .toObject(InvoiceNew::class.java)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error fetching invoice by ID", e)
+            null
+        }
+    }
+    
+    /**
      * Delete a payment method
      */
     suspend fun deletePaymentMethod(userId: String, methodId: String): Result<Unit> {

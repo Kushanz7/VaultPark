@@ -208,7 +208,11 @@ fun BillingScreen(
                     item {
                         CurrentMonthCard(
                             invoice = currentInvoice,
-                            pricingTier = pricingTier
+                            pricingTier = pricingTier,
+                            onTap = {
+                                viewModel.selectInvoice(currentInvoice)
+                                onInvoiceSelected?.invoke(currentInvoice.id)
+                            }
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                     }
@@ -292,7 +296,8 @@ fun BillingScreen(
 @Composable
 private fun CurrentMonthCard(
     invoice: com.kushan.vaultpark.model.InvoiceNew,
-    pricingTier: com.kushan.vaultpark.model.PricingTier?
+    pricingTier: com.kushan.vaultpark.model.PricingTier?,
+    onTap: () -> Unit = {}
 ) {
     val monthName = getMonthName(invoice.month)
     val animatedAmount by animateFloatAsState(
@@ -312,6 +317,7 @@ private fun CurrentMonthCard(
                 ),
                 shape = RoundedCornerShape(28.dp)
             )
+            .clickable { onTap() }
             .padding(24.dp)
     ) {
         // Header

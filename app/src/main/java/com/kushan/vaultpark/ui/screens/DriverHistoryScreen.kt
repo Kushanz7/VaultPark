@@ -156,7 +156,7 @@ fun DriverHistoryScreen(
                             )
                             StatCard(
                                 icon = Icons.Default.Timer,
-                                value = "${uiState.totalHours}h",
+                                value = String.format("%.1f", uiState.totalHours) + "h",
                                 label = "Total Hours",
                                 modifier = Modifier.weight(1f)
                             )
@@ -176,7 +176,7 @@ fun DriverHistoryScreen(
                 MindMirrorCard(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(horizontal = 0.dp)
+                        .padding(horizontal = 16.dp)
                 ) {
                     Column(
                         modifier = Modifier.fillMaxWidth(),
@@ -214,11 +214,17 @@ fun DriverHistoryScreen(
 
             // Tag Filter Row
             item {
-                TagFilterRow(
-                    selectedTags = uiState.selectedTags,
-                    onTagSelected = { tag -> viewModel.toggleTagFilter(tag) },
-                    onClearFilters = { viewModel.clearTagFilters() }
-                )
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(horizontal = 16.dp)
+                ) {
+                    TagFilterRow(
+                        selectedTags = uiState.selectedTags,
+                        onTagSelected = { tag -> viewModel.toggleTagFilter(tag) },
+                        onClearFilters = { viewModel.clearTagFilters() }
+                    )
+                }
                 Spacer(modifier = Modifier.height(16.dp))
             }
 
