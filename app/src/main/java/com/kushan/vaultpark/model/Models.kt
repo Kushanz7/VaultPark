@@ -61,6 +61,7 @@ data class ParkingSession(
     val driverId: String = "",
     val driverName: String = "",
     val vehicleNumber: String = "",
+    val parkingLotId: String = "", // NEW: Reference to parking lot
     val entryTime: Long = 0L,
     val exitTime: Long? = null,
     val gateLocation: String = "",
@@ -87,6 +88,7 @@ data class ParkingSession(
         "driverId" to driverId,
         "driverName" to driverName,
         "vehicleNumber" to vehicleNumber,
+        "parkingLotId" to parkingLotId,
         "entryTime" to entryTime,
         "exitTime" to exitTime,
         "gateLocation" to gateLocation,
@@ -277,3 +279,37 @@ data class PersonalInsights(
     val favoriteTag: String = "",
     val tagDistribution: Map<String, Int> = emptyMap()
 )
+
+// ============ PARKING LOT MODEL ============
+// 🅿️ NEW: Parking Lot managed by Security Guards
+@IgnoreExtraProperties
+data class ParkingLot(
+    val id: String = "",
+    val securityGuardId: String = "", // One parking lot per security guard
+    val securityGuardName: String = "",
+    val name: String = "", // e.g., "Building A Parking", "Main Gate Lot"
+    val location: String = "", // Address or description
+    val totalSpaces: Int = 0, // Total parking spaces available
+    val availableSpaces: Int = 0, // Available spaces now
+    val hourlyRate: Double = 0.0, // Hourly parking rate in dollars
+    val dailyCap: Double? = null, // Maximum daily charge
+    val status: String = "ACTIVE", // ACTIVE, INACTIVE
+    @ServerTimestamp
+    val createdAt: Date? = null,
+    @ServerTimestamp
+    val updatedAt: Date? = null
+) {
+    @Exclude
+    fun toMap(): Map<String, Any?> = mapOf(
+        "id" to id,
+        "securityGuardId" to securityGuardId,
+        "securityGuardName" to securityGuardName,
+        "name" to name,
+        "location" to location,
+        "totalSpaces" to totalSpaces,
+        "availableSpaces" to availableSpaces,
+        "hourlyRate" to hourlyRate,
+        "dailyCap" to dailyCap,
+        "status" to status
+    )
+}

@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.HistoryEdu
 import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.LocalParking
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Refresh
@@ -97,6 +98,7 @@ fun SecurityHomeScreen(
     onNavigateToReports: () -> Unit = {},
     onNavigateToActiveSessions: () -> Unit = {},
     onNavigateToHandover: () -> Unit = {},
+    onNavigateToParkingLot: () -> Unit = {},
     viewModel: SecurityHomeViewModel = viewModel(),
     adminViewModel: AdminToolsViewModel = viewModel()
 ) {
@@ -187,6 +189,7 @@ fun SecurityHomeScreen(
                     onManualEntry = { showManualEntryDialog = true },
                     onActiveSessions = onNavigateToActiveSessions,
                     onHandover = onNavigateToHandover,
+                    onParkingLot = onNavigateToParkingLot,
                     unreadNotesCount = adminState.unreadNotesCount
                 )
 
@@ -661,6 +664,7 @@ private fun QuickActionsRowSecurity(
     onManualEntry: () -> Unit,
     onActiveSessions: () -> Unit,
     onHandover: () -> Unit,
+    onParkingLot: () -> Unit,
     unreadNotesCount: Int = 0
 ) {
     Column(
@@ -695,6 +699,12 @@ private fun QuickActionsRowSecurity(
                 icon = Icons.Filled.ManageAccounts,
                 label = "Active Sessions",
                 onClick = onActiveSessions
+            )
+            
+            QuickActionButton(
+                icon = Icons.Filled.LocalParking,
+                label = "Parking Lot",
+                onClick = onParkingLot
             )
             
             Box {

@@ -146,6 +146,22 @@ fun NavGraphBuilder.driverNavGraph(
                 }
             )
         }
+        
+        composable(NavScreen.ParkingLotSelection.route) {
+            val parkingLotViewModel: com.kushan.vaultpark.viewmodel.ParkingLotViewModel = viewModel()
+            val homeViewModel: com.kushan.vaultpark.viewmodel.DriverHomeViewModel = viewModel()
+            
+            com.kushan.vaultpark.ui.screens.ParkingLotSelectionScreen(
+                viewModel = parkingLotViewModel,
+                onParkingLotSelected = { lot ->
+                    homeViewModel.setSelectedParkingLot(lot.id, lot.name)
+                    navController.popBackStack()
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
     }
 }
 
@@ -165,7 +181,10 @@ fun NavGraphBuilder.securityNavGraph(
         composable(NavScreen.Scanner.route) {
             SecurityHomeScreen(
                 onNavigateToLogs = { navController.navigate(NavScreen.Logs.route) },
-                onNavigateToReports = { navController.navigate(NavScreen.Reports.route) }
+                onNavigateToReports = { navController.navigate(NavScreen.Reports.route) },
+                onNavigateToActiveSessions = { navController.navigate(NavScreen.ActiveSessions.route) },
+                onNavigateToHandover = { navController.navigate(NavScreen.HandoverNotes.route) },
+                onNavigateToParkingLot = { navController.navigate(NavScreen.SecurityGuardParkingLot.route) }
             )
         }
         
@@ -243,6 +262,18 @@ fun NavGraphBuilder.securityNavGraph(
                     navController.navigate(NavScreen.Login.route) {
                         popUpTo(SECURITY_GRAPH) { inclusive = true }
                     }
+                }
+            )
+        }
+        
+        composable(NavScreen.SecurityGuardParkingLot.route) {
+            val parkingLotViewModel: com.kushan.vaultpark.viewmodel.ParkingLotViewModel = viewModel()
+            com.kushan.vaultpark.ui.screens.SecurityGuardParkingLotScreen(
+                guardId = currentUser?.id ?: "",
+                guardName = currentUser?.name ?: "Security Guard",
+                viewModel = parkingLotViewModel,
+                onBackClick = {
+                    navController.popBackStack()
                 }
             )
         }

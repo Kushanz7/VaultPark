@@ -53,7 +53,11 @@ data class DriverHomeUiState(
     val quickStats: QuickStats = QuickStats(),
     
     // ✨ NEW: Personal Insights
-    val personalInsights: PersonalInsights = PersonalInsights()
+    val personalInsights: PersonalInsights = PersonalInsights(),
+    
+    // ✨ NEW: Parking Lot Info
+    val selectedParkingLotId: String = "",
+    val selectedParkingLotName: String = ""
 )
 
 // ✨ NEW: Quick Stats for Home Screen Widget
@@ -340,8 +344,14 @@ class DriverHomeViewModel(
         val userId = auth.currentUser?.uid ?: return ""
         val user = _uiState.value.user ?: return ""
         val timestamp = System.currentTimeMillis()
+        val parkingLotId = _uiState.value.selectedParkingLotId.ifEmpty { null }
         
-        val qrString = com.kushan.vaultpark.utils.QRCodeUtils.generateQRCodeString(userId, user.vehicleNumber, timestamp)
+        val qrString = com.kushan.vaultpark.utils.QRCodeUtils.generateQRCodeString(
+            userId, 
+            user.vehicleNumber, 
+            timestamp,
+            parkingLotId = parkingLotId
+        )
         
         val bitmap = com.kushan.vaultpark.utils.QRCodeUtils.generateQRCodeBitmap(qrString, size = 512)
         var imageUrl: String? = null
@@ -379,6 +389,13 @@ class DriverHomeViewModel(
 
     fun hideQRDialog() {
         _uiState.value = _uiState.value.copy(isShowQRDialog = false, qrCodeData = "")
+    }
+    
+    fun setSelectedParkingLot(lotId: String, lotName: String) {
+        _uiState.value = _uiState.value.copy(
+            selectedParkingLotId = lotId,
+            selectedParkingLotName = lotName
+        )
     }
 
     fun refreshAllData() {

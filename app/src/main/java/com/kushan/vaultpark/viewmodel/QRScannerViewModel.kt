@@ -48,6 +48,12 @@ class QRScannerViewModel(
     val recentScans: StateFlow<List<ParkingSession>> = _recentScans.asStateFlow()
     
     private val _isFlashEnabled = MutableStateFlow(false)
+    
+    private val _selectedParkingLotId = MutableStateFlow("")
+    val selectedParkingLotId: StateFlow<String> = _selectedParkingLotId.asStateFlow()
+    
+    private val _selectedParkingLotName = MutableStateFlow("")
+    val selectedParkingLotName: StateFlow<String> = _selectedParkingLotName.asStateFlow()
     val isFlashEnabled: StateFlow<Boolean> = _isFlashEnabled.asStateFlow()
     
     private var lastScannedQR: String? = null
@@ -56,6 +62,11 @@ class QRScannerViewModel(
     
     fun setSelectedGate(gate: String) {
         _selectedGate.value = gate
+    }
+    
+    fun setSelectedParkingLot(lotId: String, lotName: String) {
+        _selectedParkingLotId.value = lotId
+        _selectedParkingLotName.value = lotName
     }
     
     fun toggleFlash() {
@@ -144,6 +155,7 @@ class QRScannerViewModel(
                 vehicleNumber = parsedQR.vehicleNumber,
                 entryTime = System.currentTimeMillis(),
                 gateLocation = _selectedGate.value,
+                parkingLotId = _selectedParkingLotId.value,
                 scannedByGuardId = currentGuardId,
                 guardName = guardName,
                 qrCodeDataUsed = qrCodeData,

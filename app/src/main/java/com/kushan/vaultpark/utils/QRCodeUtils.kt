@@ -10,16 +10,18 @@ import kotlin.math.abs
 object QRCodeUtils {
     
     /**
-     * Generate a secure QR code string with format: VAULTPARK|[userId]|[timestamp]|[vehicleNumber]|[hash]
+     * Generate a secure QR code string with format: VAULTPARK|[userId]|[timestamp]|[vehicleNumber]|[parkingLotId]|[hash]
      */
     fun generateQRCodeString(
         userId: String, 
         vehicleNumber: String, 
         timestamp: Long = System.currentTimeMillis(),
-        gateHint: String? = null
+        gateHint: String? = null,
+        parkingLotId: String? = null
     ): String {
         val gateInfo = if (gateHint != null) "|$gateHint" else ""
-        val dataToHash = "VAULTPARK|$userId|$timestamp|$vehicleNumber$gateInfo"
+        val lotInfo = if (parkingLotId != null) "|$parkingLotId" else ""
+        val dataToHash = "VAULTPARK|$userId|$timestamp|$vehicleNumber$gateInfo$lotInfo"
         val hash = generateSecurityHash(dataToHash)
         return "$dataToHash|$hash"
     }

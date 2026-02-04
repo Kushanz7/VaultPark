@@ -328,6 +328,7 @@ class FirestoreRepository(
         driverName: String,
         vehicleNumber: String,
         gateLocation: String,
+        parkingLotId: String = "",
         qrCodeData: String = ""
     ): Result<String> = try {
         val docRef = db.collection("parkingSessions").document()
@@ -338,6 +339,7 @@ class FirestoreRepository(
             vehicleNumber = vehicleNumber,
             entryTime = System.currentTimeMillis(),
             gateLocation = gateLocation,
+            parkingLotId = parkingLotId,
             status = SessionStatus.ACTIVE.name,
             qrCodeDataUsed = qrCodeData
         )

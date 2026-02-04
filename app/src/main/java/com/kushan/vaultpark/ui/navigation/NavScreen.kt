@@ -15,12 +15,14 @@ sealed class NavScreen(val route: String) {
     data object Notifications : NavScreen("notifications")
     data object ChangePassword : NavScreen("change_password")
     data object DriverProfile : NavScreen("driver_profile")
+    data object ParkingLotSelection : NavScreen("parking_lot_selection")
     
     // Security Screens
     data object Scanner : NavScreen("scanner")
     data object Logs : NavScreen("logs")
     data object Reports : NavScreen("reports")
     data object SecurityProfile : NavScreen("security_profile")
+    data object SecurityGuardParkingLot : NavScreen("security_guard_parking_lot")
     
     // New Admin Tools
     data object ActiveSessions : NavScreen("active_sessions")
