@@ -31,6 +31,9 @@ import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -72,6 +75,7 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SecurityReportsScreen(
     viewModel: ReportsViewModel = viewModel(),
@@ -116,15 +120,24 @@ fun SecurityReportsScreen(
         containerColor = DarkBackground,
         contentColor = TextLight
     ) { paddingValues ->
-        LazyColumn(
+        val refreshState = rememberPullToRefreshState()
+        
+        PullToRefreshBox(
+            isRefreshing = isLoading,
+            onRefresh = { viewModel.refreshData() },
+            state = refreshState,
             modifier = Modifier
                 .fillMaxSize()
-                .background(DarkBackground)
                 .padding(paddingValues)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(DarkBackground)
+                    .padding(horizontal = 16.dp),
+                verticalArrangement = Arrangement.spacedBy(16.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
             // Header Section
             item {
                 Spacer(modifier = Modifier.height(8.dp))
@@ -403,5 +416,6 @@ fun SecurityReportsScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
+    }
     }
 }

@@ -14,7 +14,9 @@ import com.kushan.vaultpark.ui.screens.DriverHomeScreen
 import com.kushan.vaultpark.ui.screens.InvoiceDetailsScreen
 import com.kushan.vaultpark.ui.screens.ProfileScreen
 import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
+import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
 import com.kushan.vaultpark.ui.screens.SecurityReportsScreen
+import com.kushan.vaultpark.ui.screens.admin.AdminOverdueScreen
 
 import com.kushan.vaultpark.ui.screens.SecurityHomeScreen
 import com.kushan.vaultpark.ui.screens.ActiveSessionsScreen
@@ -185,7 +187,8 @@ fun NavGraphBuilder.securityNavGraph(
                 onNavigateToActiveSessions = { navController.navigate(NavScreen.ActiveSessions.route) },
                 onNavigateToHandover = { navController.navigate(NavScreen.HandoverNotes.route) },
                 onNavigateToParkingLot = { navController.navigate(NavScreen.SecurityGuardParkingLot.route) },
-                onNavigateToManageUsers = { navController.navigate(NavScreen.ManageUsers.route) }
+                onNavigateToManageUsers = { navController.navigate(NavScreen.ManageUsers.route) },
+                onNavigateToOverdue = { navController.navigate(NavScreen.Overdue.route) }
             )
         }
         
@@ -215,6 +218,14 @@ composable(NavScreen.HandoverNotes.route) {
         
         composable(NavScreen.ManageUsers.route) {
             ManageUsersScreen()
+        }
+
+        composable(NavScreen.Overdue.route) {
+            AdminOverdueScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                }
+            )
         }
         
         composable(NavScreen.Profile.route) {

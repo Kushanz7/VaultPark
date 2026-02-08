@@ -22,8 +22,22 @@ import androidx.compose.material.icons.filled.Timer
 import androidx.compose.material.icons.filled.LocalOffer
 import androidx.compose.material.icons.filled.FileDownload
 import kotlinx.coroutines.delay
-import com.kushan.vaultpark.ui.components.*
+import com.kushan.vaultpark.ui.components.FilterChip
+import com.kushan.vaultpark.ui.components.SessionCard
+import com.kushan.vaultpark.ui.components.SessionDetailBottomSheet
+import com.kushan.vaultpark.ui.components.ShimmerCard
+import com.kushan.vaultpark.ui.components.StatCard
+import com.kushan.vaultpark.ui.components.StatsCardContainer
+import com.kushan.vaultpark.ui.components.MindMirrorCard
+import com.kushan.vaultpark.ui.components.MindMirrorCardElevated
+import com.kushan.vaultpark.ui.components.TagFilterRow
+import com.kushan.vaultpark.ui.components.MonthlyCategorySummaryCard
+import com.kushan.vaultpark.ui.components.ExportOptionsDialog
+import com.kushan.vaultpark.ui.components.AddSessionNotesDialog
+import com.kushan.vaultpark.ui.components.ShareSessionSheet
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -49,14 +63,6 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.google.firebase.auth.FirebaseAuth
 import com.kushan.vaultpark.model.ParkingSession
-import com.kushan.vaultpark.ui.components.FilterChip
-import com.kushan.vaultpark.ui.components.SessionCard
-import com.kushan.vaultpark.ui.components.SessionDetailBottomSheet
-import com.kushan.vaultpark.ui.components.ShimmerCard
-import com.kushan.vaultpark.ui.components.StatCard
-import com.kushan.vaultpark.ui.components.StatsCardContainer
-import com.kushan.vaultpark.ui.components.MindMirrorCard
-import com.kushan.vaultpark.ui.components.MindMirrorCardElevated
 import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.TextLight
@@ -125,13 +131,27 @@ fun DriverHistoryScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues),
-            contentPadding = PaddingValues(bottom = 20.dp)
-        ) {
+            val refreshState = rememberPullToRefreshState()
+            
+            PullToRefreshBox(
+                isRefreshing = uiState.isLoading,
+                onRefresh = { 
+                    if (currentUser != null) {
+                        viewModel.fetchParkingSessions(currentUser.uid)
+                    }
+                },
+                state = refreshState,
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+            ) {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(MaterialTheme.colorScheme.background)
+                        .padding(bottom = 20.dp),
+                    contentPadding = PaddingValues(bottom = 20.dp)
+                ) {
             // Stats Card
             item {
                 MindMirrorCardElevated(
@@ -197,7 +217,7 @@ fun DriverHistoryScreen(
                         ) {
                             HistoryViewModel.DateFilter.values().forEach { filter ->
                                 FilterChip(
-                                    label = filter.displayName,
+                                    label = filter.getDisplayName(),
                                     isSelected = filter == uiState.selectedFilter,
                                     onClick = {
                                         viewModel.fetchParkingSessions(
@@ -245,7 +265,7 @@ fun DriverHistoryScreen(
                 }
             } else if (uiState.filteredSessions.isEmpty() && uiState.parkingSessions.isEmpty()) {
                 item {
-                    EmptyState(
+                    HistoryEmptyState(
                         title = "No Parking History",
                         description = "You haven't parked yet. Start parking to see your history here.",
                         icon = "🅿️"
@@ -253,7 +273,7 @@ fun DriverHistoryScreen(
                 }
             } else if (uiState.filteredSessions.isEmpty() && uiState.parkingSessions.isNotEmpty()) {
                 item {
-                    EmptyState(
+                    HistoryEmptyState(
                         title = "No Matches",
                         description = "No sessions match your selected filters.",
                         icon = "🔍"
@@ -321,6 +341,7 @@ fun DriverHistoryScreen(
                     }
                 }
             }
+            }
         }
     }
 
@@ -371,7 +392,7 @@ fun DriverHistoryScreen(
 }
 
 @Composable
-fun EmptyState(
+fun HistoryEmptyState(
     title: String,
     description: String,
     icon: String = ""
@@ -410,9 +431,8 @@ fun EmptyState(
 }
 
 // Extension for filter display name
-val HistoryViewModel.DateFilter.displayName: String
-    get() = when (this) {
-        HistoryViewModel.DateFilter.ALL -> "All"
-        HistoryViewModel.DateFilter.THIS_MONTH -> "This Month"
-        HistoryViewModel.DateFilter.LAST_MONTH -> "Last Month"
-    }
+fun HistoryViewModel.DateFilter.getDisplayName(): String = when (this) {
+    HistoryViewModel.DateFilter.ALL -> "All"
+    HistoryViewModel.DateFilter.THIS_MONTH -> "This Month"
+    HistoryViewModel.DateFilter.LAST_MONTH -> "Last Month"
+}

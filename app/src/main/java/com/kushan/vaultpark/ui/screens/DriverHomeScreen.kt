@@ -41,7 +41,10 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -114,10 +117,17 @@ fun DriverHomeScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
+        val refreshState = rememberPullToRefreshState()
+        
+        PullToRefreshBox(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = { viewModel.refreshAllData() },
+            state = refreshState,
+            modifier = Modifier.fillMaxSize()
         ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
             item {
                 // Welcome Header
                 DriverWelcomeHeader(
@@ -139,6 +149,10 @@ fun DriverHomeScreen(
                     onGenerateQR = { viewModel.showQRDialog() }
                 )
 
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(16.dp))
             }
 
 
@@ -172,14 +186,12 @@ fun DriverHomeScreen(
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-
-        // Error Banner
-        if (uiState.error != null) {
-            OfflineBannerComponent()
-        }
     }
 
-
+    // Error Banner
+    if (uiState.error != null) {
+        OfflineBannerComponent()
+    }
 
     // QR Code Dialog
     if (uiState.isShowQRDialog) {
@@ -190,13 +202,14 @@ fun DriverHomeScreen(
             onRegenerateQR = { viewModel.generateQRCode() }
         )
     }
+    }
 }
 
 /**
  * Welcome Header with gradient background
  */
 @Composable
-private fun DriverWelcomeHeader(
+fun DriverWelcomeHeader(
     userName: String,
     vehicleNumber: String,
     membershipType: String
@@ -259,7 +272,7 @@ private fun DriverWelcomeHeader(
  * Membership Badge Pill
  */
 @Composable
-private fun MembershipBadgePill(membershipType: String) {
+fun MembershipBadgePill(membershipType: String) {
     val badgeColor = when (membershipType?.uppercase()) {
         "PLATINUM" -> SecondaryGold
         "GOLD" -> Color(0xFFFF9800)
@@ -295,7 +308,7 @@ private fun MembershipBadgePill(membershipType: String) {
  * Active Parking Status Card
  */
 @Composable
-private fun ActiveParkingCard(
+fun ActiveParkingCard(
     isParked: Boolean,
     gateLocation: String,
     entryTime: Long,
@@ -456,7 +469,7 @@ private fun ActiveParkingCard(
  * Quick Stats Grid (2x2)
  */
 @Composable
-private fun QuickStatsGrid(
+fun QuickStatsGrid(
     sessionsCount: String,
     totalHours: String,
     monthlyAmount: String,
@@ -518,7 +531,7 @@ private fun QuickStatsGrid(
  * Recent Activity Section
  */
 @Composable
-private fun RecentActivitySection(
+fun RecentActivitySection(
     sessions: List<com.kushan.vaultpark.model.ParkingSession>,
     onViewAll: () -> Unit
 ) {
@@ -577,7 +590,7 @@ private fun RecentActivitySection(
  * Quick Actions Row
  */
 @Composable
-private fun QuickActionsRow(
+fun QuickActionsRow(
     onFindParkingTap: () -> Unit,
     onBillingTap: () -> Unit,
     onHistoryTap: () -> Unit,
@@ -635,7 +648,7 @@ private fun QuickActionsRow(
  * Pulsing Dot Animation
  */
 @Composable
-private fun PulsingDot() {
+fun PulsingDot() {
     val infiniteTransition = rememberInfiniteTransition(label = "pulse")
     val scale by infiniteTransition.animateFloat(
         initialValue = 1f,
@@ -674,13 +687,14 @@ private fun formatDuration(minutes: Long): String {
     return "${hours}h ${mins}m"
 }
 
-private fun formatSessionDuration(entryTime: Long, exitTime: Long?): String {
+fun formatSessionDuration(entryTime: Long, exitTime: Long?): String {
     val duration = ((exitTime ?: System.currentTimeMillis()) - entryTime) / (1000 * 60)
     return "${duration / 60}h ${duration % 60}m"
 }
 
-private fun formatBillingAmount(entryTime: Long, exitTime: Long?): String {
+fun formatBillingAmount(entryTime: Long, exitTime: Long?): String {
     val durationHours = ((exitTime ?: System.currentTimeMillis()) - entryTime) / (1000.0 * 60 * 60)
     val amount = durationHours * 50.0 // $50 per hour
+    return "$" + String.format("%.2f", amount)
     return "$" + String.format("%.2f", amount)
 }

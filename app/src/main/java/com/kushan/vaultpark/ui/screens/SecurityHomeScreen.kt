@@ -45,6 +45,8 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -154,10 +156,17 @@ fun SecurityHomeScreen(
             .fillMaxSize()
             .background(MaterialTheme.colorScheme.background)
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxSize()
+        val refreshState = rememberPullToRefreshState()
+
+        PullToRefreshBox(
+            isRefreshing = uiState.isRefreshing,
+            onRefresh = { viewModel.refreshAllData() },
+            state = refreshState,
+            modifier = Modifier.fillMaxSize()
         ) {
+            LazyColumn(
+                modifier = Modifier.fillMaxSize()
+            ) {
             item {
                 // Guard Header
                 GuardDashboardHeader(
@@ -252,12 +261,13 @@ fun SecurityHomeScreen(
                 Spacer(modifier = Modifier.height(32.dp))
             }
         }
-
-        // Error Banner
-        if (uiState.error != null) {
-            OfflineBannerComponent()
-        }
     }
+
+    // Error Banner
+    if (uiState.error != null) {
+        OfflineBannerComponent()
+    }
+}
 
     // Scanner Bottom Sheet
     if (uiState.isShowScannerDialog) {
@@ -325,7 +335,7 @@ fun SecurityHomeScreen(
  * Guard Dashboard Header with gradient background
  */
 @Composable
-private fun GuardDashboardHeader(
+fun GuardDashboardHeader(
     guardName: String,
     gateLocation: String,
     currentTime: String
@@ -405,7 +415,7 @@ private fun GuardDashboardHeader(
  * Scan Action Hero Card
  */
 @Composable
-private fun ScanActionCard(onOpenScanner: () -> Unit) {
+fun ScanActionCard(onOpenScanner: () -> Unit) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -472,7 +482,7 @@ private fun ScanActionCard(onOpenScanner: () -> Unit) {
  * Today's Statistics Grid (2x2)
  */
 @Composable
-private fun TodayStatsGrid(
+fun TodayStatsGrid(
     totalScans: String,
     activeCount: String,
     entries: String,
@@ -493,9 +503,7 @@ private fun TodayStatsGrid(
                 icon = Icons.Filled.QrCode,
                 value = totalScans,
                 label = "Scans Today",
-                valueColor = RoleTheme.securityColor,
-                trend = "↑ 5 from yesterday",
-                trendColor = StatusActive
+                valueColor = RoleTheme.securityColor
             )
 
             PulsingStatCard(
@@ -532,7 +540,7 @@ private fun TodayStatsGrid(
  * Pulsing Stat Card for active cars
  */
 @Composable
-private fun PulsingStatCard(
+fun PulsingStatCard(
     modifier: Modifier = Modifier,
     value: String,
     label: String
@@ -591,7 +599,7 @@ private fun PulsingStatCard(
  * Activity Chart Section
  */
 @Composable
-private fun ActivityChartSection(
+fun ActivityChartSection(
     hourlyData: List<com.kushan.vaultpark.viewmodel.HourlyActivityData>
 ) {
     Column(
@@ -627,7 +635,7 @@ private fun ActivityChartSection(
                 ) {
                     val maxScans = (hourlyData.maxOfOrNull { it.scans } ?: 1).coerceAtLeast(1)
                     hourlyData.forEach { data ->
-                        val barHeight = ((data.scans.toFloat() / maxScans) * 120f).dp
+                        val barHeight = ((data.scans.toFloat() / maxScans) * 120f).coerceAtLeast(4f).dp
                         Column(
                             modifier = Modifier
                                 .weight(1f)
@@ -664,7 +672,7 @@ private fun ActivityChartSection(
  * Recent Scans Section
  */
 @Composable
-private fun RecentScansSection(
+fun RecentScansSection(
     scans: List<com.kushan.vaultpark.model.ParkingSession>,
     onViewAll: () -> Unit
 ) {
@@ -723,7 +731,7 @@ private fun RecentScansSection(
  * Quick Actions Row for Security
  */
 @Composable
-private fun QuickActionsRowSecurity(
+fun QuickActionsRowSecurity(
     onLogsTap: () -> Unit,
     onReportsTap: () -> Unit,
     onManualEntry: () -> Unit,
@@ -821,12 +829,12 @@ private fun QuickActionsRowSecurity(
 }
 
 // Utility Functions
-private fun getCurrentTime(): String {
+fun getCurrentTime(): String {
     val sdf = SimpleDateFormat("h:mm a", Locale.getDefault())
     return sdf.format(java.util.Date())
 }
 
-private fun formatTimestamp(timeMillis: Long): String {
+fun formatTimestamp(timeMillis: Long): String {
     val now = System.currentTimeMillis()
     val diff = (now - timeMillis) / 1000
 

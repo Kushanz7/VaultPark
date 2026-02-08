@@ -21,6 +21,8 @@ import androidx.compose.material.icons.filled.CallMade
 import androidx.compose.material.icons.filled.CallReceived
 import androidx.compose.material.icons.filled.Speed
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -41,6 +43,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -49,13 +52,14 @@ import com.kushan.vaultpark.model.ParkingSession
 import com.kushan.vaultpark.ui.components.FilterChip
 import com.kushan.vaultpark.ui.components.LogCard
 import com.kushan.vaultpark.ui.components.LogDetailBottomSheet
+import com.kushan.vaultpark.ui.components.MindMirrorCardElevated
 import com.kushan.vaultpark.ui.components.ShimmerCard
 import com.kushan.vaultpark.ui.components.StatCard
 import com.kushan.vaultpark.ui.components.StatsCardContainer
 import com.kushan.vaultpark.ui.theme.DarkBackground
 import com.kushan.vaultpark.ui.theme.DarkSurface
-import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.ui.theme.Poppins
+import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.viewmodel.LogsViewModel
@@ -129,45 +133,55 @@ fun SecurityLogsScreen(
         },
         containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
-        LazyColumn(
+        val refreshState = rememberPullToRefreshState()
+
+        PullToRefreshBox(
+            isRefreshing = isLoading,
+            onRefresh = { 
+                currentUser?.uid?.let { viewModel.fetchScanLogs(it) }
+            },
+            state = refreshState,
             modifier = Modifier
                 .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues),
-            contentPadding = PaddingValues(bottom = 20.dp)
+                .padding(paddingValues)
         ) {
-            // Stats Card
-            item {
-                StatsCardContainer(
-                    modifier = Modifier
-                        .padding(horizontal = 16.dp)
-                        .padding(top = 20.dp, bottom = 24.dp)
-                ) {
-                    StatCard(
-                        icon = Icons.Default.QrCode,
-                        value = todayScansCount.toString(),
-                        label = "Today's Scans"
-                    )
-                    StatCard(
-                        icon = Icons.Default.CallMade,
-                        value = entriesCount.toString(),
-                        label = "Entries",
-                        iconColor = RoleTheme.driverColor
-                    )
-                    StatCard(
-                        icon = Icons.Default.CallReceived,
-                        value = exitsCount.toString(),
-                        label = "Exits",
-                        iconColor = Color(0xFFFF6B6B)
-                    )
-                    StatCard(
-                        icon = Icons.Default.Speed,
-                        value = activeNowCount.toString(),
-                        label = "Active Now",
-                        iconColor = Color(0xFFFFB84D)
-                    )
+            LazyColumn(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(top = 20.dp, bottom = 24.dp)
+            ) {
+                item {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 8.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        StatCard(
+                            icon = Icons.Default.QrCode,
+                            value = todayScansCount.toString(),
+                            label = "Today's Scans"
+                        )
+                        StatCard(
+                            icon = Icons.Default.CallMade,
+                            value = entriesCount.toString(),
+                            label = "Entries",
+                            iconColor = RoleTheme.driverColor
+                        )
+                        StatCard(
+                            icon = Icons.Default.CallReceived,
+                            value = exitsCount.toString(),
+                            label = "Exits",
+                            iconColor = Color(0xFFFF6B6B)
+                        )
+                        StatCard(
+                            icon = Icons.Default.Speed,
+                            value = activeNowCount.toString(),
+                            label = "Active Now",
+                            iconColor = Color(0xFFFFB84D)
+                        )
+                    }
                 }
-            }
 
             // Filter Section - Date Filters
             item {
@@ -193,7 +207,7 @@ fun SecurityLogsScreen(
                     ) {
                         LogsViewModel.DateFilter.values().forEach { filter ->
                             FilterChip(
-                                label = filter.displayName,
+                                label = filter.getDisplayName(),
                                 isSelected = filter == selectedDateFilter,
                                 onClick = {
                                     viewModel.fetchScanLogs(
@@ -231,7 +245,7 @@ fun SecurityLogsScreen(
                     ) {
                         LogsViewModel.ScanTypeFilter.values().forEach { filter ->
                             FilterChip(
-                                label = filter.displayName,
+                                label = filter.getDisplayName(),
                                 isSelected = filter == selectedScanTypeFilter,
                                 onClick = {
                                     viewModel.filterByScanType(filter)
@@ -249,10 +263,10 @@ fun SecurityLogsScreen(
                 }
             } else if (filteredLogs.isEmpty()) {
                 item {
-                    EmptyState(
-                        title = "No Scans Recorded",
-                        description = "You haven't scanned any QR codes yet. Start scanning to see your logs here.",
-                        icon = "📱"
+                    LogsEmptyState(
+                        title = "No Logs Found",
+                        description = "No scan logs match your selected filters.",
+                        icon = "📋"
                     )
                 }
             } else {
@@ -329,6 +343,7 @@ fun SecurityLogsScreen(
             }
         }
     }
+    }
 
     // Detail Bottom Sheet
     if (selectedLog != null) {
@@ -347,21 +362,59 @@ fun SecurityLogsScreen(
                 }
             )
         }
+}
+}
+
+@Composable
+fun LogsEmptyState(
+    title: String,
+    description: String,
+    icon: String = ""
+) {
+    MindMirrorCardElevated(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp)
+    ) {
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            Text(
+                text = icon,
+                fontSize = 64.sp
+            )
+            Text(
+                text = title,
+                fontFamily = Poppins,
+                fontWeight = FontWeight.Bold,
+                fontSize = 18.sp,
+                color = TextLight
+            )
+            Text(
+                text = description,
+                fontFamily = Poppins,
+                fontWeight = FontWeight.Normal,
+                fontSize = 14.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
+            )
+        }
     }
 }
 
 // Extension for filter display name
-val LogsViewModel.DateFilter.displayName: String
-    get() = when (this) {
-        LogsViewModel.DateFilter.ALL -> "All"
-        LogsViewModel.DateFilter.TODAY -> "Today"
-        LogsViewModel.DateFilter.THIS_WEEK -> "This Week"
-        LogsViewModel.DateFilter.THIS_MONTH -> "This Month"
-    }
+fun LogsViewModel.DateFilter.getDisplayName(): String = when (this) {
+    LogsViewModel.DateFilter.ALL -> "All"
+    LogsViewModel.DateFilter.TODAY -> "Today"
+    LogsViewModel.DateFilter.THIS_WEEK -> "This Week"
+    LogsViewModel.DateFilter.THIS_MONTH -> "This Month"
+}
 
-val LogsViewModel.ScanTypeFilter.displayName: String
-    get() = when (this) {
-        LogsViewModel.ScanTypeFilter.ALL_SCANS -> "All Scans"
-        LogsViewModel.ScanTypeFilter.ENTRY_ONLY -> "Entry Only"
-        LogsViewModel.ScanTypeFilter.EXIT_ONLY -> "Exit Only"
-    }
+fun LogsViewModel.ScanTypeFilter.getDisplayName(): String = when (this) {
+    LogsViewModel.ScanTypeFilter.ALL_SCANS -> "All Scans"
+    LogsViewModel.ScanTypeFilter.ENTRY_ONLY -> "Entry Only"
+    LogsViewModel.ScanTypeFilter.EXIT_ONLY -> "Exit Only"
+}
+

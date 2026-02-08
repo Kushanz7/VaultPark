@@ -28,6 +28,7 @@ sealed class NavScreen(val route: String) {
     data object ActiveSessions : NavScreen("active_sessions")
     data object HandoverNotes : NavScreen("handover_notes")
     data object ManageUsers : NavScreen("manage_users")
+    data object Overdue : NavScreen("overdue")
 }
 
 val driverNavScreens = listOf(
