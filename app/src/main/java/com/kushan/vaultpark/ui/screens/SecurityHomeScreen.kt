@@ -29,6 +29,7 @@ import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.HistoryEdu
 import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.LocalFireDepartment
+import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material.icons.filled.LocalParking
 import androidx.compose.material.icons.filled.QrCode
 import androidx.compose.material.icons.filled.Receipt
@@ -106,6 +107,7 @@ fun SecurityHomeScreen(
     onNavigateToHandover: () -> Unit = {},
     onNavigateToParkingLot: () -> Unit = {},
     onNavigateToManageUsers: () -> Unit = {},
+    onNavigateToOverdue: () -> Unit = {},
     viewModel: SecurityHomeViewModel = viewModel(),
     adminViewModel: AdminToolsViewModel = viewModel()
 ) {
@@ -230,6 +232,7 @@ fun SecurityHomeScreen(
                     onHandover = onNavigateToHandover,
                     onParkingLot = onNavigateToParkingLot,
                     onManageUsers = onNavigateToManageUsers,
+                    onOverdue = onNavigateToOverdue,
                     unreadNotesCount = adminState.unreadNotesCount
                 )
 
@@ -728,6 +731,7 @@ private fun QuickActionsRowSecurity(
     onHandover: () -> Unit,
     onParkingLot: () -> Unit,
     onManageUsers: () -> Unit,
+    onOverdue: () -> Unit,
     unreadNotesCount: Int = 0
 ) {
     Column(
@@ -768,6 +772,12 @@ private fun QuickActionsRowSecurity(
                 icon = Icons.Filled.Group,
                 label = "Manage Users",
                 onClick = onManageUsers
+            )
+
+            QuickActionButton(
+                icon = Icons.Filled.Warning,
+                label = "Overdue",
+                onClick = onOverdue
             )
             
             QuickActionButton(

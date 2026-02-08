@@ -177,8 +177,13 @@ data class InvoiceNew(
     val status: String = "PENDING",
     @ServerTimestamp
     val generatedAt: Date? = null,
+    val dueDate: Date? = null,
     val paidAt: Date? = null,
-    val paymentMethod: String? = null
+    val paymentMethod: String? = null,
+    // Overdue tracking
+    val isOverdue: Boolean = false,
+    val daysOverdue: Int = 0,
+    val overdueAmount: Double = 0.0
 ) {
     @Exclude
     fun toMap(): Map<String, Any?> = mapOf(
@@ -192,8 +197,12 @@ data class InvoiceNew(
         "totalAmount" to totalAmount,
         "sessionIds" to sessionIds,
         "status" to status,
+        "dueDate" to dueDate,
         "paidAt" to paidAt,
-        "paymentMethod" to paymentMethod
+        "paymentMethod" to paymentMethod,
+        "isOverdue" to isOverdue,
+        "daysOverdue" to daysOverdue,
+        "overdueAmount" to overdueAmount
     )
 }
 

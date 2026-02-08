@@ -71,6 +71,7 @@ import com.kushan.vaultpark.ui.theme.StatusSuccess
 import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.TextTertiaryDark
+import com.kushan.vaultpark.ui.theme.StatusWarning
 import com.kushan.vaultpark.viewmodel.BillingViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -338,6 +339,36 @@ private fun CurrentMonthCard(
         )
         Spacer(modifier = Modifier.height(12.dp))
         
+        // Overdue Warning
+        if (invoice.isOverdue) {
+             Box(
+                modifier = Modifier
+                    .padding(bottom = 12.dp)
+                    .background(
+                        color = StatusError.copy(alpha = 0.15f),
+                        shape = RoundedCornerShape(8.dp)
+                    )
+                    .padding(horizontal = 12.dp, vertical = 6.dp)
+             ) {
+                 Row(verticalAlignment = Alignment.CenterVertically) {
+                     Icon(
+                         imageVector = Icons.Default.Circle,
+                         contentDescription = "Overdue",
+                         tint = StatusError,
+                         modifier = Modifier.size(8.dp)
+                     )
+                     Spacer(modifier = Modifier.width(6.dp))
+                     Text(
+                        text = "Overdue: $${String.format("%.2f", invoice.overdueAmount)} (${invoice.daysOverdue} days late)",
+                        fontFamily = Poppins,
+                        fontWeight = FontWeight.Medium,
+                        fontSize = 12.sp,
+                        color = StatusError
+                    )
+                 }
+             }
+        }
+        
         // Membership badge
         Box(
             modifier = Modifier
@@ -408,7 +439,7 @@ private fun CurrentMonthCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 48.sp,
-            color = PrimaryPurple,
+            color = if (invoice.isOverdue) StatusError else PrimaryPurple,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(4.dp))

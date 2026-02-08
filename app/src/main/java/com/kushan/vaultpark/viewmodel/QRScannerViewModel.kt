@@ -219,6 +219,9 @@ class QRScannerViewModel(
             
             firestoreRepository.updateParkingSession(updatedSession)
             
+            // Update monthly invoice with this completed session
+            updateInvoiceWithCompletedSession(updatedSession)
+            
             _scanState.value = ScanState.Success(updatedSession)
             loadRecentScans()
         } catch (e: Exception) {
@@ -241,6 +244,33 @@ class QRScannerViewModel(
     fun resetScanState() {
         _scanState.value = ScanState.Idle
         lastScannedQR = null
+    }
+
+    /**
+     * Update invoice with completed session
+     */
+    private fun updateInvoiceWithCompletedSession(session: ParkingSession) {
+        viewModelScope.launch {
+            try {
+                // Fetch user details for pricing
+                val user = firestoreRepository.getUserById(session.driverId)
+                val pricingTier = user?.let { 
+                    com.kushan.vaultpark.util.BillingFirestoreQueries.fetchPricingTier(it.membershipType)
+                }
+                
+                // Update or create invoice
+                com.kushan.vaultpark.util.BillingFirestoreQueries.updateInvoiceWithSession(
+                    session = session,
+                    driverName = session.driverName,
+                    pricingTier = pricingTier
+                )
+                
+                Log.d(TAG, "Invoice updated for session ${session.id}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to update invoice for session ${session.id}", e)
+                // Don't fail the scan if invoice update fails
+            }
+        }
     }
     
     private fun resetScanAfterDelay(delayMs: Long) {

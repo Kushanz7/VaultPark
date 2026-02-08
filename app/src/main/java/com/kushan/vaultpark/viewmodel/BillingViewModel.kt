@@ -14,6 +14,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.UUID
 
@@ -26,7 +29,8 @@ data class BillingUiState(
     val isLoading: Boolean = false,
     val isPaymentProcessing: Boolean = false,
     val error: String? = null,
-    val paymentSuccess: Boolean = false
+    val paymentSuccess: Boolean = false,
+    val notificationSent: Boolean = false
 )
 
 class BillingViewModel(
@@ -63,6 +67,13 @@ class BillingViewModel(
                 // If no invoice exists, generate one
                 if (invoice == null) {
                     invoice = generateInvoiceForMonth(userId, currentMonth, currentYear)
+                } else {
+                    // Check for overdue status updates
+                    val updatedInvoice = BillingCalculationUtils.checkOverdueStatus(invoice)
+                    if (updatedInvoice != null) {
+                        BillingFirestoreQueries.saveInvoice(updatedInvoice)
+                        invoice = updatedInvoice
+                    }
                 }
                 
                 // Fetch invoice history
@@ -84,6 +95,11 @@ class BillingViewModel(
                     paymentMethods = methods,
                     isLoading = false
                 )
+                
+                // Check and send notifications if needed
+                if (invoice != null) {
+                    checkAndSendNotifications(invoice, userId)
+                }
             } catch (e: Exception) {
                 Log.e(TAG, "Error loading billing data", e)
                 _uiState.value = _uiState.value.copy(
@@ -110,6 +126,13 @@ class BillingViewModel(
                 
                 if (invoice == null) {
                     invoice = generateInvoiceForMonth(userId, currentMonth, currentYear)
+                } else {
+                     // Check for overdue status updates
+                    val updatedInvoice = BillingCalculationUtils.checkOverdueStatus(invoice)
+                    if (updatedInvoice != null) {
+                        BillingFirestoreQueries.saveInvoice(updatedInvoice)
+                        invoice = updatedInvoice
+                    }
                 }
                 
                 _uiState.value = _uiState.value.copy(currentInvoice = invoice)
@@ -179,7 +202,8 @@ class BillingViewModel(
             totalHours = totalHours,
             totalAmount = totalAmount,
             sessionIds = sessions.map { it.id },
-            status = "PENDING"
+            status = "PENDING",
+            dueDate = BillingCalculationUtils.getMonthDueDate(month, year)
         )
         
         // Save to Firestore
@@ -294,6 +318,39 @@ class BillingViewModel(
             "gold"
         } catch (e: Exception) {
             null
+        }
+    }
+
+    /**
+     * Check and send notifications based on invoice status
+     */
+    private fun checkAndSendNotifications(invoice: InvoiceNew, userId: String) {
+        if (invoice.status == "PAID" || invoice.dueDate == null) return
+        
+        viewModelScope.launch {
+            val today = LocalDate.now()
+            val dueDate = invoice.dueDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+            val daysUntilDue = ChronoUnit.DAYS.between(today, dueDate).toInt()
+            val daysOverdue = ChronoUnit.DAYS.between(dueDate, today).toInt()
+            
+            // 1. 3 days before due date
+            if (daysUntilDue == 3) {
+                 com.kushan.vaultpark.notifications.NotificationHelper.sendBillingReminder(
+                     userId, invoice.totalAmount, "${invoice.month}/${invoice.year}", invoice.id
+                 )
+            }
+            // 2. On due date
+            else if (daysUntilDue == 0) {
+                 com.kushan.vaultpark.notifications.NotificationHelper.sendBillingReminder(
+                     userId, invoice.totalAmount, "DUE TODAY", invoice.id
+                 )
+            }
+            // 3. Overdue (Daily reminder)
+            else if (daysOverdue > 0) {
+                 com.kushan.vaultpark.notifications.NotificationHelper.sendOverdueNotification(
+                     userId, invoice.totalAmount + invoice.overdueAmount, daysOverdue, invoice.id
+                 )
+            }
         }
     }
     

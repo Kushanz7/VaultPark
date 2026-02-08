@@ -166,6 +166,39 @@ object NotificationHelper {
     }
 
     /**
+     * Send overdue notification
+     */
+    suspend fun sendOverdueNotification(
+        userId: String,
+        amount: Double,
+        daysOverdue: Int,
+        invoiceId: String
+    ): Result<Unit> {
+        return try {
+            val data = mapOf(
+                "type" to "OVERDUE",
+                "invoiceId" to invoiceId,
+                "amount" to amount.toString(),
+                "daysOverdue" to daysOverdue.toString(),
+                "timestamp" to Date().time.toString()
+            )
+
+            saveNotification(
+                userId = userId,
+                type = "OVERDUE",
+                title = "Payment Overdue ⚠️",
+                message = "Your bill is $daysOverdue days overdue. Total: $$amount",
+                data = data
+            )
+
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error sending overdue notification", e)
+            Result.failure(e)
+        }
+    }
+
+    /**
      * Send system notification
      */
     suspend fun sendSystemNotification(

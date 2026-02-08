@@ -244,4 +244,108 @@ object BillingFirestoreQueries {
             Result.failure(e)
         }
     }
+
+    /**
+     * Fetch all overdue invoices for Admin
+     */
+    suspend fun fetchOverdueInvoices(): List<InvoiceNew> {
+        return try {
+            val snapshot = db.collection("invoices")
+                .whereEqualTo("isOverdue", true)
+                .whereEqualTo("status", "PENDING") // Ensure it's still unpaid
+                .orderBy("daysOverdue", Query.Direction.DESCENDING)
+                .get()
+                .await()
+
+            snapshot.documents.mapNotNull {
+                it.toObject(InvoiceNew::class.java)
+            }
+        } catch (e: Exception) {
+            when {
+                e.message?.contains("index", ignoreCase = true) == true -> {
+                    Log.e(TAG, "⚠️ Firestore index required! Run: ./gradlew deployFirestoreIndexes", e)
+                    Log.e(TAG, "Or create index at Firebase Console: invoices (isOverdue ASC, status ASC, daysOverdue DESC)")
+                }
+                else -> Log.e(TAG, "Error fetching overdue invoices", e)
+            }
+            emptyList()
+        }
+    }
+
+    /**
+     * Update invoice with new completed session
+     * Creates invoice if it doesn't exist, or updates existing invoice
+     */
+    suspend fun updateInvoiceWithSession(
+        session: ParkingSession,
+        driverName: String,
+        pricingTier: PricingTier?
+    ): Result<Unit> {
+        return try {
+            if (session.exitTime == null) {
+                Log.w(TAG, "Session ${session.id} has no exit time, skipping invoice update")
+                return Result.success(Unit)
+            }
+
+            // Get the month and year from entry time
+            val calendar = Calendar.getInstance()
+            calendar.timeInMillis = session.entryTime
+            val month = calendar.get(Calendar.MONTH) + 1
+            val year = calendar.get(Calendar.YEAR)
+
+            // Fetch or create invoice for the month
+            var invoice = fetchInvoiceForMonth(session.driverId, month, year)
+            
+            if (invoice == null) {
+                // Create new invoice
+                val invoiceId = "INV-${session.driverId}-$year-${String.format("%02d", month)}"
+                invoice = InvoiceNew(
+                    id = invoiceId,
+                    driverId = session.driverId,
+                    driverName = driverName,
+                    month = month,
+                    year = year,
+                    totalSessions = 0,
+                    totalHours = 0.0,
+                    totalAmount = 0.0,
+                    sessionIds = emptyList(),
+                    status = "PENDING",
+                    dueDate = BillingCalculationUtils.getMonthDueDate(month, year)
+                )
+            }
+
+            // Check if session already added
+            if (invoice.sessionIds.contains(session.id)) {
+                Log.d(TAG, "Session ${session.id} already in invoice ${invoice.id}")
+                return Result.success(Unit)
+            }
+
+            // Calculate session duration in hours
+            val durationMs = session.exitTime - session.entryTime
+            val durationHours = durationMs / (1000.0 * 60 * 60)
+
+            // Calculate session cost
+            val hourlyRate = pricingTier?.hourlyRate ?: 5.0
+            val dailyCap = pricingTier?.dailyCap ?: Double.MAX_VALUE
+            val baseCost = durationHours * hourlyRate
+            val sessionCost = kotlin.math.min(baseCost, dailyCap)
+
+            // Update invoice with new session
+            val updatedInvoice = invoice.copy(
+                totalSessions = invoice.totalSessions + 1,
+                totalHours = invoice.totalHours + durationHours,
+                totalAmount = invoice.totalAmount + sessionCost,
+                sessionIds = invoice.sessionIds + session.id
+            )
+
+            // Save updated invoice
+            saveInvoice(updatedInvoice)
+            
+            Log.d(TAG, "✅ Invoice ${updatedInvoice.id} updated with session ${session.id}. Total: $${updatedInvoice.totalAmount}")
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Log.e(TAG, "Error updating invoice with session", e)
+            Result.failure(e)
+        }
+    }
 }

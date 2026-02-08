@@ -2,7 +2,11 @@ package com.kushan.vaultpark.util
 
 import com.kushan.vaultpark.model.ParkingSession
 import com.kushan.vaultpark.model.PricingTier
+import com.kushan.vaultpark.model.InvoiceNew
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.ZoneId
+import java.time.temporal.ChronoUnit
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
@@ -114,5 +118,77 @@ object BillingCalculationUtils {
      */
     fun isAmountRoundingThreshold(amount: Double, threshold: Double = 0.01): Boolean {
         return amount % 1.0 < threshold
+    }
+    
+    /**
+     * Calculate overdue charges for an invoice
+     * Policy:
+     * - Grace period: 5 days after due date
+     * - Rate: 2% per day late
+     * - Max Rate: 20% of original amount
+     */
+    fun calculateOverdueCharges(invoice: InvoiceNew): Double {
+        if (invoice.dueDate == null || invoice.status == "PAID") return 0.0
+        
+        val today = LocalDate.now()
+        val dueDate = invoice.dueDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+        
+        if (today.isAfter(dueDate)) {
+            val daysLate = ChronoUnit.DAYS.between(dueDate, today).toInt()
+            
+            // Grace period of 5 days
+            if (daysLate > 5) {
+                val chargeableDays = daysLate - 5
+                val dailyRate = 0.02 // 2% per day
+                val maxRate = 0.20 // 20% maximum
+                
+                // Calculate rate capped at 20%
+                val overdueRate = min(chargeableDays * dailyRate, maxRate)
+                
+                return invoice.totalAmount * overdueRate
+            }
+        }
+        
+        return 0.0
+    }
+    
+    /**
+     * Check and update status for an invoice (returns new copy if changed, else null)
+     */
+    fun checkOverdueStatus(invoice: InvoiceNew): InvoiceNew? {
+        if (invoice.status == "PAID" || invoice.dueDate == null) return null
+        
+        val today = LocalDate.now()
+        val dueDate = invoice.dueDate.toInstant().atZone(ZoneId.systemDefault()).toLocalDate()
+        
+        var hasChanges = false
+        var updatedInvoice = invoice
+        
+        // Check if overdue
+        if (today.isAfter(dueDate)) {
+            val daysLate = ChronoUnit.DAYS.between(dueDate, today).toInt()
+            
+            if (!invoice.isOverdue) {
+                updatedInvoice = updatedInvoice.copy(isOverdue = true)
+                hasChanges = true
+            }
+            
+            if (invoice.daysOverdue != daysLate) {
+                updatedInvoice = updatedInvoice.copy(daysOverdue = daysLate)
+                hasChanges = true
+            }
+            
+            // Calculate charges
+            val overdueAmount = calculateOverdueCharges(updatedInvoice)
+            // Round to 2 decimal places
+            val roundedOverdue = (overdueAmount * 100).toInt() / 100.0
+            
+            if (invoice.overdueAmount != roundedOverdue) {
+                updatedInvoice = updatedInvoice.copy(overdueAmount = roundedOverdue)
+                hasChanges = true
+            }
+        }
+        
+        return if (hasChanges) updatedInvoice else null
     }
 }

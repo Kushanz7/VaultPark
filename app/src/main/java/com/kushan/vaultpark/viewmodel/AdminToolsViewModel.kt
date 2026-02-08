@@ -1,5 +1,6 @@
 package com.kushan.vaultpark.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
@@ -50,6 +51,10 @@ class AdminToolsViewModel(
     private val db: FirebaseFirestore = FirebaseFirestore.getInstance(),
     private val auth: FirebaseAuth = FirebaseAuth.getInstance()
 ) : ViewModel() {
+
+    companion object {
+        private const val TAG = "AdminToolsViewModel"
+    }
 
     private val _uiState = MutableStateFlow(AdminToolsUiState())
     val uiState: StateFlow<AdminToolsUiState> = _uiState.asStateFlow()
@@ -478,6 +483,13 @@ class AdminToolsViewModel(
                 if (session != null) {
                     val duration = calculateDuration(session.entryTime, exitTime)
                     
+                    val updatedSession = session.copy(
+                        exitTime = exitTime,
+                        status = SessionStatus.COMPLETED.name,
+                        duration = duration,
+                        notes = "${session.notes}\nManual Exit: $reason".trim()
+                    )
+                    
                     db.collection("parkingSessions").document(sessionId)
                         .update(
                             mapOf(
@@ -488,6 +500,9 @@ class AdminToolsViewModel(
                             )
                         )
                         .await()
+
+                    // Update monthly invoice with this completed session
+                    updateInvoiceWithCompletedSession(updatedSession)
 
                     loadActiveSessions()
                     _uiState.value = _uiState.value.copy(
@@ -759,6 +774,35 @@ class AdminToolsViewModel(
                         error = "Failed to acknowledge note: ${e.message}"
                     )
                 }
+            }
+        }
+    }
+
+    /**
+     * Update invoice with completed session
+     */
+    private fun updateInvoiceWithCompletedSession(session: ParkingSession) {
+        viewModelScope.launch {
+            try {
+                // Fetch user details for pricing
+                val userDoc = db.collection("users").document(session.driverId).get().await()
+                val user = userDoc.toObject(com.kushan.vaultpark.model.User::class.java)
+                
+                val pricingTier = user?.let { 
+                    com.kushan.vaultpark.util.BillingFirestoreQueries.fetchPricingTier(it.membershipType)
+                }
+                
+                // Update or create invoice
+                com.kushan.vaultpark.util.BillingFirestoreQueries.updateInvoiceWithSession(
+                    session = session,
+                    driverName = session.driverName,
+                    pricingTier = pricingTier
+                )
+                
+                Log.d(TAG, "Invoice updated for manually exited session ${session.id}")
+            } catch (e: Exception) {
+                Log.e(TAG, "Failed to update invoice for session ${session.id}", e)
+                // Don't fail the manual exit if invoice update fails
             }
         }
     }
