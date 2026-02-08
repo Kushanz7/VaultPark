@@ -15,7 +15,7 @@ sealed class NavScreen(val route: String) {
     data object Notifications : NavScreen("notifications")
     data object ChangePassword : NavScreen("change_password")
     data object DriverProfile : NavScreen("driver_profile")
-    data object ParkingLotSelection : NavScreen("parking_lot_selection")
+    data object ParkingLotsMap : NavScreen("parking_lots_map")
     
     // Security Screens
     data object Scanner : NavScreen("scanner")

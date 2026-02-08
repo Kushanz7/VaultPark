@@ -131,6 +131,7 @@ class FirestoreRepository(
             driverName = driverName,
             vehicleNumber = vehicleNumber,
             gateLocation = gateLocation,
+            location = gateLocation, // Default to gate location for legacy
             status = SessionStatus.ACTIVE.name,
             qrCodeDataUsed = qrCodeData
         )
@@ -328,6 +329,7 @@ class FirestoreRepository(
         driverName: String,
         vehicleNumber: String,
         gateLocation: String,
+        location: String = "",
         parkingLotId: String = "",
         qrCodeData: String = ""
     ): Result<String> = try {
@@ -339,6 +341,7 @@ class FirestoreRepository(
             vehicleNumber = vehicleNumber,
             entryTime = System.currentTimeMillis(),
             gateLocation = gateLocation,
+            location = location,
             parkingLotId = parkingLotId,
             status = SessionStatus.ACTIVE.name,
             qrCodeDataUsed = qrCodeData

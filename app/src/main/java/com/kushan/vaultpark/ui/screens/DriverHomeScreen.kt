@@ -35,6 +35,7 @@ import androidx.compose.material.icons.filled.Receipt
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material.icons.filled.Help
+import androidx.compose.material.icons.filled.Map
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
@@ -94,6 +95,7 @@ fun DriverHomeScreen(
     onNavigateToBilling: () -> Unit = {},
     onNavigateToHistory: () -> Unit = {},
     onNavigateToSupport: () -> Unit = {},
+    onNavigateToMap: () -> Unit = {},
     viewModel: DriverHomeViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -160,13 +162,14 @@ fun DriverHomeScreen(
             }
 
             item {
-                // One-Tap Actions
-                OneTapActionsCard(
-                    onParkNow = { viewModel.showQRDialog() },
-                    onViewLastSession = onNavigateToHistory,
-                    onPayBill = onNavigateToBilling
+                // Quick Actions Row
+                QuickActionsRow(
+                    onFindParkingTap = onNavigateToMap,
+                    onBillingTap = onNavigateToBilling,
+                    onHistoryTap = onNavigateToHistory,
+                    onSupportTap = onNavigateToSupport
                 )
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
             }
         }
 
@@ -575,6 +578,7 @@ private fun RecentActivitySection(
  */
 @Composable
 private fun QuickActionsRow(
+    onFindParkingTap: () -> Unit,
     onBillingTap: () -> Unit,
     onHistoryTap: () -> Unit,
     onSupportTap: () -> Unit
@@ -600,6 +604,12 @@ private fun QuickActionsRow(
                 .horizontalScroll(rememberScrollState()),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
+            QuickActionButton(
+                icon = Icons.Filled.Map,
+                label = "Find Parking",
+                onClick = onFindParkingTap
+            )
+
             QuickActionButton(
                 icon = Icons.Filled.AttachMoney,
                 label = "Pay Bill",

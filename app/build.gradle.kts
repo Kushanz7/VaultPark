@@ -13,7 +13,7 @@ android {
 
     defaultConfig {
         applicationId = "com.kushan.vaultpark"
-        minSdk = 24
+        minSdk = 23
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -129,4 +129,14 @@ dependencies {
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
+
+    // OpenStreetMap
+    implementation("org.osmdroid:osmdroid-android:6.1.18")
+    
+    // Location Services (Needed for FusedLocationProviderClient)
+    implementation("com.google.android.gms:play-services-location:21.1.0")
+    
+    // Retrofit (Keep for other uses if any, or remove if only used for Directions which we are deleting. Keeping for now as it might be used elsewhere or useful)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 }

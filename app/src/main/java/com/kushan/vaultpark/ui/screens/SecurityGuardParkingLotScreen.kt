@@ -1,5 +1,6 @@
 package com.kushan.vaultpark.ui.screens
 
+import android.location.Geocoder
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,6 +24,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -31,6 +33,7 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
@@ -40,14 +43,31 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.lifecycle.DefaultLifecycleObserver
+import androidx.lifecycle.LifecycleOwner
 import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.viewmodel.ParkingLotViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
+import org.osmdroid.config.Configuration
+import org.osmdroid.events.MapEventsReceiver
+import org.osmdroid.tileprovider.tilesource.TileSourceFactory
+import org.osmdroid.util.GeoPoint
+import org.osmdroid.views.MapView
+import org.osmdroid.views.overlay.MapEventsOverlay
+import org.osmdroid.views.overlay.Marker
+import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -59,13 +79,20 @@ fun SecurityGuardParkingLotScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val snackbarHostState = remember { SnackbarHostState() }
+    val context = LocalContext.current
+    
+    // Initialize OSM
+    LaunchedEffect(Unit) {
+        Configuration.getInstance().load(context, context.getSharedPreferences("osm", 0))
+    }
     
     var isCreating by remember { mutableStateOf(false) }
     var isEditing by remember { mutableStateOf(false) }
     
     // Form fields
     var lotName by remember { mutableStateOf("") }
-    var location by remember { mutableStateOf("") }
+    var locationAddress by remember { mutableStateOf("") }
+    var selectedLocation by remember { mutableStateOf<GeoPoint?>(null) }
     var totalSpaces by remember { mutableStateOf("") }
     var hourlyRate by remember { mutableStateOf("") }
     var dailyCap by remember { mutableStateOf("") }
@@ -152,7 +179,11 @@ fun SecurityGuardParkingLotScreen(
                             modifier = Modifier.padding(bottom = 24.dp)
                         )
                         Button(
-                            onClick = { isCreating = true },
+                            onClick = { 
+                                isCreating = true
+                                // Default location (Colombo)
+                                selectedLocation = GeoPoint(6.9271, 79.8612)
+                            },
                             modifier = Modifier.fillMaxWidth()
                         ) {
                             Text("Create Parking Lot")
@@ -160,14 +191,18 @@ fun SecurityGuardParkingLotScreen(
                     }
                 }
             } else if (isCreating) {
-                // Show creation form
-                CreateParkingLotForm(
-                    guardId = guardId,
-                    guardName = guardName,
+                // Show creation form with Map
+                ParkingLotFormMap(
+                    title = "Create Your Parking Lot",
                     lotName = lotName,
                     onLotNameChange = { lotName = it },
-                    location = location,
-                    onLocationChange = { location = it },
+                    locationAddress = locationAddress,
+                    onLocationAddressChange = { locationAddress = it },
+                    selectedLocation = selectedLocation,
+                    onLocationSelected = { geoPoint, address -> 
+                        selectedLocation = geoPoint
+                        locationAddress = address
+                    },
                     totalSpaces = totalSpaces,
                     onTotalSpacesChange = { totalSpaces = it },
                     hourlyRate = hourlyRate,
@@ -175,28 +210,32 @@ fun SecurityGuardParkingLotScreen(
                     dailyCap = dailyCap,
                     onDailyCapChange = { dailyCap = it },
                     isLoading = uiState.isLoading,
-                    onCreateClick = {
+                    actionButtonText = "Create",
+                    onActionClick = {
                         val spaces = totalSpaces.toIntOrNull() ?: 0
                         val rate = hourlyRate.toDoubleOrNull() ?: 0.0
                         val cap = dailyCap.toDoubleOrNull() ?: 0.0
                         
-                        if (lotName.isBlank() || location.isBlank() || spaces <= 0 || rate <= 0 || cap <= 0) {
-                            validationError = "Please fill all fields correctly"
-                            return@CreateParkingLotForm
+                        if (lotName.isBlank() || locationAddress.isBlank() || spaces <= 0 || rate <= 0 || cap <= 0 || selectedLocation == null) {
+                            validationError = "Please fill all fields correctly and select a location on the map"
+                            return@ParkingLotFormMap
                         }
                         
                         viewModel.createParkingLot(
                             securityGuardId = guardId,
                             securityGuardName = guardName,
                             name = lotName,
-                            location = location,
+                            location = locationAddress,
+                            latitude = selectedLocation!!.latitude,
+                            longitude = selectedLocation!!.longitude,
                             totalSpaces = spaces,
                             hourlyRate = rate,
                             dailyCap = cap
                         )
                         isCreating = false
                         lotName = ""
-                        location = ""
+                        locationAddress = ""
+                        selectedLocation = null
                         totalSpaces = ""
                         hourlyRate = ""
                         dailyCap = ""
@@ -210,7 +249,12 @@ fun SecurityGuardParkingLotScreen(
                     onEditClick = {
                         isEditing = true
                         lotName = uiState.myParkingLot!!.name
-                        location = uiState.myParkingLot!!.location
+                        locationAddress = uiState.myParkingLot!!.location
+                        // Use existing lat/lon if available, else default
+                        val lat = uiState.myParkingLot!!.latitude ?: 6.9271
+                        val lon = uiState.myParkingLot!!.longitude ?: 79.8612
+                        selectedLocation = GeoPoint(lat, lon)
+                        
                         totalSpaces = uiState.myParkingLot!!.totalSpaces.toString()
                         hourlyRate = uiState.myParkingLot!!.hourlyRate.toString()
                         dailyCap = uiState.myParkingLot!!.dailyCap.toString()
@@ -220,13 +264,18 @@ fun SecurityGuardParkingLotScreen(
                     }
                 )
             } else if (uiState.myParkingLot != null && isEditing) {
-                // Show edit form
-                EditParkingLotForm(
-                    lot = uiState.myParkingLot!!,
+                // Show edit form with Map
+                ParkingLotFormMap(
+                    title = "Edit Parking Lot",
                     lotName = lotName,
                     onLotNameChange = { lotName = it },
-                    location = location,
-                    onLocationChange = { location = it },
+                    locationAddress = locationAddress,
+                    onLocationAddressChange = { locationAddress = it },
+                    selectedLocation = selectedLocation,
+                    onLocationSelected = { geoPoint, address -> 
+                        selectedLocation = geoPoint
+                        locationAddress = address
+                    },
                     totalSpaces = totalSpaces,
                     onTotalSpacesChange = { totalSpaces = it },
                     hourlyRate = hourlyRate,
@@ -234,20 +283,23 @@ fun SecurityGuardParkingLotScreen(
                     dailyCap = dailyCap,
                     onDailyCapChange = { dailyCap = it },
                     isLoading = uiState.isLoading,
-                    onUpdateClick = {
+                    actionButtonText = "Update",
+                    onActionClick = {
                         val spaces = totalSpaces.toIntOrNull() ?: 0
                         val rate = hourlyRate.toDoubleOrNull() ?: 0.0
                         val cap = dailyCap.toDoubleOrNull() ?: 0.0
                         
-                        if (lotName.isBlank() || location.isBlank() || spaces <= 0 || rate <= 0 || cap <= 0) {
+                        if (lotName.isBlank() || locationAddress.isBlank() || spaces <= 0 || rate <= 0 || cap <= 0 || selectedLocation == null) {
                             validationError = "Please fill all fields correctly"
-                            return@EditParkingLotForm
+                            return@ParkingLotFormMap
                         }
                         
                         viewModel.updateParkingLot(
                             lotId = uiState.myParkingLot!!.id,
                             name = lotName,
-                            location = location,
+                            location = locationAddress,
+                            latitude = selectedLocation!!.latitude,
+                            longitude = selectedLocation!!.longitude,
                             totalSpaces = spaces,
                             hourlyRate = rate,
                             dailyCap = cap
@@ -262,13 +314,14 @@ fun SecurityGuardParkingLotScreen(
 }
 
 @Composable
-private fun CreateParkingLotForm(
-    guardId: String,
-    guardName: String,
+private fun ParkingLotFormMap(
+    title: String,
     lotName: String,
     onLotNameChange: (String) -> Unit,
-    location: String,
-    onLocationChange: (String) -> Unit,
+    locationAddress: String,
+    onLocationAddressChange: (String) -> Unit,
+    selectedLocation: GeoPoint?,
+    onLocationSelected: (GeoPoint, String) -> Unit,
     totalSpaces: String,
     onTotalSpacesChange: (String) -> Unit,
     hourlyRate: String,
@@ -276,201 +329,203 @@ private fun CreateParkingLotForm(
     dailyCap: String,
     onDailyCapChange: (String) -> Unit,
     isLoading: Boolean,
-    onCreateClick: () -> Unit,
+    actionButtonText: String,
+    onActionClick: () -> Unit,
     onCancelClick: () -> Unit
 ) {
+    val context = LocalContext.current
+    val geocoder = remember { Geocoder(context, Locale.getDefault()) }
+    val scope = rememberCoroutineScope()
+    val lifecycleOwner = LocalLifecycleOwner.current
+    
     Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(16.dp),
+            .padding(bottom = 16.dp),
         verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
-        Text(
-            text = "Create Your Parking Lot",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
-        
-        OutlinedTextField(
-            value = lotName,
-            onValueChange = onLotNameChange,
-            label = { Text("Lot Name") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            singleLine = true
-        )
-        
-        OutlinedTextField(
-            value = location,
-            onValueChange = onLocationChange,
-            label = { Text("Location") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            singleLine = true,
-            leadingIcon = { Icon(Icons.Default.LocationOn, "Location") }
-        )
-        
-        OutlinedTextField(
-            value = totalSpaces,
-            onValueChange = onTotalSpacesChange,
-            label = { Text("Total Parking Spaces") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true
-        )
-        
-        OutlinedTextField(
-            value = hourlyRate,
-            onValueChange = onHourlyRateChange,
-            label = { Text("Hourly Rate ($)") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            singleLine = true
-        )
-        
-        OutlinedTextField(
-            value = dailyCap,
-            onValueChange = onDailyCapChange,
-            label = { Text("Daily Cap ($)") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            singleLine = true
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        // Map Section (Top)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(300.dp)
+                .background(Color.LightGray)
         ) {
-            Button(
-                onClick = onCancelClick,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                enabled = !isLoading
-            ) {
-                Text("Cancel")
-            }
+            AndroidView(
+                modifier = Modifier.fillMaxSize(),
+                factory = { ctx ->
+                    MapView(ctx).apply {
+                        setTileSource(TileSourceFactory.MAPNIK)
+                        setMultiTouchControls(true)
+                        controller.setZoom(15.0)
+                        
+                        // Handle Lifecycle
+                        val lifecycleObserver = object : DefaultLifecycleObserver {
+                            override fun onResume(owner: LifecycleOwner) { super.onResume(owner); this@apply.onResume() }
+                            override fun onPause(owner: LifecycleOwner) { super.onPause(owner); this@apply.onPause() }
+                        }
+                        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+                        
+                        // Add Touch Overlay
+                        val mapEventsOverlay = MapEventsOverlay(object : MapEventsReceiver {
+                            override fun singleTapConfirmedHelper(p: GeoPoint?): Boolean {
+                                p?.let { geoPoint ->
+                                    // Reverse geocode
+                                    scope.launch(Dispatchers.IO) {
+                                        try {
+                                            @Suppress("DEPRECATION")
+                                            val addresses = geocoder.getFromLocation(geoPoint.latitude, geoPoint.longitude, 1)
+                                            val addressText = if (!addresses.isNullOrEmpty()) {
+                                                addresses[0].getAddressLine(0) ?: "Unknown Location"
+                                            } else {
+                                                "Lat: ${geoPoint.latitude}, Lon: ${geoPoint.longitude}"
+                                            }
+                                            
+                                            withContext(Dispatchers.Main) {
+                                                onLocationSelected(geoPoint, addressText)
+                                            }
+                                        } catch (e: Exception) {
+                                            withContext(Dispatchers.Main) {
+                                                onLocationSelected(geoPoint, "Lat: ${geoPoint.latitude}, Lon: ${geoPoint.longitude}")
+                                            }
+                                        }
+                                    }
+                                }
+                                return true
+                            }
+                            override fun longPressHelper(p: GeoPoint?): Boolean = false
+                        })
+                        overlays.add(mapEventsOverlay)
+                    }
+                },
+                update = { mapView ->
+                    mapView.overlays.removeAll { it is Marker && it.title == "Selected Location" }
+                    
+                    selectedLocation?.let { location ->
+                        mapView.controller.animateTo(location)
+                        val marker = Marker(mapView).apply {
+                            position = location
+                            setTitle("Selected Location")
+                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                        }
+                        mapView.overlays.add(marker)
+                    }
+                    mapView.invalidate()
+                }
+            )
             
-            Button(
-                onClick = onCreateClick,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                enabled = !isLoading
-            ) {
-                Text(if (isLoading) "Creating..." else "Create")
+            // Overlay text if no location selected
+            if (selectedLocation == null) {
+                Surface(
+                    modifier = Modifier
+                        .align(Alignment.TopCenter)
+                        .padding(16.dp),
+                    color = MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text(
+                        text = "Tap on map to set location",
+                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
+                        style = MaterialTheme.typography.labelMedium
+                    )
+                }
             }
         }
-    }
-}
-
-@Composable
-private fun EditParkingLotForm(
-    lot: com.kushan.vaultpark.model.ParkingLot,
-    lotName: String,
-    onLotNameChange: (String) -> Unit,
-    location: String,
-    onLocationChange: (String) -> Unit,
-    totalSpaces: String,
-    onTotalSpacesChange: (String) -> Unit,
-    hourlyRate: String,
-    onHourlyRateChange: (String) -> Unit,
-    dailyCap: String,
-    onDailyCapChange: (String) -> Unit,
-    isLoading: Boolean,
-    onUpdateClick: () -> Unit,
-    onCancelClick: () -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        verticalArrangement = Arrangement.spacedBy(12.dp)
-    ) {
-        Text(
-            text = "Edit Parking Lot",
-            style = MaterialTheme.typography.headlineSmall,
-            modifier = Modifier.padding(bottom = 8.dp)
-        )
         
-        OutlinedTextField(
-            value = lotName,
-            onValueChange = onLotNameChange,
-            label = { Text("Lot Name") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            singleLine = true
-        )
-        
-        OutlinedTextField(
-            value = location,
-            onValueChange = onLocationChange,
-            label = { Text("Location") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            singleLine = true,
-            leadingIcon = { Icon(Icons.Default.LocationOn, "Location") }
-        )
-        
-        OutlinedTextField(
-            value = totalSpaces,
-            onValueChange = onTotalSpacesChange,
-            label = { Text("Total Parking Spaces") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
-            singleLine = true
-        )
-        
-        OutlinedTextField(
-            value = hourlyRate,
-            onValueChange = onHourlyRateChange,
-            label = { Text("Hourly Rate ($)") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            singleLine = true
-        )
-        
-        OutlinedTextField(
-            value = dailyCap,
-            onValueChange = onDailyCapChange,
-            label = { Text("Daily Cap ($)") },
-            modifier = Modifier.fillMaxWidth(),
-            enabled = !isLoading,
-            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
-            singleLine = true
-        )
-        
-        Spacer(modifier = Modifier.height(8.dp))
-        
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        // Form Section
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Button(
-                onClick = onCancelClick,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                enabled = !isLoading
-            ) {
-                Text("Cancel")
-            }
+            Text(
+                text = title,
+                style = MaterialTheme.typography.headlineSmall,
+                modifier = Modifier.padding(vertical = 8.dp)
+            )
             
-            Button(
-                onClick = onUpdateClick,
-                modifier = Modifier
-                    .weight(1f)
-                    .height(48.dp),
-                enabled = !isLoading
+            OutlinedTextField(
+                value = lotName,
+                onValueChange = onLotNameChange,
+                label = { Text("Lot Name") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
+                singleLine = true
+            )
+            
+            OutlinedTextField(
+                value = locationAddress,
+                onValueChange = onLocationAddressChange,
+                label = { Text("Location Address") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
+                singleLine = true,
+                leadingIcon = { Icon(Icons.Default.LocationOn, "Location") }
+            )
+            
+            OutlinedTextField(
+                value = totalSpaces,
+                onValueChange = onTotalSpacesChange,
+                label = { Text("Total Parking Spaces") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                singleLine = true
+            )
+            
+            OutlinedTextField(
+                value = hourlyRate,
+                onValueChange = onHourlyRateChange,
+                label = { Text("Hourly Rate ($)") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                singleLine = true
+            )
+            
+            OutlinedTextField(
+                value = dailyCap,
+                onValueChange = onDailyCapChange,
+                label = { Text("Daily Cap ($)") },
+                modifier = Modifier.fillMaxWidth(),
+                enabled = !isLoading,
+                keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal),
+                singleLine = true
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
-                Text(if (isLoading) "Updating..." else "Update")
+                Button(
+                    onClick = onCancelClick,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    enabled = !isLoading
+                ) {
+                    Text("Cancel")
+                }
+                
+                Button(
+                    onClick = onActionClick,
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(48.dp),
+                    enabled = !isLoading
+                ) {
+                    if (isLoading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.height(24.dp).width(24.dp),
+                            color = MaterialTheme.colorScheme.onPrimary
+                        )
+                    } else {
+                        Text(actionButtonText)
+                    }
+                }
             }
         }
     }
@@ -499,7 +554,7 @@ private fun ParkingLotDetailsCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(12.dp)
+                    verticalArrangement = Arrangement.spacedBy(12.dp)
             ) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),

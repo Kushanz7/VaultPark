@@ -199,6 +199,7 @@ class AdminToolsViewModel(
                         vehicleNumber = vehicleNumber,
                         entryTime = System.currentTimeMillis(),
                         gateLocation = gateLocation,
+                        location = gateLocation, // Default to gate location for manual entry
                         scannedByGuardId = guardId,
                         guardName = guardData?.name ?: "Unknown Guard",
                         status = SessionStatus.ACTIVE.name,

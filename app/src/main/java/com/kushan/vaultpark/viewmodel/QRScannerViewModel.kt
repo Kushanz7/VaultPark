@@ -151,6 +151,19 @@ class QRScannerViewModel(
             val guard = firestoreRepository.getUserById(currentGuardId)
             val guardName = guard?.name ?: "Security Guard"
             
+            // Get parking lot for this guard
+            val formattedLocation: String
+            val parkingLotId: String
+            
+            val parkingLot = com.kushan.vaultpark.util.ParkingLotFirestoreQueries.getParkingLotByGuardId(currentGuardId)
+            if (parkingLot != null) {
+                formattedLocation = parkingLot.location
+                parkingLotId = parkingLot.id
+            } else {
+                formattedLocation = "Unknown Location"
+                parkingLotId = "unknown"
+            }
+            
             // Generate QR code data string for record
             val qrCodeData = "VAULTPARK|${parsedQR.userId}|${parsedQR.timestamp}|${parsedQR.vehicleNumber}|${parsedQR.hash}"
             
@@ -160,7 +173,9 @@ class QRScannerViewModel(
                 vehicleNumber = parsedQR.vehicleNumber,
                 entryTime = System.currentTimeMillis(),
                 gateLocation = _selectedGate.value,
-                parkingLotId = _selectedParkingLotId.value,
+                // Store the Parking Lot location address/name here
+                location = formattedLocation, 
+                parkingLotId = parkingLotId,
                 scannedByGuardId = currentGuardId,
                 guardName = guardName,
                 qrCodeDataUsed = qrCodeData,

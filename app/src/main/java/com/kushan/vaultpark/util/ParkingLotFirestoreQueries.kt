@@ -25,6 +25,8 @@ object ParkingLotFirestoreQueries {
         securityGuardName: String,
         name: String,
         location: String,
+        latitude: Double,
+        longitude: Double,
         totalSpaces: Int,
         hourlyRate: Double,
         dailyCap: Double? = null
@@ -47,6 +49,8 @@ object ParkingLotFirestoreQueries {
                 securityGuardName = securityGuardName,
                 name = name,
                 location = location,
+                latitude = latitude,
+                longitude = longitude,
                 totalSpaces = totalSpaces,
                 availableSpaces = totalSpaces,
                 hourlyRate = hourlyRate,
@@ -108,6 +112,8 @@ object ParkingLotFirestoreQueries {
         parkingLotId: String,
         name: String? = null,
         location: String? = null,
+        latitude: Double? = null,
+        longitude: Double? = null,
         totalSpaces: Int? = null,
         hourlyRate: Double? = null,
         dailyCap: Double? = null,
@@ -117,6 +123,8 @@ object ParkingLotFirestoreQueries {
             val updates = mutableMapOf<String, Any?>()
             name?.let { updates["name"] = it }
             location?.let { updates["location"] = it }
+            latitude?.let { updates["latitude"] = it }
+            longitude?.let { updates["longitude"] = it }
             totalSpaces?.let { updates["totalSpaces"] = it }
             hourlyRate?.let { updates["hourlyRate"] = it }
             dailyCap?.let { updates["dailyCap"] = it }

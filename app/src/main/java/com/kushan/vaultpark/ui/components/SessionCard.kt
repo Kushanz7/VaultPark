@@ -131,6 +131,30 @@ fun SessionCard(
                 )
             }
 
+            // Location Row (New)
+            if (session.location.isNotEmpty() && session.location != "Unknown Location") {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.LocationOn,
+                        contentDescription = "Location",
+                        tint = TextSecondaryDark,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Text(
+                        text = session.location,
+                        fontFamily = Poppins,
+                        fontWeight = FontWeight.Normal,
+                        fontSize = 14.sp,
+                        color = TextLight,
+                        maxLines = 1
+                    )
+                }
+            }
+
             // Time Row: Entry and Exit
             Row(
                 modifier = Modifier.fillMaxWidth(),

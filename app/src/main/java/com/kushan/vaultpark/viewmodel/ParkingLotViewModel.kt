@@ -58,6 +58,8 @@ class ParkingLotViewModel : ViewModel() {
         securityGuardName: String,
         name: String,
         location: String,
+        latitude: Double,
+        longitude: Double,
         totalSpaces: Int,
         hourlyRate: Double,
         dailyCap: Double
@@ -70,6 +72,8 @@ class ParkingLotViewModel : ViewModel() {
                     securityGuardName = securityGuardName,
                     name = name,
                     location = location,
+                    latitude = latitude,
+                    longitude = longitude,
                     totalSpaces = totalSpaces,
                     hourlyRate = hourlyRate,
                     dailyCap = dailyCap
@@ -103,6 +107,8 @@ class ParkingLotViewModel : ViewModel() {
         lotId: String,
         name: String,
         location: String,
+        latitude: Double,
+        longitude: Double,
         totalSpaces: Int,
         hourlyRate: Double,
         dailyCap: Double
@@ -114,6 +120,8 @@ class ParkingLotViewModel : ViewModel() {
                     parkingLotId = lotId,
                     name = name,
                     location = location,
+                    latitude = latitude,
+                    longitude = longitude,
                     totalSpaces = totalSpaces,
                     hourlyRate = hourlyRate,
                     dailyCap = dailyCap

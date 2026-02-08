@@ -50,6 +50,9 @@ fun NavGraphBuilder.driverNavGraph(
                 },
                 onNavigateToSupport = {
                     navController.navigate(NavScreen.Notifications.route)
+                },
+                onNavigateToMap = {
+                    navController.navigate(NavScreen.ParkingLotsMap.route)
                 }
             )
         }
@@ -147,18 +150,13 @@ fun NavGraphBuilder.driverNavGraph(
             )
         }
         
-        composable(NavScreen.ParkingLotSelection.route) {
-            val parkingLotViewModel: com.kushan.vaultpark.viewmodel.ParkingLotViewModel = viewModel()
-            val homeViewModel: com.kushan.vaultpark.viewmodel.DriverHomeViewModel = viewModel()
+        composable(NavScreen.ParkingLotsMap.route) {
+            val mapViewModel: com.kushan.vaultpark.viewmodel.ParkingLotsMapViewModel = viewModel()
             
-            com.kushan.vaultpark.ui.screens.ParkingLotSelectionScreen(
-                viewModel = parkingLotViewModel,
-                onParkingLotSelected = { lot ->
-                    homeViewModel.setSelectedParkingLot(lot.id, lot.name)
-                    navController.popBackStack()
-                },
-                onBackClick = {
-                    navController.popBackStack()
+            com.kushan.vaultpark.ui.screens.ParkingLotsMapScreen(
+                viewModel = mapViewModel,
+                onMenuClick = {
+                     navController.popBackStack()
                 }
             )
         }

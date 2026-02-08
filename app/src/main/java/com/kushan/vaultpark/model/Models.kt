@@ -65,6 +65,7 @@ data class ParkingSession(
     val entryTime: Long = 0L,
     val exitTime: Long? = null,
     val gateLocation: String = "",
+    val location: String = "", // NEW: Parking Lot Address/Name
     val scannedByGuardId: String? = null,
     val guardName: String? = null,
     val status: String = SessionStatus.ACTIVE.name,
@@ -92,6 +93,7 @@ data class ParkingSession(
         "entryTime" to entryTime,
         "exitTime" to exitTime,
         "gateLocation" to gateLocation,
+        "location" to location,
         "scannedByGuardId" to scannedByGuardId,
         "guardName" to guardName,
         "status" to status,
@@ -297,7 +299,14 @@ data class ParkingLot(
     @ServerTimestamp
     val createdAt: Date? = null,
     @ServerTimestamp
-    val updatedAt: Date? = null
+    val updatedAt: Date? = null,
+    
+    // ✨ NEW: Map & Details Support
+    val latitude: Double = 0.0,
+    val longitude: Double = 0.0,
+    val facilities: List<String> = emptyList(), // e.g., ["24/7", "CCTV", "Covered", "EV Charging"]
+    val imageUrl: String? = null,
+    val rating: Double = 0.0
 ) {
     @Exclude
     fun toMap(): Map<String, Any?> = mapOf(
@@ -310,6 +319,11 @@ data class ParkingLot(
         "availableSpaces" to availableSpaces,
         "hourlyRate" to hourlyRate,
         "dailyCap" to dailyCap,
-        "status" to status
+        "status" to status,
+        "latitude" to latitude,
+        "longitude" to longitude,
+        "facilities" to facilities,
+        "imageUrl" to imageUrl,
+        "rating" to rating
     )
 }
