@@ -757,73 +757,88 @@ fun QuickActionsRowSecurity(
             modifier = Modifier.padding(start = 8.dp)
         )
 
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .horizontalScroll(rememberScrollState()),
-            horizontalArrangement = Arrangement.spacedBy(12.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-             QuickActionButton(
-                icon = Icons.Filled.Receipt,
-                label = "Manual Entry",
-                onClick = onManualEntry
-            )
-            
-            QuickActionButton(
-                icon = Icons.Filled.ManageAccounts,
-                label = "Active Sessions",
-                onClick = onActiveSessions
-            )
-
-            QuickActionButton(
-                icon = Icons.Filled.Group,
-                label = "Manage Users",
-                onClick = onManageUsers
-            )
-
-            QuickActionButton(
-                icon = Icons.Filled.Warning,
-                label = "Overdue",
-                onClick = onOverdue
-            )
-            
-            QuickActionButton(
-                icon = Icons.Filled.LocalParking,
-                label = "Parking Lot",
-                onClick = onParkingLot
-            )
-            
-            Box {
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
                 QuickActionButton(
-                    icon = Icons.Filled.EventNote,
-                    label = "Handover",
-                    onClick = onHandover
+                    icon = Icons.Filled.Receipt,
+                    label = "Manual Entry",
+                    onClick = onManualEntry,
+                    modifier = Modifier.weight(1f)
                 )
                 
-                if (unreadNotesCount > 0) {
-                    Badge(
-                        containerColor = StatusError,
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .offset(x = (-4).dp, y = 4.dp)
-                    ) {
-                        Text("$unreadNotesCount")
-                    }
-                }
+                QuickActionButton(
+                    icon = Icons.Filled.ManageAccounts,
+                    label = "Active Sessions",
+                    onClick = onActiveSessions,
+                    modifier = Modifier.weight(1f)
+                )
+
+                QuickActionButton(
+                    icon = Icons.Filled.Group,
+                    label = "Manage Users",
+                    onClick = onManageUsers,
+                    modifier = Modifier.weight(1f)
+                )
+
+                QuickActionButton(
+                    icon = Icons.Filled.Warning,
+                    label = "Overdue",
+                    onClick = onOverdue,
+                    modifier = Modifier.weight(1f)
+                )
             }
             
-            QuickActionButton(
-                icon = Icons.Filled.HistoryEdu,
-                label = "View Logs",
-                onClick = onLogsTap
-            )
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                QuickActionButton(
+                    icon = Icons.Filled.LocalParking,
+                    label = "Parking Lot",
+                    onClick = onParkingLot,
+                    modifier = Modifier.weight(1f)
+                )
+                
+                Box(modifier = Modifier.weight(1f)) {
+                    QuickActionButton(
+                        icon = Icons.Filled.EventNote,
+                        label = "Handover",
+                        onClick = onHandover,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                    
+                    if (unreadNotesCount > 0) {
+                        Badge(
+                            containerColor = StatusError,
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .offset(x = (-4).dp, y = 4.dp)
+                        ) {
+                            Text("$unreadNotesCount")
+                        }
+                    }
+                }
+                
+                QuickActionButton(
+                    icon = Icons.Filled.HistoryEdu,
+                    label = "View Logs",
+                    onClick = onLogsTap,
+                    modifier = Modifier.weight(1f)
+                )
 
-            QuickActionButton(
-                icon = Icons.Filled.Assessment,
-                label = "Reports",
-                onClick = onReportsTap
-            )
+                QuickActionButton(
+                    icon = Icons.Filled.Assessment,
+                    label = "Reports",
+                    onClick = onReportsTap,
+                    modifier = Modifier.weight(1f)
+                )
+            }
         }
     }
 }

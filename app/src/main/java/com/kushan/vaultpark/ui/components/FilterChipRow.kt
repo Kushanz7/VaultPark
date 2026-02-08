@@ -22,6 +22,8 @@ import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.TextLight
+import com.kushan.vaultpark.ui.theme.SecurityPurple
+import androidx.compose.ui.graphics.Color
 
 /**
  * FilterChipRow Component
@@ -59,13 +61,16 @@ fun FilterChip(
     label: String,
     isSelected: Boolean,
     onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    useSecurity: Boolean = false
 ) {
+    val selectedColor = if (useSecurity) SecurityPurple else NeonLime
+    
     Box(
         modifier = modifier
             .height(40.dp)
             .background(
-                color = if (isSelected) NeonLime else DarkSurfaceVariant,
+                color = if (isSelected) selectedColor else DarkSurfaceVariant,
                 shape = MaterialTheme.shapes.extraLarge
             )
             .clickable { onClick() }
@@ -77,7 +82,7 @@ fun FilterChip(
             fontFamily = Poppins,
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
-            color = if (isSelected) com.kushan.vaultpark.ui.theme.TextDarkLight else TextSecondaryDark
+            color = if (isSelected) Color.White else TextSecondaryDark
         )
     }
 }

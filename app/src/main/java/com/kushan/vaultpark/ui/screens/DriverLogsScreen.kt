@@ -60,8 +60,9 @@ import com.kushan.vaultpark.ui.theme.DarkBackground
 import com.kushan.vaultpark.ui.theme.DarkSurface
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.RoleTheme
-import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
+import com.kushan.vaultpark.ui.theme.SecurityPurple
+import com.kushan.vaultpark.ui.theme.SecurityColorLight
 import com.kushan.vaultpark.viewmodel.LogsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -151,35 +152,46 @@ fun SecurityLogsScreen(
                     .padding(top = 20.dp, bottom = 24.dp)
             ) {
                 item {
-                    Row(
+                    MindMirrorCardElevated(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(horizontal = 16.dp, vertical = 8.dp),
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            .padding(horizontal = 16.dp, vertical = 8.dp)
                     ) {
-                        StatCard(
-                            icon = Icons.Default.QrCode,
-                            value = todayScansCount.toString(),
-                            label = "Today's Scans"
-                        )
-                        StatCard(
-                            icon = Icons.Default.CallMade,
-                            value = entriesCount.toString(),
-                            label = "Entries",
-                            iconColor = RoleTheme.driverColor
-                        )
-                        StatCard(
-                            icon = Icons.Default.CallReceived,
-                            value = exitsCount.toString(),
-                            label = "Exits",
-                            iconColor = Color(0xFFFF6B6B)
-                        )
-                        StatCard(
-                            icon = Icons.Default.Speed,
-                            value = activeNowCount.toString(),
-                            label = "Active Now",
-                            iconColor = Color(0xFFFFB84D)
-                        )
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(8.dp),
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            StatCard(
+                                icon = Icons.Default.QrCode,
+                                value = todayScansCount.toString(),
+                                label = "Today's Scans",
+                                iconColor = SecurityColorLight,
+                                valueColor = SecurityPurple
+                            )
+                            StatCard(
+                                icon = Icons.Default.CallMade,
+                                value = entriesCount.toString(),
+                                label = "Entries",
+                                iconColor = SecurityColorLight,
+                                valueColor = SecurityPurple
+                            )
+                            StatCard(
+                                icon = Icons.Default.CallReceived,
+                                value = exitsCount.toString(),
+                                label = "Exits",
+                                iconColor = SecurityColorLight,
+                                valueColor = SecurityPurple
+                            )
+                            StatCard(
+                                icon = Icons.Default.Speed,
+                                value = activeNowCount.toString(),
+                                label = "Active Now",
+                                iconColor = SecurityColorLight,
+                                valueColor = SecurityPurple
+                            )
+                        }
                     }
                 }
 
@@ -209,6 +221,7 @@ fun SecurityLogsScreen(
                             FilterChip(
                                 label = filter.getDisplayName(),
                                 isSelected = filter == selectedDateFilter,
+                                useSecurity = true,
                                 onClick = {
                                     viewModel.fetchScanLogs(
                                         currentUser?.uid ?: "",
@@ -247,6 +260,7 @@ fun SecurityLogsScreen(
                             FilterChip(
                                 label = filter.getDisplayName(),
                                 isSelected = filter == selectedScanTypeFilter,
+                                useSecurity = true,
                                 onClick = {
                                     viewModel.filterByScanType(filter)
                                 }
@@ -390,7 +404,7 @@ fun LogsEmptyState(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = description,

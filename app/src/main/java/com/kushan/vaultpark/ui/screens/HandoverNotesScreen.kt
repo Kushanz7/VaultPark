@@ -74,13 +74,13 @@ fun HandoverNotesScreen(
                         fontFamily = Poppins,
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
-                        color = TextLight
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "Communication between shifts",
                         fontFamily = Poppins,
                         fontSize = 14.sp,
-                        color = TextSecondaryDark
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -245,7 +245,7 @@ private fun HandoverNoteCard(
                                 fontFamily = Poppins,
                                 fontWeight = if (isUnread) FontWeight.Bold else FontWeight.SemiBold,
                                 fontSize = 16.sp,
-                                color = TextLight
+                                color = MaterialTheme.colorScheme.onSurface
                             )
 
                             if (isUnread) {
@@ -264,14 +264,14 @@ private fun HandoverNoteCard(
                                 text = note.guardName,
                                 fontFamily = Poppins,
                                 fontSize = 12.sp,
-                                color = TextSecondaryDark
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
-                            Text("•", fontSize = 12.sp, color = TextSecondaryDark)
+                            Text("•", fontSize = 12.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                             Text(
                                 text = formatNoteTime(note.createdAt),
                                 fontFamily = Poppins,
                                 fontSize = 12.sp,
-                                color = TextSecondaryDark
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -299,7 +299,7 @@ private fun HandoverNoteCard(
                     text = note.message.take(80) + if (note.message.length > 80) "..." else "",
                     fontFamily = Poppins,
                     fontSize = 14.sp,
-                    color = TextSecondaryDark
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -320,13 +320,13 @@ private fun HandoverNoteCard(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 12.sp,
-                            color = TextSecondaryDark
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = note.type.displayName,
                             fontFamily = Poppins,
                             fontSize = 12.sp,
-                            color = TextLight
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
 
@@ -335,7 +335,7 @@ private fun HandoverNoteCard(
                         text = note.message,
                         fontFamily = Poppins,
                         fontSize = 14.sp,
-                        color = TextLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                         lineHeight = 20.sp
                     )
 
@@ -479,7 +479,7 @@ private fun CreateHandoverNoteDialog(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.Bold,
                             fontSize = 20.sp,
-                            color = TextLight
+                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         IconButton(onClick = onDismiss) {
@@ -603,7 +603,7 @@ private fun CreateHandoverNoteDialog(
                             "Set expiry time",
                             fontFamily = Poppins,
                             fontSize = 14.sp,
-                            color = TextLight
+                            color = MaterialTheme.colorScheme.onSurface
                         )
 
                         Switch(
@@ -692,7 +692,7 @@ private fun EmptyHandoverNotesState() {
         Icon(
             imageVector = Icons.Default.EventNote,
             contentDescription = null,
-            tint = TextSecondaryDark,
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
             modifier = Modifier.size(64.dp)
         )
 
@@ -701,14 +701,14 @@ private fun EmptyHandoverNotesState() {
             fontFamily = Poppins,
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
-            color = TextLight
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Text(
             text = "Start a new shift note to communicate with other guards",
             fontFamily = Poppins,
             fontSize = 14.sp,
-            color = TextSecondaryDark,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = androidx.compose.ui.text.style.TextAlign.Center
         )
     }

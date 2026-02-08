@@ -189,6 +189,7 @@ fun QuickActionButton(
     icon: ImageVector,
     label: String,
     modifier: Modifier = Modifier,
+    iconTint: Color = PrimaryPurple,
     onClick: () -> Unit
 ) {
     Column(
@@ -206,7 +207,7 @@ fun QuickActionButton(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = PrimaryPurple,
+            tint = iconTint,
             modifier = Modifier.size(32.dp)
         )
         Spacer(modifier = Modifier.height(4.dp))

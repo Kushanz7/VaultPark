@@ -184,15 +184,6 @@ fun QRCodeDialog(
                         }
                     }
 
-                    // Circular progress indicator
-                    CircularProgressIndicator(
-                        progress = countdownSeconds.toFloat() / 30f,
-                        modifier = Modifier
-                            .size(320.dp)
-                            .align(Alignment.Center),
-                        color = PrimaryPurple,
-                        strokeWidth = 4.dp
-                    )
                 }
 
                 Spacer(modifier = Modifier.height(16.dp))

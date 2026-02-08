@@ -34,6 +34,7 @@ import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.TextTertiaryDark
+import com.kushan.vaultpark.ui.theme.SecurityPurple
 import com.kushan.vaultpark.ui.utils.formatDateTime
 import com.kushan.vaultpark.ui.utils.formatDurationBreakdown
 import com.kushan.vaultpark.ui.utils.calculateBillingAmount
@@ -210,7 +211,7 @@ fun DetailSection(
     title: String,
     content: String,
     icon: String = "",
-    contentColor: Color = NeonLime
+    contentColor: Color = SecurityPurple
 ) {
     Column(
         modifier = Modifier
@@ -285,7 +286,7 @@ fun DetailSectionWithTime(
             fontFamily = Poppins,
             fontWeight = FontWeight.Normal,
             fontSize = 16.sp,
-            color = NeonLime,
+            color = SecurityPurple,
             modifier = Modifier.padding(top = 8.dp, start = 32.dp)
         )
     }

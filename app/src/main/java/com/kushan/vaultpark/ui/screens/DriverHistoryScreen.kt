@@ -65,7 +65,6 @@ import com.google.firebase.auth.FirebaseAuth
 import com.kushan.vaultpark.model.ParkingSession
 import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.utils.formatAmount
 import com.kushan.vaultpark.viewmodel.HistoryViewModel
 
@@ -232,32 +231,6 @@ fun DriverHistoryScreen(
                 }
             }
 
-            // Tag Filter Row
-            item {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 16.dp)
-                ) {
-                    TagFilterRow(
-                        selectedTags = uiState.selectedTags,
-                        onTagSelected = { tag -> viewModel.toggleTagFilter(tag) },
-                        onClearFilters = { viewModel.clearTagFilters() }
-                    )
-                }
-                Spacer(modifier = Modifier.height(16.dp))
-            }
-
-            // Monthly Category Summary
-            item {
-                if (uiState.tagDistribution.isNotEmpty()) {
-                    MonthlyCategorySummaryCard(
-                        tagDistribution = uiState.tagDistribution
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-            }
-
             // Sessions List or Loading State
             if (uiState.isLoading && uiState.parkingSessions.isEmpty()) {
                 items(5) {
@@ -416,7 +389,7 @@ fun HistoryEmptyState(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 18.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = description,

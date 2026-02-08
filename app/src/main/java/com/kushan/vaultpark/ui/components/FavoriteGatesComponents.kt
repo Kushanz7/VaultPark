@@ -365,7 +365,7 @@ private fun QuickSessionItem(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,
-                    color = PrimaryPurple
+                    color = NeonLime
                 )
                 Icon(
                     imageVector = Icons.Filled.ChevronRight,

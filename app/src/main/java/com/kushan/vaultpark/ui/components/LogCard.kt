@@ -32,6 +32,7 @@ import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.TextTertiaryDark
+import com.kushan.vaultpark.ui.theme.SecurityPurple
 import com.kushan.vaultpark.ui.utils.formatDateTime
 import com.kushan.vaultpark.ui.utils.formatDuration
 
@@ -116,7 +117,7 @@ fun LogCard(
                 Icon(
                     imageVector = Icons.Default.DirectionsCar,
                     contentDescription = "Vehicle",
-                    tint = NeonLime,
+                    tint = SecurityPurple,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
@@ -124,7 +125,7 @@ fun LogCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
-                    color = NeonLime
+                    color = SecurityPurple
                 )
             }
 

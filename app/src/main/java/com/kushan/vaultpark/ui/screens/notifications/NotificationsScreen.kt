@@ -57,8 +57,8 @@ import com.kushan.vaultpark.ui.theme.PrimaryPurple
 import com.kushan.vaultpark.ui.theme.SecondaryGold
 import com.kushan.vaultpark.ui.theme.StatusError
 import com.kushan.vaultpark.ui.theme.StatusSuccess
-import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
+import androidx.compose.material3.MaterialTheme
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -151,20 +151,20 @@ fun NotificationsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Notifications", color = TextLight) },
+                title = { Text("Notifications", color = MaterialTheme.colorScheme.onSurface) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkSurface
+                    containerColor = MaterialTheme.colorScheme.surface
                 )
             )
         },
-        containerColor = DarkBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         if (uiState.notifications.isEmpty() && !uiState.isLoading) {
             Box(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .background(DarkBackground),
+                    .background(MaterialTheme.colorScheme.background),
                 contentAlignment = Alignment.Center
             ) {
                 Column(
@@ -174,14 +174,14 @@ fun NotificationsScreen(
                     Icon(
                         imageVector = Icons.Filled.Notifications,
                         contentDescription = "No notifications",
-                        tint = TextSecondaryDark,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(64.dp)
                     )
 
                     Text(
                         text = "No Notifications",
                         fontSize = 20.sp,
-                        color = TextLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(top = 16.dp)
                     )
@@ -189,7 +189,7 @@ fun NotificationsScreen(
                     Text(
                         text = "You're all caught up! Check back later.",
                         fontSize = 14.sp,
-                        color = TextSecondaryDark,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.padding(top = 8.dp)
                     )
                 }
@@ -199,7 +199,7 @@ fun NotificationsScreen(
                 modifier = Modifier
                     .fillMaxSize()
                     .padding(padding)
-                    .background(DarkBackground)
+                    .background(MaterialTheme.colorScheme.background)
             ) {
                 items(uiState.notifications) { notification ->
                     NotificationItem(
@@ -247,7 +247,7 @@ private fun NotificationItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = if (notification.isRead) DarkSurface else DarkSurface.copy(alpha = 0.8f),
+                color = if (notification.isRead) MaterialTheme.colorScheme.surface else MaterialTheme.colorScheme.surface.copy(alpha = 0.8f),
                 shape = RoundedCornerShape(12.dp)
             )
             .clickable { onTap() }
@@ -296,7 +296,7 @@ private fun NotificationItem(
                     Text(
                         text = notification.title,
                         fontSize = 16.sp,
-                        color = TextLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
 

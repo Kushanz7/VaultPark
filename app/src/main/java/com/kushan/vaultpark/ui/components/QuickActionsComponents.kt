@@ -75,7 +75,7 @@ fun QuickStatsWidget(
                     value = if (quickStats.lastParkedDaysAgo == 0) "Today" 
                            else if (quickStats.lastParkedDaysAgo == 1) "Yesterday"
                            else "${quickStats.lastParkedDaysAgo} days ago",
-                    iconTint = PrimaryPurple,
+                    iconTint = NeonLime,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -96,7 +96,7 @@ fun QuickStatsWidget(
                     icon = Icons.Filled.LocationOn,
                     label = "Most Used",
                     value = quickStats.mostUsedGate,
-                    iconTint = PrimaryPurple,
+                    iconTint = NeonLime,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -125,7 +125,7 @@ fun QuickStatsWidget(
                         Icon(
                             imageVector = Icons.Filled.Visibility,
                             contentDescription = "View",
-                            tint = PrimaryPurple,
+                            tint = NeonLime,
                             modifier = Modifier.size(16.dp)
                         )
                         Text(
@@ -133,7 +133,7 @@ fun QuickStatsWidget(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 14.sp,
-                            color = PrimaryPurple
+                            color = NeonLime
                         )
                     }
                 }

@@ -29,6 +29,7 @@ import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -52,13 +53,14 @@ import com.kushan.vaultpark.ui.components.StatColumn
 import com.kushan.vaultpark.ui.theme.Background
 import com.kushan.vaultpark.ui.theme.DarkSurface
 import com.kushan.vaultpark.ui.theme.DarkSurfaceVariant
+import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.PrimaryPurple
 import com.kushan.vaultpark.ui.theme.SecondaryGold
 import com.kushan.vaultpark.ui.theme.StatusSuccess
-import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.TextTertiaryDark
+import com.kushan.vaultpark.ui.theme.DriverTextDark
 import com.kushan.vaultpark.viewmodel.BillingViewModel
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -66,10 +68,6 @@ import java.util.Locale
 import android.graphics.Bitmap
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.ui.graphics.Color as ComposeColor
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
-import androidx.compose.runtime.setValue
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -104,7 +102,7 @@ fun InvoiceDetailsScreen(
                         fontFamily = Poppins,
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
-                        color = TextLight
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -112,16 +110,18 @@ fun InvoiceDetailsScreen(
                         Icon(
                             imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                             contentDescription = "Back",
-                            tint = TextLight
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkSurface
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
-        containerColor = Background
+        containerColor = MaterialTheme.colorScheme.background
     ) { paddingValues ->
         when (paymentStep) {
             PaymentStep.DETAILS -> {
@@ -236,7 +236,7 @@ private fun InvoiceDetailsContent(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 18.sp,
-                    color = TextLight
+                    color = MaterialTheme.colorScheme.onSurface,
                 )
                 Spacer(modifier = Modifier.height(12.dp))
             }
@@ -294,7 +294,7 @@ private fun InvoiceDetailsContent(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryPurple
+                        containerColor = NeonLime
                     ),
                     shape = RoundedCornerShape(16.dp)
                 ) {
@@ -305,7 +305,7 @@ private fun InvoiceDetailsContent(
                         Icon(
                             imageVector = Icons.Default.CreditCard,
                             contentDescription = "Pay",
-                            tint = ComposeColor.White,
+                            tint = DriverTextDark,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
@@ -313,7 +313,7 @@ private fun InvoiceDetailsContent(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp,
-                            color = ComposeColor.White
+                            color = DriverTextDark
                         )
                     }
                 }
@@ -347,7 +347,7 @@ private fun PaymentProcessContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = DarkSurface,
+                    color = MaterialTheme.colorScheme.surface,
                     shape = RoundedCornerShape(20.dp)
                 )
                 .padding(24.dp),
@@ -359,7 +359,7 @@ private fun PaymentProcessContent(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -427,7 +427,7 @@ private fun PaymentProcessContent(
                 ),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Text("Cancel", color = TextLight)
+                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
             }
         }
     }
@@ -451,7 +451,7 @@ private fun QRCodePaymentContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = DarkSurface,
+                    color = MaterialTheme.colorScheme.surface,
                     shape = RoundedCornerShape(20.dp)
                 )
                 .padding(24.dp),
@@ -463,7 +463,7 @@ private fun QRCodePaymentContent(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 24.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
             
             Spacer(modifier = Modifier.height(12.dp))
@@ -556,7 +556,7 @@ private fun PaymentCompletionContent(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(
-                    color = DarkSurface,
+                    color = MaterialTheme.colorScheme.surface,
                     shape = RoundedCornerShape(20.dp)
                 )
                 .padding(24.dp),
@@ -604,7 +604,7 @@ private fun PaymentCompletionContent(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
             
             Spacer(modifier = Modifier.height(24.dp))
@@ -637,7 +637,7 @@ private fun InvoiceHeaderCard(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = DarkSurface,
+                color = MaterialTheme.colorScheme.surface,
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(20.dp)
             )
             .padding(20.dp)
@@ -655,7 +655,7 @@ private fun InvoiceHeaderCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 28.sp,
-            color = TextLight
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(16.dp))
         
@@ -687,7 +687,7 @@ private fun InvoiceSummaryCard(
             .fillMaxWidth()
             .background(
                 brush = Brush.verticalGradient(
-                    colors = listOf(DarkSurfaceVariant, DarkSurface)
+                    colors = listOf(MaterialTheme.colorScheme.surfaceVariant, MaterialTheme.colorScheme.surface)
                 ),
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp)
             )
@@ -699,7 +699,7 @@ private fun InvoiceSummaryCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.SemiBold,
             fontSize = 18.sp,
-            color = TextLight
+            color = MaterialTheme.colorScheme.onSurface
         )
         Spacer(modifier = Modifier.height(20.dp))
         
@@ -739,7 +739,7 @@ private fun InvoiceSummaryCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 48.sp,
-            color = PrimaryPurple
+            color = NeonLime
         )
     }
 }
@@ -753,7 +753,7 @@ private fun SessionDetailCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = DarkSurface,
+                color = MaterialTheme.colorScheme.surface,
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
             )
             .padding(16.dp)
@@ -769,7 +769,7 @@ private fun SessionDetailCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,
-                    color = TextLight
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
                 Spacer(modifier = Modifier.height(4.dp))
                 Text(
@@ -798,7 +798,7 @@ private fun AmountSummaryCard(invoice: InvoiceNew) {
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = DarkSurface,
+                color = MaterialTheme.colorScheme.surface,
                 shape = androidx.compose.foundation.shape.RoundedCornerShape(16.dp)
             )
             .padding(20.dp)
@@ -821,7 +821,7 @@ private fun AmountSummaryCard(invoice: InvoiceNew) {
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         
@@ -843,7 +843,7 @@ private fun AmountSummaryCard(invoice: InvoiceNew) {
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
         
@@ -860,7 +860,7 @@ private fun AmountSummaryCard(invoice: InvoiceNew) {
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = String.format("$%.2f", invoice.totalAmount),
@@ -881,14 +881,14 @@ private fun DownloadInvoiceButton() {
             .fillMaxWidth()
             .height(56.dp),
         colors = ButtonDefaults.buttonColors(
-            containerColor = PrimaryPurple
+            containerColor = NeonLime
         ),
         shape = androidx.compose.foundation.shape.RoundedCornerShape(28.dp)
     ) {
         Icon(
             imageVector = Icons.Default.FileDownload,
             contentDescription = "Download",
-            tint = TextLight,
+            tint = DriverTextDark,
             modifier = Modifier.size(20.dp)
         )
         Spacer(modifier = Modifier.padding(8.dp))
@@ -897,7 +897,7 @@ private fun DownloadInvoiceButton() {
             fontFamily = Poppins,
             fontWeight = FontWeight.SemiBold,
             fontSize = 16.sp,
-            color = TextLight
+            color = DriverTextDark
         )
     }
 }
@@ -925,7 +925,7 @@ private fun InvoiceDetailRow(
             fontFamily = Poppins,
             fontWeight = FontWeight.Medium,
             fontSize = 13.sp,
-            color = TextLight
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

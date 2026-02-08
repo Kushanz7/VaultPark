@@ -35,6 +35,7 @@ import com.kushan.vaultpark.model.InvoiceNew
 import com.kushan.vaultpark.model.PaymentMethod
 import com.kushan.vaultpark.ui.theme.DarkSurface
 import com.kushan.vaultpark.ui.theme.DarkSurfaceVariant
+import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.PrimaryPurple
 import com.kushan.vaultpark.ui.theme.SecondaryGold
@@ -62,7 +63,7 @@ fun StatColumn(
         Icon(
             imageVector = icon,
             contentDescription = label,
-            tint = PrimaryPurple,
+            tint = NeonLime,
             modifier = Modifier.size(32.dp)
         )
         Spacer(modifier = Modifier.height(8.dp))
@@ -71,7 +72,7 @@ fun StatColumn(
             fontFamily = Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 24.sp,
-            color = PrimaryPurple
+            color = NeonLime
         )
         Spacer(modifier = Modifier.height(4.dp))
         Text(
@@ -155,7 +156,7 @@ fun InvoiceCard(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = PrimaryPurple
+                color = NeonLime
             )
             // Status badge
             Box(
@@ -188,7 +189,7 @@ fun InvoiceCard(
             Icon(
                 imageVector = Icons.Default.CreditCard,
                 contentDescription = "Download",
-                tint = PrimaryPurple,
+                tint = NeonLime,
                 modifier = Modifier.size(24.dp)
             )
             Icon(

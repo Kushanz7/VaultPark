@@ -50,6 +50,7 @@ import com.kushan.vaultpark.ui.theme.isDarkThemeEnabled
 import com.kushan.vaultpark.ui.theme.setDarkTheme
 import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
+import com.kushan.vaultpark.ui.theme.RoleTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -148,7 +149,7 @@ fun ProfileScreen(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp,
-                            color = NeonLime,
+                            color = if (currentUser?.role?.name == "SECURITY") RoleTheme.securityColor else RoleTheme.driverColor,
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                         
@@ -188,7 +189,7 @@ fun ProfileScreen(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 16.sp,
-                            color = NeonLime,
+                            color = if (currentUser?.role?.name == "SECURITY") RoleTheme.securityColor else RoleTheme.driverColor,
                             modifier = Modifier.padding(bottom = 16.dp)
                         )
                         
@@ -208,7 +209,7 @@ fun ProfileScreen(
                                     imageVector = if (isDarkTheme) Icons.Filled.DarkMode else Icons.Filled.LightMode,
                                     contentDescription = "Theme Icon",
                                     modifier = Modifier.size(20.dp),
-                                    tint = NeonLime
+                                    tint = if (currentUser?.role?.name == "SECURITY") RoleTheme.securityColor else RoleTheme.driverColor
                                 )
                                 Spacer(modifier = Modifier.size(12.dp))
                                 Column {
@@ -236,8 +237,8 @@ fun ProfileScreen(
                                     setDarkTheme(newValue)
                                 },
                                 colors = SwitchDefaults.colors(
-                                    checkedThumbColor = NeonLime,
-                                    checkedTrackColor = NeonLime.copy(alpha = 0.3f),
+                                    checkedThumbColor = if (currentUser?.role?.name == "SECURITY") RoleTheme.securityColor else RoleTheme.driverColor,
+                                    checkedTrackColor = if (currentUser?.role?.name == "SECURITY") RoleTheme.securityColor.copy(alpha = 0.3f) else RoleTheme.driverColor.copy(alpha = 0.3f),
                                     uncheckedThumbColor = MaterialTheme.colorScheme.outline,
                                     uncheckedTrackColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
                                 )
@@ -298,7 +299,7 @@ fun ProfileScreen(
                 ) {
                     Text(
                         "Sign Out",
-                        color = MaterialTheme.colorScheme.error,
+                        color = MaterialTheme.colorScheme.onErrorContainer,
                         fontFamily = Poppins,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 14.sp

@@ -76,6 +76,7 @@ import com.kushan.vaultpark.ui.components.QuickActionButton
 import com.kushan.vaultpark.ui.components.RecentActivityItem
 import com.kushan.vaultpark.ui.components.StatCardSkeleton
 import com.kushan.vaultpark.ui.theme.DarkBackground
+import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.PrimaryPurple
 import com.kushan.vaultpark.ui.theme.SecondaryGold
@@ -83,6 +84,7 @@ import com.kushan.vaultpark.ui.theme.DarkSurface
 import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.TextTertiaryDark
+import com.kushan.vaultpark.ui.theme.DriverTextDark
 import com.kushan.vaultpark.ui.theme.StatusActive
 import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.viewmodel.DriverHomeViewModel
@@ -276,7 +278,7 @@ fun MembershipBadgePill(membershipType: String) {
     val badgeColor = when (membershipType?.uppercase()) {
         "PLATINUM" -> SecondaryGold
         "GOLD" -> Color(0xFFFF9800)
-        else -> Color(0xFF9C27B0)
+        else -> NeonLime
     }
 
     Row(
@@ -448,7 +450,7 @@ fun ActiveParkingCard(
                         Icon(
                             imageVector = Icons.Filled.QrCode,
                             contentDescription = "QR Code",
-                            tint = Color.White,
+                            tint = DriverTextDark,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
@@ -456,7 +458,7 @@ fun ActiveParkingCard(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 18.sp,
-                            color = Color.White
+                            color = DriverTextDark
                         )
                     }
                 }
@@ -620,24 +622,28 @@ fun QuickActionsRow(
             QuickActionButton(
                 icon = Icons.Filled.Map,
                 label = "Find Parking",
+                iconTint = NeonLime,
                 onClick = onFindParkingTap
             )
 
             QuickActionButton(
                 icon = Icons.Filled.AttachMoney,
                 label = "Pay Bill",
+                iconTint = NeonLime,
                 onClick = onBillingTap
             )
 
             QuickActionButton(
                 icon = Icons.Filled.HistoryEdu,
                 label = "History",
+                iconTint = NeonLime,
                 onClick = onHistoryTap
             )
 
             QuickActionButton(
                 icon = Icons.Filled.Help,
                 label = "Support",
+                iconTint = NeonLime,
                 onClick = onSupportTap
             )
         }

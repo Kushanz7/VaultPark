@@ -37,6 +37,7 @@ import androidx.compose.ui.unit.sp
 import com.kushan.vaultpark.model.UserRole
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.NeonLime
+import com.kushan.vaultpark.ui.theme.RoleTheme
 
 enum class BottomNavItem(val icon: ImageVector, val driverLabel: String, val securityLabel: String) {
     Home(Icons.Default.Home, "Home", "Scanner"),
@@ -75,7 +76,8 @@ fun NeonDarkBottomNavigation(
                     item = item,
                     isSelected = item == selectedItem,
                     onClick = { onItemSelected(item) },
-                    label = if (userRole == UserRole.SECURITY) item.securityLabel else item.driverLabel
+                    label = if (userRole == UserRole.SECURITY) item.securityLabel else item.driverLabel,
+                    userRole = userRole
                 )
             }
         }
@@ -87,15 +89,18 @@ fun BottomNavItemComponent(
     item: BottomNavItem,
     isSelected: Boolean,
     onClick: () -> Unit,
-    label: String
+    label: String,
+    userRole: UserRole = UserRole.DRIVER
 ) {
+    val roleColor = if (userRole == UserRole.SECURITY) RoleTheme.securityColor else RoleTheme.driverColor
+    
     val backgroundColor by animateColorAsState(
-        targetValue = if (isSelected) NeonLime.copy(alpha = 0.12f) else Color.Transparent,
+        targetValue = if (isSelected) roleColor.copy(alpha = 0.12f) else Color.Transparent,
         animationSpec = tween(200), label = ""
     )
     
     val iconColor by animateColorAsState(
-        targetValue = if (isSelected) NeonLime else MaterialTheme.colorScheme.onSurfaceVariant,
+        targetValue = if (isSelected) roleColor else MaterialTheme.colorScheme.onSurfaceVariant,
         animationSpec = tween(200), label = ""
     )
 

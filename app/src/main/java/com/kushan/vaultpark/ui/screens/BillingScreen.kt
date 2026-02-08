@@ -63,12 +63,12 @@ import com.kushan.vaultpark.ui.components.StatusBadge
 import com.kushan.vaultpark.ui.theme.Background
 import com.kushan.vaultpark.ui.theme.DarkSurface
 import com.kushan.vaultpark.ui.theme.DarkSurfaceVariant
+import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.PrimaryPurple
 import com.kushan.vaultpark.ui.theme.SecondaryGold
 import com.kushan.vaultpark.ui.theme.StatusError
 import com.kushan.vaultpark.ui.theme.StatusSuccess
-import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.TextTertiaryDark
 import com.kushan.vaultpark.ui.theme.StatusWarning
@@ -104,7 +104,7 @@ fun BillingScreen(
                         fontFamily = Poppins,
                         fontWeight = FontWeight.Bold,
                         fontSize = 24.sp,
-                        color = TextLight
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 },
                 navigationIcon = {
@@ -113,13 +113,15 @@ fun BillingScreen(
                             Icon(
                                 imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                                 contentDescription = "Back",
-                                tint = TextLight
+                                tint = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkSurface
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
                 )
             )
         },
@@ -273,7 +275,7 @@ fun BillingScreen(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 20.sp,
-                            color = TextLight
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                         Spacer(modifier = Modifier.height(12.dp))
                     }
@@ -439,7 +441,7 @@ private fun CurrentMonthCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 48.sp,
-            color = if (invoice.isOverdue) StatusError else PrimaryPurple,
+            color = if (invoice.isOverdue) StatusError else NeonLime,
             modifier = Modifier.align(Alignment.CenterHorizontally)
         )
         Spacer(modifier = Modifier.height(4.dp))
@@ -521,7 +523,7 @@ private fun PaymentMethodsSection(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 20.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = "+ Add New",
@@ -571,7 +573,7 @@ private fun PayNowButton(
     ) {
         if (isLoading) {
             CircularProgressIndicator(
-                color = TextLight,
+                color = MaterialTheme.colorScheme.onSurface,
                 modifier = Modifier.size(20.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -580,7 +582,7 @@ private fun PayNowButton(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
         } else {
             Text(
@@ -588,7 +590,7 @@ private fun PayNowButton(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 18.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
