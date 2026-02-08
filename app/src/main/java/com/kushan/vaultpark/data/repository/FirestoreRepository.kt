@@ -401,6 +401,31 @@ class FirestoreRepository(
         Result.failure(e)
     }
 
+// ==================== Admin User Management Operations ====================
+
+    /**
+     * Get all users from Firestore
+     */
+    suspend fun getAllUsers(): List<User> = try {
+        val snapshot = db.collection("users")
+            .orderBy("createdAt", Query.Direction.DESCENDING)
+            .get()
+            .await()
+        snapshot.toObjects(User::class.java).map { it.copy(id = it.id) }
+    } catch (e: Exception) {
+        emptyList()
+    }
+
+    /**
+     * Delete user from Firestore
+     */
+    suspend fun deleteUser(userId: String): Result<Unit> = try {
+        db.collection("users").document(userId).delete().await()
+        Result.success(Unit)
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
     // ==================== History & Logs Operations ====================
 
     /**

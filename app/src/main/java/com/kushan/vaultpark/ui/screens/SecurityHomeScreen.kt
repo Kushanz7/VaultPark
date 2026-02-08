@@ -27,6 +27,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Assessment
 import androidx.compose.material.icons.filled.HistoryEdu
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.LocalParking
 import androidx.compose.material.icons.filled.QrCode
@@ -104,6 +105,7 @@ fun SecurityHomeScreen(
     onNavigateToActiveSessions: () -> Unit = {},
     onNavigateToHandover: () -> Unit = {},
     onNavigateToParkingLot: () -> Unit = {},
+    onNavigateToManageUsers: () -> Unit = {},
     viewModel: SecurityHomeViewModel = viewModel(),
     adminViewModel: AdminToolsViewModel = viewModel()
 ) {
@@ -227,6 +229,7 @@ fun SecurityHomeScreen(
                     onActiveSessions = onNavigateToActiveSessions,
                     onHandover = onNavigateToHandover,
                     onParkingLot = onNavigateToParkingLot,
+                    onManageUsers = onNavigateToManageUsers,
                     unreadNotesCount = adminState.unreadNotesCount
                 )
 
@@ -724,6 +727,7 @@ private fun QuickActionsRowSecurity(
     onActiveSessions: () -> Unit,
     onHandover: () -> Unit,
     onParkingLot: () -> Unit,
+    onManageUsers: () -> Unit,
     unreadNotesCount: Int = 0
 ) {
     Column(
@@ -758,6 +762,12 @@ private fun QuickActionsRowSecurity(
                 icon = Icons.Filled.ManageAccounts,
                 label = "Active Sessions",
                 onClick = onActiveSessions
+            )
+
+            QuickActionButton(
+                icon = Icons.Filled.Group,
+                label = "Manage Users",
+                onClick = onManageUsers
             )
             
             QuickActionButton(

@@ -31,7 +31,9 @@ fun ModernPrimaryButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    isLoading: Boolean = false
+    isLoading: Boolean = false,
+    backgroundColor: Color = NeonLime,
+    contentColor: Color = MidnightBlack
 ) {
     Button(
         onClick = onClick,
@@ -40,11 +42,11 @@ fun ModernPrimaryButton(
             .height(56.dp),
         enabled = enabled && !isLoading,
         shape = ButtonShape,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = NeonLime,
-            contentColor = MidnightBlack,
-            disabledContainerColor = NeonLime.copy(alpha = 0.5f),
-            disabledContentColor = MidnightBlack.copy(alpha = 0.7f)
+colors = ButtonDefaults.buttonColors(
+            containerColor = backgroundColor,
+            contentColor = contentColor,
+            disabledContainerColor = backgroundColor.copy(alpha = 0.5f),
+            disabledContentColor = contentColor.copy(alpha = 0.7f)
         ),
         elevation = ButtonDefaults.buttonElevation(
             defaultElevation = 0.dp,

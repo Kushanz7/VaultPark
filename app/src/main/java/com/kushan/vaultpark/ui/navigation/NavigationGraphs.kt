@@ -24,8 +24,10 @@ import com.kushan.vaultpark.ui.screens.notifications.NotificationsViewModel
 import com.kushan.vaultpark.ui.screens.profile.ChangePasswordScreen
 import com.kushan.vaultpark.ui.screens.profile.DriverProfileScreen
 import com.kushan.vaultpark.ui.screens.profile.SecurityProfileScreen
+import com.kushan.vaultpark.ui.screens.ManageUsersScreen
 import com.kushan.vaultpark.viewmodel.AuthViewModel
 import com.kushan.vaultpark.viewmodel.ProfileViewModel
+import com.kushan.vaultpark.viewmodel.AdminUserManagementViewModel
 
 /**
  * Driver Navigation Graph
@@ -182,7 +184,8 @@ fun NavGraphBuilder.securityNavGraph(
                 onNavigateToReports = { navController.navigate(NavScreen.Reports.route) },
                 onNavigateToActiveSessions = { navController.navigate(NavScreen.ActiveSessions.route) },
                 onNavigateToHandover = { navController.navigate(NavScreen.HandoverNotes.route) },
-                onNavigateToParkingLot = { navController.navigate(NavScreen.SecurityGuardParkingLot.route) }
+                onNavigateToParkingLot = { navController.navigate(NavScreen.SecurityGuardParkingLot.route) },
+                onNavigateToManageUsers = { navController.navigate(NavScreen.ManageUsers.route) }
             )
         }
         
@@ -206,8 +209,12 @@ fun NavGraphBuilder.securityNavGraph(
             ActiveSessionsScreen()
         }
         
-        composable(NavScreen.HandoverNotes.route) {
+composable(NavScreen.HandoverNotes.route) {
             HandoverNotesScreen()
+        }
+        
+        composable(NavScreen.ManageUsers.route) {
+            ManageUsersScreen()
         }
         
         composable(NavScreen.Profile.route) {

@@ -24,9 +24,10 @@ sealed class NavScreen(val route: String) {
     data object SecurityProfile : NavScreen("security_profile")
     data object SecurityGuardParkingLot : NavScreen("security_guard_parking_lot")
     
-    // New Admin Tools
+// New Admin Tools
     data object ActiveSessions : NavScreen("active_sessions")
     data object HandoverNotes : NavScreen("handover_notes")
+    data object ManageUsers : NavScreen("manage_users")
 }
 
 val driverNavScreens = listOf(
@@ -42,6 +43,13 @@ val securityNavScreens = listOf(
     NavScreen.Reports,
     NavScreen.ActiveSessions,
     NavScreen.HandoverNotes,
+    NavScreen.Profile
+)
+
+val adminNavScreens = listOf(
+    NavScreen.ManageUsers,
+    NavScreen.ActiveSessions,
+    NavScreen.Reports,
     NavScreen.Profile
 )
 

@@ -28,6 +28,12 @@ data class User(
     @ServerTimestamp
     val createdAt: Date? = null,
     
+    // ✨ NEW: Account Status for Admin Management
+    val isActive: Boolean? = true, // null defaults to true for existing users
+    
+    // ✨ NEW: Profile Image URL
+    val profileImageUrl: String? = null,
+    
     // ✨ NEW: Favorite Gates Feature
     val favoriteGate: String? = null,
     val favoriteGateNote: String? = null,
@@ -45,6 +51,8 @@ data class User(
         "role" to role.name,
         "vehicleNumber" to vehicleNumber,
         "membershipType" to membershipType,
+        "isActive" to isActive,
+        "profileImageUrl" to profileImageUrl,
         "favoriteGate" to favoriteGate,
         "favoriteGateNote" to favoriteGateNote,
         "recentGates" to recentGates,
