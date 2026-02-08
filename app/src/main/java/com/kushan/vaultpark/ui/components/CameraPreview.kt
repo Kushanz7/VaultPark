@@ -17,6 +17,7 @@ import androidx.compose.material.icons.filled.FlashlightOn
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -48,58 +49,53 @@ fun CameraPreview(
     val scope = rememberCoroutineScope()
     var previewView by remember { mutableStateOf<PreviewView?>(null) }
     
-    DisposableEffect(lifecycleOwner) {
-        scope.launch {
-            try {
-                val provider = withContext(Dispatchers.Default) {
-                    ProcessCameraProvider.getInstance(context).get()
-                }
-                
-                previewView?.let { preview ->
-                    provider.unbindAll()
-                    
-                    val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
-                    
-                    val previewUseCase = Preview.Builder().build().also {
-                        it.setSurfaceProvider(preview.surfaceProvider)
-                    }
-                    
-                    val imageAnalysis = ImageAnalysis.Builder()
-                        .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
-                        .build()
-                        .also {
-                            it.setAnalyzer(
-                                Executors.newSingleThreadExecutor(),
-                                BarcodeAnalyzer { qrCode, rect ->
-                                    onQRCodeDetected(qrCode, rect)
-                                }
-                            )
+    
+    LaunchedEffect(previewView, lifecycleOwner, isFlashEnabled) {
+        val view = previewView ?: return@LaunchedEffect
+        
+        try {
+            val provider = withContext(Dispatchers.IO) {
+                ProcessCameraProvider.getInstance(context).get()
+            }
+            
+            provider.unbindAll()
+            
+            val cameraSelector = CameraSelector.DEFAULT_BACK_CAMERA
+            
+            val previewUseCase = Preview.Builder().build().also {
+                it.setSurfaceProvider(view.surfaceProvider)
+            }
+            
+            val imageAnalysis = ImageAnalysis.Builder()
+                .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                .build()
+                .also {
+                    it.setAnalyzer(
+                        Executors.newSingleThreadExecutor(),
+                        BarcodeAnalyzer { qrCode, rect ->
+                            onQRCodeDetected(qrCode, rect)
                         }
-                    
-                    val camera = provider.bindToLifecycle(
-                        lifecycleOwner,
-                        cameraSelector,
-                        previewUseCase,
-                        imageAnalysis
                     )
-                    
-                    try {
-                        if (isFlashEnabled && camera.cameraInfo.hasFlashUnit()) {
-                            camera.cameraControl.enableTorch(true)
-                        } else {
-                            camera.cameraControl.enableTorch(false)
-                        }
-                    } catch (e: Exception) {
-                        Log.e("CameraPreview", "Error toggling flash", e)
-                    }
+                }
+            
+            val camera = provider.bindToLifecycle(
+                lifecycleOwner,
+                cameraSelector,
+                previewUseCase,
+                imageAnalysis
+            )
+            
+            try {
+                if (isFlashEnabled && camera.cameraInfo.hasFlashUnit()) {
+                    camera.cameraControl.enableTorch(true)
+                } else {
+                    camera.cameraControl.enableTorch(false)
                 }
             } catch (e: Exception) {
-                Log.e("CameraPreview", "Error initializing camera", e)
+                Log.e("CameraPreview", "Error toggling flash", e)
             }
-        }
-        
-        onDispose {
-            // Cleanup if needed
+        } catch (e: Exception) {
+            Log.e("CameraPreview", "Error initializing camera", e)
         }
     }
     

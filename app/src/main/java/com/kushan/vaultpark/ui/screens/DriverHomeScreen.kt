@@ -80,6 +80,7 @@ import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.TextTertiaryDark
 import com.kushan.vaultpark.ui.theme.StatusActive
+import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.viewmodel.DriverHomeViewModel
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
@@ -245,7 +246,7 @@ private fun DriverWelcomeHeader(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = PrimaryPurple
+                color = RoleTheme.driverColor
             )
         }
     }
@@ -327,7 +328,7 @@ private fun ActiveParkingCard(
                         fontFamily = Poppins,
                         fontWeight = FontWeight.SemiBold,
                         fontSize = 16.sp,
-                        color = StatusActive
+                        color = RoleTheme.driverColor
                     )
                 }
 
@@ -355,7 +356,7 @@ private fun ActiveParkingCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.Bold,
                     fontSize = 24.sp,
-                    color = PrimaryPurple
+                    color = RoleTheme.driverColor
                 )
 
                 // Exit QR Button
@@ -365,7 +366,7 @@ private fun ActiveParkingCard(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryPurple
+                        containerColor = RoleTheme.driverColor
                     ),
                     shape = RoundedCornerShape(28.dp)
                 ) {
@@ -420,7 +421,7 @@ private fun ActiveParkingCard(
                         .fillMaxWidth()
                         .height(56.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = PrimaryPurple
+                        containerColor = RoleTheme.driverColor
                     ),
                     shape = RoundedCornerShape(28.dp)
                 ) {
@@ -474,7 +475,7 @@ private fun QuickStatsGrid(
                 icon = Icons.Filled.CalendarMonth,
                 value = sessionsCount,
                 label = "Visits This Month",
-                valueColor = PrimaryPurple
+                valueColor = RoleTheme.driverColor
             )
 
             DashboardStatCard(
@@ -495,7 +496,7 @@ private fun QuickStatsGrid(
                 icon = Icons.Filled.Receipt,
                 value = monthlyAmount,
                 label = "Current Bill",
-                valueColor = PrimaryPurple,
+                valueColor = RoleTheme.driverColor,
                 onTap = onBillingTap
             )
 
@@ -549,7 +550,7 @@ private fun RecentActivitySection(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,
-                    color = PrimaryPurple
+                    color = RoleTheme.driverColor
                 )
             }
         }
@@ -640,7 +641,7 @@ private fun PulsingDot() {
         modifier = Modifier
             .size((8.dp.value * scale).dp)
             .background(
-                color = StatusActive,
+                color = RoleTheme.driverColor,
                 shape = RoundedCornerShape(50)
             )
     )

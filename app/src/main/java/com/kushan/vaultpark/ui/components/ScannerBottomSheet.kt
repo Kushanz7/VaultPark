@@ -35,6 +35,7 @@ import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -53,8 +54,14 @@ import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.PrimaryPurple
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.DarkBackground
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
+import com.kushan.vaultpark.ui.components.CameraPreview
 import java.text.SimpleDateFormat
 import java.util.Locale
+
+@OptIn(ExperimentalPermissionsApi::class)
 
 /**
  * Scanner Bottom Sheet for QR code scanning
@@ -131,6 +138,14 @@ fun ScannerBottomSheet(
                 )
 
                 // Camera Preview Area
+                val cameraPermissionState = rememberPermissionState(android.Manifest.permission.CAMERA)
+                
+                LaunchedEffect(Unit) {
+                    if (!cameraPermissionState.status.isGranted) {
+                        cameraPermissionState.launchPermissionRequest()
+                    }
+                }
+
                 Card(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -144,44 +159,41 @@ fun ScannerBottomSheet(
                         modifier = Modifier.fillMaxHeight(),
                         contentAlignment = Alignment.Center
                     ) {
-                        // Camera preview placeholder
-                        Column(
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.Center,
-                            modifier = Modifier.fillMaxHeight()
-                        ) {
-                            Text(
-                                text = "📱",
-                                fontSize = 48.sp
+                        if (cameraPermissionState.status.isGranted) {
+                            CameraPreview(
+                                onQRCodeDetected = { qrCode, _ ->
+                                     onScan(qrCode)
+                                },
+                                isFlashEnabled = isFlashOn,
+                                onFlashToggle = { isFlashOn = !isFlashOn }
                             )
-                            Spacer(modifier = Modifier.height(8.dp))
-                            Text(
-                                text = "Camera Preview",
-                                fontFamily = Poppins,
-                                fontSize = 14.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-                            Spacer(modifier = Modifier.height(4.dp))
-                            Text(
-                                text = "Position QR code within frame",
-                                fontFamily = Poppins,
-                                fontSize = 12.sp,
-                                color = TextSecondaryDark
-                            )
-                        }
-
-                        // Flash toggle button
-                        IconButton(
-                            onClick = { isFlashOn = !isFlashOn },
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .padding(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = if (isFlashOn) Icons.Filled.FlashlightOn else Icons.Filled.FlashlightOff,
-                                contentDescription = "Toggle Flash",
-                                tint = if (isFlashOn) Color.Yellow else TextSecondaryDark
-                            )
+                        } else {
+                            // Permission denied placeholder
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Center,
+                                modifier = Modifier.fillMaxHeight()
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.Close, 
+                                    contentDescription = "No Permission",
+                                    modifier = Modifier.size(48.dp),
+                                    tint = MaterialTheme.colorScheme.error
+                                )
+                                Spacer(modifier = Modifier.height(8.dp))
+                                Text(
+                                    text = "Camera Permission Required",
+                                    fontFamily = Poppins,
+                                    fontSize = 14.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                                Button(
+                                    onClick = { cameraPermissionState.launchPermissionRequest() },
+                                    modifier = Modifier.padding(top = 8.dp)
+                                ) {
+                                    Text("Grant Access")
+                                }
+                            }
                         }
                     }
                 }

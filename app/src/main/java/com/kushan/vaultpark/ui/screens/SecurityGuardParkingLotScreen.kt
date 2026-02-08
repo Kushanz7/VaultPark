@@ -45,6 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.graphics.Color
+import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.viewmodel.ParkingLotViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -102,7 +104,7 @@ fun SecurityGuardParkingLotScreen(
                     }
                 },
                 colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
+                    containerColor = RoleTheme.securityColor,
                     titleContentColor = MaterialTheme.colorScheme.onPrimary,
                     navigationIconContentColor = MaterialTheme.colorScheme.onPrimary
                 )
@@ -490,7 +492,7 @@ private fun ParkingLotDetailsCard(
         Card(
             modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer
+                containerColor = RoleTheme.securityColor
             )
         ) {
             Column(
@@ -519,13 +521,13 @@ private fun ParkingLotDetailsCard(
                                 modifier = Modifier
                                     .height(16.dp)
                                     .width(16.dp),
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                                tint = Color.White
                             )
                             Text(
                                 text = lot.location,
                                 style = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(start = 4.dp),
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                                color = Color.White
                             )
                         }
                     }

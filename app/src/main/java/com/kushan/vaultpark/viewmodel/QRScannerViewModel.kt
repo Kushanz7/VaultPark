@@ -29,7 +29,7 @@ sealed class ScanState {
 class QRScannerViewModel(
     application: Application,
     private val firestoreRepository: FirestoreRepository,
-    val currentGuardId: String
+    var currentGuardId: String = ""
 ) : AndroidViewModel(application) {
     
     companion object {
@@ -73,7 +73,12 @@ class QRScannerViewModel(
         _isFlashEnabled.value = !_isFlashEnabled.value
     }
     
-    fun scanQRCode(qrString: String) {
+    fun scanQRCode(qrString: String, guardId: String? = null) {
+        // Update currentGuardId if provided
+        if (guardId != null) {
+            currentGuardId = guardId
+        }
+
         // Prevent scanning if already processing or showing result
         if (_scanState.value !is ScanState.Idle) {
             return

@@ -69,7 +69,7 @@ import com.kushan.vaultpark.ui.components.ScannerBottomSheet
 import com.kushan.vaultpark.ui.components.StatCardSkeleton
 import com.kushan.vaultpark.ui.theme.DarkBackground
 import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.PrimaryPurple
+import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.ui.theme.SecondaryGold
 import com.kushan.vaultpark.ui.theme.StatusActive
 import com.kushan.vaultpark.ui.theme.TextLight
@@ -90,6 +90,11 @@ import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
+import com.kushan.vaultpark.viewmodel.QRScannerViewModel
+import com.kushan.vaultpark.viewmodel.ScanState
+import com.kushan.vaultpark.ui.components.QRScanResultDialog
+import com.kushan.vaultpark.ui.components.ErrorDialog
+import com.kushan.vaultpark.data.repository.FirestoreRepository
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -107,6 +112,38 @@ fun SecurityHomeScreen(
     var showManualEntryDialog by remember { mutableStateOf(false) }
     var showReportDialog by remember { mutableStateOf(false) }
     val context = LocalContext.current
+    val firestoreRepository = remember { com.kushan.vaultpark.data.repository.FirestoreRepository() }
+    val qrScannerViewModel = remember { 
+        QRScannerViewModel(
+             context.applicationContext as android.app.Application, 
+             firestoreRepository
+        ) 
+    }
+    
+    val scanState by qrScannerViewModel.scanState.collectAsState()
+    var showSuccessDialog by remember { mutableStateOf(false) }
+    var showErrorDialog by remember { mutableStateOf(false) }
+    var lastScannedSession by remember { mutableStateOf<com.kushan.vaultpark.model.ParkingSession?>(null) }
+    var lastErrorMessage by remember { mutableStateOf("") }
+    
+    LaunchedEffect(scanState) {
+        when (scanState) {
+            is ScanState.Success -> {
+                lastScannedSession = (scanState as ScanState.Success).session
+                showSuccessDialog = true
+                showErrorDialog = false
+                viewModel.hideScannerDialog()
+                viewModel.refreshAllData() // Refresh dashboard stats
+            }
+            is ScanState.Error -> {
+                lastErrorMessage = (scanState as ScanState.Error).message
+                showErrorDialog = true
+                showSuccessDialog = false
+                viewModel.hideScannerDialog()
+            }
+            else -> {}
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -223,10 +260,32 @@ fun SecurityHomeScreen(
             recentScans = uiState.recentScans,
             onGateSelected = {},
             onScan = { qrData ->
-                viewModel.hideScannerDialog()
                 // Process scanned data
+                qrScannerViewModel.scanQRCode(qrData, uiState.guard?.id)
             },
             onDismiss = { viewModel.hideScannerDialog() }
+        )
+    }
+    
+    // Scanner Success Dialog
+    if (showSuccessDialog && lastScannedSession != null) {
+        QRScanResultDialog(
+            session = lastScannedSession!!,
+            onDismiss = {
+                showSuccessDialog = false
+                qrScannerViewModel.resetScanState()
+            }
+        )
+    }
+    
+    // Scanner Error Dialog
+    if (showErrorDialog) {
+        ErrorDialog(
+            errorMessage = lastErrorMessage,
+            onDismiss = {
+                showErrorDialog = false
+                qrScannerViewModel.resetScanState()
+            }
         )
     }
 
@@ -312,7 +371,7 @@ private fun GuardDashboardHeader(
                 Icon(
                     imageVector = Icons.Filled.LocalFireDepartment,
                     contentDescription = "Gate",
-                    tint = PrimaryPurple,
+                    tint = RoleTheme.securityColor,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
@@ -320,7 +379,7 @@ private fun GuardDashboardHeader(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,
-                    color = PrimaryPurple
+                    color = RoleTheme.securityColor
                 )
             }
 
@@ -347,7 +406,7 @@ private fun ScanActionCard(onOpenScanner: () -> Unit) {
             .padding(horizontal = 16.dp),
         shape = RoundedCornerShape(28.dp),
         colors = CardDefaults.cardColors(
-            containerColor = PrimaryPurple
+            containerColor = RoleTheme.securityColor
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
@@ -396,7 +455,7 @@ private fun ScanActionCard(onOpenScanner: () -> Unit) {
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    color = PrimaryPurple
+                    color = RoleTheme.securityColor
                 )
             }
         }
@@ -428,7 +487,7 @@ private fun TodayStatsGrid(
                 icon = Icons.Filled.QrCode,
                 value = totalScans,
                 label = "Scans Today",
-                valueColor = PrimaryPurple,
+                valueColor = RoleTheme.securityColor,
                 trend = "↑ 5 from yesterday",
                 trendColor = StatusActive
             )
@@ -575,7 +634,7 @@ private fun ActivityChartSection(
                                     .fillMaxWidth()
                                     .height(barHeight)
                                     .background(
-                                        color = PrimaryPurple,
+                                        color = RoleTheme.securityColor,
                                         shape = RoundedCornerShape(topStart = 4.dp, topEnd = 4.dp)
                                     )
                             )
@@ -634,7 +693,7 @@ private fun RecentScansSection(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 12.sp,
-                    color = PrimaryPurple
+                    color = RoleTheme.securityColor
                 )
             }
         }

@@ -103,7 +103,7 @@ fun HandoverNotesScreen(
                 onClick = { showCreateNoteDialog = true },
                 modifier = Modifier.fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryPurple
+                    containerColor = RoleTheme.securityColor
                 ),
                 shape = RoundedCornerShape(12.dp),
                 contentPadding = PaddingValues(16.dp)
@@ -656,7 +656,7 @@ private fun CreateHandoverNoteDialog(
                         modifier = Modifier.fillMaxWidth(),
                         enabled = title.isNotEmpty() && message.isNotEmpty(),
                         colors = ButtonDefaults.buttonColors(
-                            containerColor = PrimaryPurple
+                            containerColor = RoleTheme.securityColor
                         ),
                         shape = RoundedCornerShape(12.dp),
                         contentPadding = PaddingValues(16.dp)

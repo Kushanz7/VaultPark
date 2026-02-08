@@ -122,3 +122,13 @@ fun setDarkTheme(isDark: Boolean) {
 fun isDarkThemeEnabled(): Boolean {
     return isDarkThemeState.value ?: true
 }
+
+object RoleTheme {
+    val driverColor: Color
+        @Composable
+        get() = if (isSystemInDarkTheme() || isDarkThemeEnabled()) DriverGreen else DriverGreenLight
+
+    val securityColor: Color
+        @Composable
+        get() = if (isSystemInDarkTheme() || isDarkThemeEnabled()) SecurityPurple else SecurityPurpleLight
+}

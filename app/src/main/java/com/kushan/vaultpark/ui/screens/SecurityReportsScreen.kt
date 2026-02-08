@@ -65,6 +65,7 @@ import com.kushan.vaultpark.ui.theme.StatusSuccess
 import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.TextTertiaryDark
+import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.viewmodel.DateRangeFilter
 import com.kushan.vaultpark.viewmodel.ReportsViewModel
 import java.text.SimpleDateFormat
@@ -160,14 +161,14 @@ fun SecurityReportsScreen(
                         if (isLoading) {
                             CircularProgressIndicator(
                                 modifier = Modifier.size(24.dp),
-                                color = PrimaryPurple,
+                                color = RoleTheme.securityColor,
                                 strokeWidth = 2.dp
                             )
                         } else {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
                                 contentDescription = "Refresh",
-                                tint = PrimaryPurple,
+                                tint = RoleTheme.securityColor,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -233,7 +234,7 @@ fun SecurityReportsScreen(
                                     Icon(
                                         imageVector = Icons.Default.QueryStats,
                                         contentDescription = "Scans",
-                                        tint = PrimaryPurple,
+                                        tint = RoleTheme.securityColor,
                                         modifier = Modifier.size(24.dp)
                                     )
                                 },

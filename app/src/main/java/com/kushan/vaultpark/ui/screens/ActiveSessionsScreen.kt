@@ -85,7 +85,7 @@ fun ActiveSessionsScreen(
                 // Selection count badge
                 if (uiState.selectedSessions.isNotEmpty()) {
                     Badge(
-                        containerColor = PrimaryPurple
+                        containerColor = RoleTheme.securityColor
                     ) {
                         Text(
                             text = "${uiState.selectedSessions.size} selected",
@@ -281,7 +281,7 @@ private fun SwipeableSessionCard(
                 Icon(
                     imageVector = Icons.Default.Notes,
                     contentDescription = "Add Note",
-                    tint = PrimaryPurple,
+                    tint = RoleTheme.securityColor,
                     modifier = Modifier.size(28.dp)
                 )
             }
@@ -309,7 +309,7 @@ private fun SwipeableSessionCard(
                 },
             onClick = onToggleSelection,
             colors = CardDefaults.cardColors(
-                containerColor = if (isSelected) PrimaryPurple.copy(alpha = 0.2f)
+                containerColor = if (isSelected) RoleTheme.securityColor.copy(alpha = 0.2f)
                 else MaterialTheme.colorScheme.surface
             ),
             shape = RoundedCornerShape(16.dp),
@@ -327,7 +327,7 @@ private fun SwipeableSessionCard(
                     checked = isSelected,
                     onCheckedChange = { onToggleSelection() },
                     colors = CheckboxDefaults.colors(
-                        checkedColor = PrimaryPurple
+                        checkedColor = RoleTheme.securityColor
                     )
                 )
 
@@ -386,14 +386,14 @@ private fun SwipeableSessionCard(
                             Icon(
                                 imageVector = Icons.Default.LocationOn,
                                 contentDescription = null,
-                                tint = PrimaryPurple,
+                                tint = RoleTheme.securityColor,
                                 modifier = Modifier.size(14.dp)
                             )
                             Text(
                                 text = session.gateLocation,
                                 fontFamily = Poppins,
                                 fontSize = 12.sp,
-                                color = PrimaryPurple
+                                color = RoleTheme.securityColor
                             )
                         }
 
@@ -525,7 +525,7 @@ private fun BulkActionsBar(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 20.sp,
-                color = PrimaryPurple
+                color = RoleTheme.securityColor
             )
 
             FilledTonalButton(
@@ -561,8 +561,8 @@ private fun BulkActionsBar(
                 enabled = !isLoading,
                 modifier = Modifier.weight(1f),
                 colors = ButtonDefaults.filledTonalButtonColors(
-                    containerColor = PrimaryPurple.copy(alpha = 0.2f),
-                    contentColor = PrimaryPurple
+                    containerColor = RoleTheme.securityColor.copy(alpha = 0.2f),
+                    contentColor = RoleTheme.securityColor
                 )
             ) {
                 Icon(Icons.Default.FileDownload, contentDescription = null, modifier = Modifier.size(18.dp))
@@ -594,7 +594,7 @@ private fun SessionActionDialog(
                     SessionAction.FLAG_ISSUE -> Icons.Default.Warning
                 },
                 contentDescription = null,
-                tint = PrimaryPurple,
+                tint = RoleTheme.securityColor,
                 modifier = Modifier.size(32.dp)
             )
         },
@@ -638,7 +638,7 @@ private fun SessionActionDialog(
             Button(
                 onClick = { onConfirm(inputText) },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = PrimaryPurple
+                    containerColor = RoleTheme.securityColor
                 )
             ) {
                 Text("Confirm", fontFamily = Poppins, fontWeight = FontWeight.SemiBold)

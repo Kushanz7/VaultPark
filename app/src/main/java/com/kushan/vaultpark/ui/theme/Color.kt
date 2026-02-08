@@ -13,6 +13,14 @@ val PrimaryPurple = Color(0xFF7C3AED)       // Primary purple for billing
 val SecondaryGold = Color(0xFFFCD34D)       // Secondary gold for accents
 val PurpleDark = Color(0xFF6D28D9)          // Darker purple
 val PurpleLight = Color(0xFFA78BFA)         // Lighter purple
+// Security Role Colors
+val SecurityPurple = PrimaryPurple          // Default/Dark mode purple
+val SecurityPurpleLight = Color(0xFF6D28D9) // Darker purple for Light mode (better contrast)
+
+// Driver Role Colors
+val DriverGreen = NeonLime                  // Default/Dark mode green
+val DriverGreenLight = Color(0xFF4C9F06)    // Darker green for Light mode (better contrast)
+val DriverGreenSecondary = SoftMintGreen    // Secondary driver green
 
 // Surface Colors
 val DarkGrey = Color(0xFF6E6E6E)            // Secondary surface - Unselected buttons, inactive tabs

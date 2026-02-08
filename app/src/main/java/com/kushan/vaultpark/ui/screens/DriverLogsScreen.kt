@@ -54,7 +54,7 @@ import com.kushan.vaultpark.ui.components.StatCard
 import com.kushan.vaultpark.ui.components.StatsCardContainer
 import com.kushan.vaultpark.ui.theme.DarkBackground
 import com.kushan.vaultpark.ui.theme.DarkSurface
-import com.kushan.vaultpark.ui.theme.NeonLime
+import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.TextSecondaryDark
@@ -152,7 +152,7 @@ fun SecurityLogsScreen(
                         icon = Icons.Default.CallMade,
                         value = entriesCount.toString(),
                         label = "Entries",
-                        iconColor = Color(0xFF4CAF50)
+                        iconColor = RoleTheme.driverColor
                     )
                     StatCard(
                         icon = Icons.Default.CallReceived,
@@ -281,7 +281,7 @@ fun SecurityLogsScreen(
                                     .align(Alignment.Center)
                                     .height(44.dp),
                                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                                    containerColor = NeonLime
+                                    containerColor = RoleTheme.driverColor
                                 ),
                                 shape = MaterialTheme.shapes.medium
                             ) {
