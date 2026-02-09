@@ -32,8 +32,8 @@ fun ModernPrimaryButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isLoading: Boolean = false,
-    backgroundColor: Color = NeonLime,
-    contentColor: Color = MidnightBlack
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimary
 ) {
     Button(
         onClick = onClick,
@@ -42,7 +42,7 @@ fun ModernPrimaryButton(
             .height(56.dp),
         enabled = enabled && !isLoading,
         shape = ButtonShape,
-colors = ButtonDefaults.buttonColors(
+        colors = ButtonDefaults.buttonColors(
             containerColor = backgroundColor,
             contentColor = contentColor,
             disabledContainerColor = backgroundColor.copy(alpha = 0.5f),
@@ -152,12 +152,12 @@ fun ModernTextField(
             visualTransformation = visualTransformation,
             shape = InputShape,
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = InputBackground,
-                unfocusedContainerColor = InputBackground,
-                disabledContainerColor = InputBackground.copy(alpha = 0.5f),
-                focusedBorderColor = NeonLime,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = Color.Transparent,
-                errorBorderColor = StatusError,
+                errorBorderColor = MaterialTheme.colorScheme.error,
                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
                 unfocusedTextColor = MaterialTheme.colorScheme.onSurface
             ),
@@ -171,7 +171,7 @@ fun ModernTextField(
         if (isError && errorMessage != null) {
             Text(
                 text = errorMessage,
-                color = StatusError,
+                color = MaterialTheme.colorScheme.error,
                 fontSize = 12.sp,
                 fontFamily = Poppins,
                 modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -217,8 +217,8 @@ fun ModernChip(
     modifier: Modifier = Modifier,
     selected: Boolean = false,
     onClick: (() -> Unit)? = null,
-    backgroundColor: Color = if (selected) NeonLime else InputBackground,
-    textColor: Color = if (selected) MidnightBlack else MaterialTheme.colorScheme.onSurface
+    backgroundColor: Color = if (selected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
+    textColor: Color = if (selected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
 ) {
     Box(
         modifier = modifier
@@ -302,7 +302,7 @@ fun LoadingState(
         verticalArrangement = Arrangement.Center
     ) {
         CircularProgressIndicator(
-            color = NeonLime,
+            color = MaterialTheme.colorScheme.primary,
             strokeWidth = 3.dp
         )
         Spacer(modifier = Modifier.height(16.dp))
@@ -406,12 +406,12 @@ fun EnhancedInputField(
             visualTransformation = visualTransformation,
             shape = com.kushan.vaultpark.ui.theme.GlassCardShape,
             colors = OutlinedTextFieldDefaults.colors(
-                focusedContainerColor = InputBackground,
-                unfocusedContainerColor = InputBackground,
-                disabledContainerColor = InputBackground.copy(alpha = 0.5f),
-                focusedBorderColor = NeonLime,
+                focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+                disabledContainerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+                focusedBorderColor = MaterialTheme.colorScheme.primary,
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.3f),
-                errorBorderColor = StatusError,
+                errorBorderColor = MaterialTheme.colorScheme.error,
                 focusedTextColor = MaterialTheme.colorScheme.onSurface,
                 unfocusedTextColor = MaterialTheme.colorScheme.onSurface
             ),
@@ -425,7 +425,7 @@ fun EnhancedInputField(
         if (isError && errorMessage != null) {
             Text(
                 text = errorMessage,
-                color = StatusError,
+                color = MaterialTheme.colorScheme.error,
                 fontSize = 12.sp,
                 fontFamily = Poppins,
                 modifier = Modifier.padding(start = 16.dp, top = 4.dp)
@@ -467,9 +467,9 @@ fun SmallInputField(
         keyboardOptions = keyboardOptions,
         shape = com.kushan.vaultpark.ui.theme.GlassCardShape,
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = InputBackground,
-            unfocusedContainerColor = InputBackground,
-            focusedBorderColor = NeonLime,
+            focusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant,
+            focusedBorderColor = MaterialTheme.colorScheme.primary,
             unfocusedBorderColor = MaterialTheme.colorScheme.outline.copy(alpha = 0.2f),
             focusedTextColor = MaterialTheme.colorScheme.onSurface,
             unfocusedTextColor = MaterialTheme.colorScheme.onSurface
@@ -493,8 +493,8 @@ fun PillButton(
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
     isLoading: Boolean = false,
-    backgroundColor: Color = NeonLime,
-    contentColor: Color = MidnightBlack,
+    backgroundColor: Color = MaterialTheme.colorScheme.primary,
+    contentColor: Color = MaterialTheme.colorScheme.onPrimary,
     icon: @Composable (() -> Unit)? = null
 ) {
     Button(
@@ -542,8 +542,8 @@ fun OutlinedPillButton(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    borderColor: Color = NeonLime,
-    textColor: Color = NeonLime,
+    borderColor: Color = MaterialTheme.colorScheme.primary,
+    textColor: Color = MaterialTheme.colorScheme.primary,
     icon: @Composable (() -> Unit)? = null
 ) {
     OutlinedButton(

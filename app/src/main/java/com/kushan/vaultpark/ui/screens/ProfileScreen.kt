@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -42,12 +43,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.kushan.vaultpark.viewmodel.ProfileViewModel
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.ui.components.MindMirrorCard
-import com.kushan.vaultpark.ui.theme.isDarkThemeEnabled
-import com.kushan.vaultpark.ui.theme.setDarkTheme
+import com.kushan.vaultpark.ui.components.MindMirrorCard
 import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.RoleTheme
@@ -61,9 +63,11 @@ fun ProfileScreen(
     onNavigateToNotifications: (() -> Unit)? = null,
     onNavigateToChangePassword: (() -> Unit)? = null,
     onNavigateToDriverProfile: (() -> Unit)? = null,
-    onNavigateToSecurityProfile: (() -> Unit)? = null
+    onNavigateToSecurityProfile: (() -> Unit)? = null,
+    viewModel: ProfileViewModel = viewModel()
 ) {
-    var isDarkTheme by remember { mutableStateOf(isDarkThemeEnabled()) }
+    val themeMode by viewModel.themeMode.collectAsState()
+    val isDarkTheme = themeMode == "DARK" || (themeMode == "SYSTEM" && isSystemInDarkTheme())
     
     Scaffold(
         topBar = {
@@ -232,9 +236,9 @@ fun ProfileScreen(
                             
                             Switch(
                                 checked = isDarkTheme,
-                                onCheckedChange = { newValue ->
-                                    isDarkTheme = newValue
-                                    setDarkTheme(newValue)
+                                onCheckedChange = { isChecked ->
+                                    val newMode = if (isChecked) "DARK" else "LIGHT"
+                                    viewModel.setThemeMode(newMode)
                                 },
                                 colors = SwitchDefaults.colors(
                                     checkedThumbColor = if (currentUser?.role?.name == "SECURITY") RoleTheme.securityColor else RoleTheme.driverColor,

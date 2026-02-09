@@ -63,19 +63,19 @@ fun OnboardingScreen(
             title = "Welcome to VaultPark",
             description = "Experience premium parking with secure QR access and seamless management",
             icon = Icons.Default.DirectionsCar,
-            primaryColor = PrimaryPurple
+            primaryColor = MaterialTheme.colorScheme.primary
         ),
         OnboardingPage(
             title = "Quick & Secure Access",
             description = "Dynamic QR codes refresh every 30 seconds for maximum security",
             icon = Icons.Default.QrCode,
-            primaryColor = SecondaryGold
+            primaryColor = MaterialTheme.colorScheme.secondary
         ),
         OnboardingPage(
             title = "Track & Pay Easily",
             description = "View your parking history, manage billing, and stay informed with instant notifications",
             icon = Icons.Default.Lock,
-            primaryColor = PrimaryPurple
+            primaryColor = MaterialTheme.colorScheme.primary
         )
     )
 
@@ -116,7 +116,7 @@ fun OnboardingScreen(
                         )
                         .background(
                             if (index == pagerState.currentPage) {
-                                PrimaryPurple
+                                MaterialTheme.colorScheme.primary
                             } else {
                                 MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.3f)
                             }

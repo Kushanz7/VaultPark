@@ -75,18 +75,13 @@ import com.kushan.vaultpark.ui.components.QRCodeDialog
 import com.kushan.vaultpark.ui.components.QuickActionButton
 import com.kushan.vaultpark.ui.components.RecentActivityItem
 import com.kushan.vaultpark.ui.components.StatCardSkeleton
-import com.kushan.vaultpark.ui.theme.DarkBackground
-import com.kushan.vaultpark.ui.theme.NeonLime
-import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.PrimaryPurple
-import com.kushan.vaultpark.ui.theme.SecondaryGold
-import com.kushan.vaultpark.ui.theme.DarkSurface
-import com.kushan.vaultpark.ui.theme.TextLight
-import com.kushan.vaultpark.ui.theme.TextSecondaryDark
-import com.kushan.vaultpark.ui.theme.TextTertiaryDark
-import com.kushan.vaultpark.ui.theme.DriverTextDark
+
 import com.kushan.vaultpark.ui.theme.StatusActive
 import com.kushan.vaultpark.ui.theme.RoleTheme
+import com.kushan.vaultpark.ui.theme.Poppins
+import com.kushan.vaultpark.ui.theme.SecondaryGold
+import com.kushan.vaultpark.ui.theme.NeonLime
+import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.viewmodel.DriverHomeViewModel
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
@@ -237,7 +232,7 @@ fun DriverWelcomeHeader(
             fontFamily = Poppins,
             fontWeight = FontWeight.Normal,
             fontSize = 14.sp,
-            color = TextSecondaryDark
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
 
         Text(
@@ -245,7 +240,7 @@ fun DriverWelcomeHeader(
             fontFamily = Poppins,
             fontWeight = FontWeight.Bold,
             fontSize = 28.sp,
-            color = TextLight
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Row(
@@ -356,7 +351,7 @@ fun ActiveParkingCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.Bold,
                     fontSize = 18.sp,
-                    color = TextLight
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 // Entry Time
@@ -365,7 +360,7 @@ fun ActiveParkingCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
-                    color = TextSecondaryDark
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 // Duration Counter
@@ -413,7 +408,7 @@ fun ActiveParkingCard(
                     imageVector = Icons.Filled.KeyboardArrowRight,
                     contentDescription = "Not parked",
                     modifier = Modifier.size(64.dp),
-                    tint = TextSecondaryDark
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Text(
@@ -429,7 +424,7 @@ fun ActiveParkingCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
-                    color = TextSecondaryDark
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 // Generate QR Button
@@ -450,7 +445,7 @@ fun ActiveParkingCard(
                         Icon(
                             imageVector = Icons.Filled.QrCode,
                             contentDescription = "QR Code",
-                            tint = DriverTextDark,
+                            tint = MaterialTheme.colorScheme.onPrimary,
                             modifier = Modifier.size(20.dp)
                         )
                         Text(
@@ -458,7 +453,7 @@ fun ActiveParkingCard(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.SemiBold,
                             fontSize = 18.sp,
-                            color = DriverTextDark
+                            color = MaterialTheme.colorScheme.onPrimary
                         )
                     }
                 }
@@ -523,7 +518,7 @@ fun QuickStatsGrid(
                 icon = Icons.Filled.Star,
                 value = memberSince,
                 label = "Member Since",
-                valueColor = TextLight
+                valueColor = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -553,7 +548,7 @@ fun RecentActivitySection(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Button(
@@ -609,7 +604,7 @@ fun QuickActionsRow(
             fontFamily = Poppins,
             fontWeight = FontWeight.SemiBold,
             fontSize = 16.sp,
-            color = TextLight,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(start = 8.dp)
         )
 

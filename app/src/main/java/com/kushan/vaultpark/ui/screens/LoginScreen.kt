@@ -193,13 +193,13 @@ fun LoginScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 shape = RoundedCornerShape(12.dp),
                                 colors = CardDefaults.cardColors(
-                                    containerColor = StatusError.copy(alpha = 0.1f)
+                                    containerColor = MaterialTheme.colorScheme.error.copy(alpha = 0.1f)
                                 )
                             ) {
                                 Text(
                                     text = errorMessage!!,
                                     modifier = Modifier.padding(12.dp),
-                                    color = StatusError,
+                                    color = MaterialTheme.colorScheme.error,
                                     fontSize = 13.sp,
                                     fontWeight = FontWeight.Medium,
                                     fontFamily = Poppins

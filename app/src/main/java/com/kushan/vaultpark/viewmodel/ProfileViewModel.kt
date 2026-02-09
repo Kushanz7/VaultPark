@@ -1,13 +1,15 @@
 package com.kushan.vaultpark.viewmodel
 
+import android.app.Application
 import android.net.Uri
 import android.util.Log
-import androidx.lifecycle.ViewModel
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.messaging.FirebaseMessaging
 import com.google.firebase.storage.FirebaseStorage
+import com.kushan.vaultpark.data.local.ThemePreferencesManager
 import com.kushan.vaultpark.data.repository.FirestoreRepository
 import com.kushan.vaultpark.model.NotificationData
 import com.kushan.vaultpark.model.User
@@ -32,11 +34,13 @@ data class ProfileUiState(
 )
 
 class ProfileViewModel(
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance(),
-    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance(),
-    private val storage: FirebaseStorage = FirebaseStorage.getInstance(),
+    application: Application
+) : AndroidViewModel(application) {
+
+    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+    private val firestore: FirebaseFirestore = FirebaseFirestore.getInstance()
+    private val storage: FirebaseStorage = FirebaseStorage.getInstance()
     private val firestoreRepository: FirestoreRepository = FirestoreRepository()
-) : ViewModel() {
 
     private val _uiState = MutableStateFlow(ProfileUiState())
     val uiState: StateFlow<ProfileUiState> = _uiState.asStateFlow()
@@ -50,10 +54,29 @@ class ProfileViewModel(
     private val _successMessage = MutableStateFlow<String?>(null)
     val successMessage: StateFlow<String?> = _successMessage.asStateFlow()
 
+    private val _themeMode = MutableStateFlow("SYSTEM")
+    val themeMode: StateFlow<String> = _themeMode.asStateFlow()
+
     init {
         loadUserProfile()
         loadUserPreferences()
         registerFCMToken()
+        observeThemePreference()
+    }
+
+    private fun observeThemePreference() {
+        viewModelScope.launch {
+            ThemePreferencesManager.getThemeMode(getApplication()).collect { mode ->
+                _themeMode.value = mode
+            }
+        }
+    }
+
+    fun setThemeMode(mode: String) {
+        viewModelScope.launch {
+            ThemePreferencesManager.saveThemeMode(getApplication(), mode)
+            _themeMode.value = mode
+        }
     }
 
     /**

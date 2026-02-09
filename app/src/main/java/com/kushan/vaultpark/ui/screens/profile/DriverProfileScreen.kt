@@ -26,7 +26,12 @@ import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Help
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Logout
+import androidx.compose.material.icons.automirrored.filled.Help
+import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.NotificationsActive
+import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.KeyboardArrowRight
@@ -38,6 +43,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
@@ -64,13 +70,9 @@ import com.kushan.vaultpark.ui.components.ProfileField
 import com.kushan.vaultpark.ui.components.ProfilePictureWithUpload
 import com.kushan.vaultpark.ui.components.ProfileStatCard
 import com.kushan.vaultpark.ui.components.SettingSwitch
-import com.kushan.vaultpark.ui.theme.DarkBackground
-import com.kushan.vaultpark.ui.theme.DarkSurface
 import com.kushan.vaultpark.ui.theme.PrimaryPurple
 import com.kushan.vaultpark.ui.theme.SecondaryGold
 import com.kushan.vaultpark.ui.theme.StatusError
-import com.kushan.vaultpark.ui.theme.TextLight
-import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.viewmodel.ProfileViewModel
 import kotlinx.coroutines.launch
 
@@ -132,8 +134,8 @@ fun DriverProfileScreen(
     if (showLogoutDialog) {
         AlertDialog(
             onDismissRequest = { showLogoutDialog = false },
-            title = { Text("Sign Out?", color = TextLight) },
-            text = { Text("Are you sure you want to sign out?", color = TextSecondaryDark) },
+            title = { Text("Sign Out?", color = MaterialTheme.colorScheme.onSurface) },
+            text = { Text("Are you sure you want to sign out?", color = MaterialTheme.colorScheme.onSurfaceVariant) },
             confirmButton = {
                 TextButton(
                     onClick = {
@@ -150,20 +152,20 @@ fun DriverProfileScreen(
                     Text("Cancel", color = PrimaryPurple)
                 }
             },
-            containerColor = DarkSurface,
-            titleContentColor = TextLight
+            containerColor = MaterialTheme.colorScheme.surface,
+            titleContentColor = MaterialTheme.colorScheme.onSurface
         )
     }
 
     if (showDeleteDialog) {
         AlertDialog(
             onDismissRequest = { showDeleteDialog = false },
-            title = { Text("Delete Account?", color = TextLight) },
+            title = { Text("Delete Account?", color = MaterialTheme.colorScheme.onSurface) },
             text = {
                 Column {
                     Text(
                         "This action cannot be undone. All your data will be permanently deleted.",
-                        color = TextSecondaryDark
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     androidx.compose.material3.TextField(
                         value = deleteConfirmation,
@@ -173,8 +175,8 @@ fun DriverProfileScreen(
                             .fillMaxWidth()
                             .padding(top = 16.dp),
                         colors = androidx.compose.material3.TextFieldDefaults.colors(
-                            focusedContainerColor = DarkBackground,
-                            unfocusedContainerColor = DarkBackground
+                            focusedContainerColor = MaterialTheme.colorScheme.background,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.background
                         )
                     )
                 }
@@ -198,16 +200,16 @@ fun DriverProfileScreen(
                     Text("Cancel", color = PrimaryPurple)
                 }
             },
-            containerColor = DarkSurface
+            containerColor = MaterialTheme.colorScheme.surface
         )
     }
 
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Profile", color = TextLight) },
+                title = { Text("Profile", color = MaterialTheme.colorScheme.onSurface) },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = DarkSurface
+                    containerColor = MaterialTheme.colorScheme.surface
                 ),
                 actions = {
                     if (!uiState.isEditMode) {
@@ -225,13 +227,13 @@ fun DriverProfileScreen(
             )
         },
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = DarkBackground
+        containerColor = MaterialTheme.colorScheme.background
     ) { padding ->
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(padding)
-                .background(DarkBackground)
+                .background(MaterialTheme.colorScheme.background)
         ) {
             // Profile Header Card
             item {
@@ -241,7 +243,7 @@ fun DriverProfileScreen(
                         .height(200.dp)
                         .background(
                             brush = Brush.verticalGradient(
-                                colors = listOf(DarkSurface, DarkSurface)
+                                colors = listOf(MaterialTheme.colorScheme.surface, MaterialTheme.colorScheme.surface)
                             ),
                             shape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
                         )
@@ -262,7 +264,7 @@ fun DriverProfileScreen(
                         Text(
                             text = uiState.user?.name ?: "Driver",
                             fontSize = 24.sp,
-                            color = TextLight,
+                            color = MaterialTheme.colorScheme.onSurface,
                             fontWeight = FontWeight.Bold,
                             modifier = Modifier.padding(top = 16.dp)
                         )
@@ -270,7 +272,7 @@ fun DriverProfileScreen(
                         Text(
                             text = uiState.user?.email ?: "",
                             fontSize = 14.sp,
-                            color = TextSecondaryDark,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             modifier = Modifier.padding(top = 4.dp)
                         )
 
@@ -299,14 +301,14 @@ fun DriverProfileScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(DarkSurface, RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(20.dp))
                         .padding(20.dp)
                         .padding(16.dp)
                 ) {
                     Text(
                         text = "Personal Information",
                         fontSize = 18.sp,
-                        color = TextLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold
                     )
 
@@ -384,9 +386,87 @@ fun DriverProfileScreen(
                                 onClick = { viewModel.toggleEditMode(false) },
                                 modifier = Modifier.weight(1f)
                             ) {
-                                Text("Cancel", color = TextSecondaryDark)
+                                Text("Cancel", color = MaterialTheme.colorScheme.onSurfaceVariant)
                             }
                         }
+                    }
+                }
+            }
+
+
+
+            // Theme Settings Card
+            item {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(20.dp))
+                        .padding(20.dp)
+                ) {
+                    Text(
+                        text = "Appearance",
+                        fontSize = 18.sp,
+                        color = MaterialTheme.colorScheme.onSurface,
+                        fontWeight = FontWeight.Bold
+                    )
+                    
+                    val currentThemeMode by viewModel.themeMode.collectAsState()
+                    
+                    // Theme Mode Selector
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(vertical = 12.dp),
+                        horizontalArrangement = Arrangement.SpaceBetween,
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(
+                                imageVector = if (currentThemeMode == "DARK") Icons.Filled.DarkMode else Icons.Filled.LightMode,
+                                contentDescription = "Theme",
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                modifier = Modifier.size(24.dp)
+                            )
+                            
+                            Column(modifier = Modifier.padding(start = 16.dp)) {
+                                Text(
+                                    text = "Theme Mode",
+                                    fontSize = 16.sp,
+                                    color = MaterialTheme.colorScheme.onSurface
+                                )
+                                Text(
+                                    text = "Current: $currentThemeMode",
+                                    fontSize = 12.sp,
+                                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                                )
+                            }
+                        }
+                    }
+                    
+                    // Theme Options
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(start = 40.dp),
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    ) {
+                        com.kushan.vaultpark.ui.components.ThemeOptionChip(
+                            label = "System",
+                            isSelected = currentThemeMode == "SYSTEM",
+                            onClick = { viewModel.setThemeMode("SYSTEM") }
+                        )
+                        
+                        com.kushan.vaultpark.ui.components.ThemeOptionChip(
+                            label = "Light",
+                            isSelected = currentThemeMode == "LIGHT",
+                            onClick = { viewModel.setThemeMode("LIGHT") }
+                        )
+                        
+                        com.kushan.vaultpark.ui.components.ThemeOptionChip(
+                            label = "Dark",
+                            isSelected = currentThemeMode == "DARK",
+                            onClick = { viewModel.setThemeMode("DARK") }
+                        )
                     }
                 }
             }
@@ -396,14 +476,14 @@ fun DriverProfileScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(DarkSurface, RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(20.dp))
                         .padding(16.dp)
                         .padding(top = 20.dp)
                 ) {
                     Text(
                         text = "Notifications & Preferences",
                         fontSize = 18.sp,
-                        color = TextLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
@@ -459,14 +539,14 @@ fun DriverProfileScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(DarkSurface, RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(20.dp))
                         .padding(20.dp)
                         .padding(top = 20.dp)
                 ) {
                     Text(
                         text = "My Stats",
                         fontSize = 18.sp,
-                        color = TextLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
@@ -520,14 +600,14 @@ fun DriverProfileScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(DarkSurface, RoundedCornerShape(20.dp))
+                        .background(MaterialTheme.colorScheme.surface, RoundedCornerShape(20.dp))
                         .padding(16.dp)
                         .padding(top = 20.dp)
                 ) {
                     Text(
                         text = "Account",
                         fontSize = 18.sp,
-                        color = TextLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                         fontWeight = FontWeight.Bold,
                         modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
                     )
@@ -537,7 +617,7 @@ fun DriverProfileScreen(
                         Triple(Icons.Filled.AttachMoney, "Payment Methods", { navController.navigate("payment_methods") }),
                         Triple(Icons.Filled.Lock, "Privacy Policy", { navController.navigate("privacy_policy") }),
                         Triple(Icons.Filled.Lock, "Terms of Service", { navController.navigate("terms_of_service") }),
-                        Triple(Icons.Filled.Help, "Help & Support", { navController.navigate("help_support") })
+                        Triple(Icons.AutoMirrored.Filled.Help, "Help & Support", { navController.navigate("help_support") })
                     ).forEach { (icon, label, action) ->
                         Row(
                             modifier = Modifier
@@ -554,22 +634,22 @@ fun DriverProfileScreen(
                                 Icon(
                                     imageVector = icon,
                                     contentDescription = label,
-                                    tint = TextSecondaryDark,
+                                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                     modifier = Modifier.size(24.dp)
                                 )
 
                                 Text(
                                     text = label,
                                     fontSize = 16.sp,
-                                    color = TextLight,
+                                    color = MaterialTheme.colorScheme.onSurface,
                                     modifier = Modifier.padding(start = 16.dp)
                                 )
                             }
 
                             Icon(
-                                imageVector = Icons.Filled.KeyboardArrowRight,
+                                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                                 contentDescription = null,
-                                tint = TextSecondaryDark,
+                                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                                 modifier = Modifier.size(20.dp)
                             )
                         }
@@ -615,7 +695,7 @@ fun DriverProfileScreen(
                     shape = RoundedCornerShape(28.dp)
                 ) {
                     Icon(
-                        imageVector = Icons.Filled.Logout,
+                        imageVector = Icons.AutoMirrored.Filled.Logout,
                         contentDescription = "Logout",
                         tint = Color.White,
                         modifier = Modifier

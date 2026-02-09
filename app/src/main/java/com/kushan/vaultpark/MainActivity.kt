@@ -32,6 +32,8 @@ import com.kushan.vaultpark.viewmodel.AuthViewModel
 import com.kushan.vaultpark.util.DataStoreUtils
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import androidx.compose.foundation.isSystemInDarkTheme
+import com.kushan.vaultpark.data.local.ThemePreferencesManager
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -50,7 +52,32 @@ class MainActivity : ComponentActivity() {
         }
         
         setContent {
-            VaultParkTheme {
+            val themeMode by ThemePreferencesManager
+                .getThemeMode(getApplication())
+                .collectAsState(initial = "SYSTEM")
+                
+            val darkTheme = when (themeMode) {
+                "LIGHT" -> false
+                "DARK" -> true
+                else -> isSystemInDarkTheme() // "SYSTEM"
+            }
+            
+            val authViewModel: AuthViewModel = viewModel()
+            val userRole = authViewModel.currentUser.collectAsState().value?.role
+            
+            // Use String value for userRole to match Theme.kt signature
+            // Assuming UserRole is an enum, we need its name or string representation
+            // If UserRole is a String directly, pass it. If Enum, pass .name
+            // Based on previous files, UserRole seems to be an enum or string constant.
+            // Let's check MainActivity imports: import com.kushan.vaultpark.model.UserRole
+            // And usage: userRole = currentUser?.role ?: UserRole.DRIVER
+            // If it's an enum, we probably need .name or .toString() if Theme.kt expects String.
+            // Theme.kt expects: userRole: String? = null
+            
+            VaultParkTheme(
+                darkTheme = darkTheme,
+                userRole = userRole?.toString()
+            ) {
                 VaultParkApp(this)
             }
         }

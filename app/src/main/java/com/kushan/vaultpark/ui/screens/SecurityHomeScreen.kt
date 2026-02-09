@@ -71,13 +71,10 @@ import com.kushan.vaultpark.ui.components.QuickActionButton
 import com.kushan.vaultpark.ui.components.RecentActivityItem
 import com.kushan.vaultpark.ui.components.ScannerBottomSheet
 import com.kushan.vaultpark.ui.components.StatCardSkeleton
-import com.kushan.vaultpark.ui.theme.DarkBackground
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.ui.theme.SecondaryGold
 import com.kushan.vaultpark.ui.theme.StatusActive
-import com.kushan.vaultpark.ui.theme.TextLight
-import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.theme.StatusError
 import com.kushan.vaultpark.viewmodel.SecurityHomeViewModel
 import com.kushan.vaultpark.viewmodel.AdminToolsViewModel
@@ -405,7 +402,7 @@ fun GuardDashboardHeader(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
-                color = TextSecondaryDark
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
     }
@@ -590,7 +587,7 @@ fun PulsingStatCard(
             fontFamily = Poppins,
             fontWeight = FontWeight.Normal,
             fontSize = 12.sp,
-            color = TextSecondaryDark
+            color = MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }
@@ -613,7 +610,7 @@ fun ActivityChartSection(
             fontFamily = Poppins,
             fontWeight = FontWeight.SemiBold,
             fontSize = 16.sp,
-            color = TextLight
+            color = MaterialTheme.colorScheme.onSurface
         )
 
         Card(
@@ -658,7 +655,7 @@ fun ActivityChartSection(
                                 fontFamily = Poppins,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 8.sp,
-                                color = TextSecondaryDark
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
@@ -692,7 +689,7 @@ fun RecentScansSection(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Button(
@@ -753,7 +750,7 @@ fun QuickActionsRowSecurity(
             fontFamily = Poppins,
             fontWeight = FontWeight.SemiBold,
             fontSize = 16.sp,
-            color = TextLight,
+            color = MaterialTheme.colorScheme.onSurface,
             modifier = Modifier.padding(start = 8.dp)
         )
 
