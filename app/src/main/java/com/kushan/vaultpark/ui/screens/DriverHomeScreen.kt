@@ -185,10 +185,7 @@ fun DriverHomeScreen(
         }
     }
 
-    // Error Banner
-    if (uiState.error != null) {
-        OfflineBannerComponent()
-    }
+
 
     // QR Code Dialog
     if (uiState.isShowQRDialog) {
@@ -696,6 +693,5 @@ fun formatSessionDuration(entryTime: Long, exitTime: Long?): String {
 fun formatBillingAmount(entryTime: Long, exitTime: Long?): String {
     val durationHours = ((exitTime ?: System.currentTimeMillis()) - entryTime) / (1000.0 * 60 * 60)
     val amount = durationHours * 50.0 // $50 per hour
-    return "$" + String.format("%.2f", amount)
     return "$" + String.format("%.2f", amount)
 }

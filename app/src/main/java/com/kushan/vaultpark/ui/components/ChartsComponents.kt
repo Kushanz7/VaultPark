@@ -255,26 +255,30 @@ fun EntryExitRatioChart(
             horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             // Entry bar (green)
-            Box(
-                modifier = Modifier
-                    .weight(entryPercentage.toFloat())
-                    .height(8.dp)
-                    .background(
-                        color = Color(0xFF50C878),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-            )
+            if (entries > 0) {
+                Box(
+                    modifier = Modifier
+                        .weight(entries.toFloat())
+                        .height(8.dp)
+                        .background(
+                            color = Color(0xFF50C878),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                )
+            }
             
             // Exit bar (red)
-            Box(
-                modifier = Modifier
-                    .weight(exitPercentage.toFloat())
-                    .height(8.dp)
-                    .background(
-                        color = Color(0xFFFF6B6B),
-                        shape = RoundedCornerShape(4.dp)
-                    )
-            )
+            if (exits > 0) {
+                Box(
+                    modifier = Modifier
+                        .weight(exits.toFloat())
+                        .height(8.dp)
+                        .background(
+                            color = Color(0xFFFF6B6B),
+                            shape = RoundedCornerShape(4.dp)
+                        )
+                )
+            }
         }
         
         // Labels
