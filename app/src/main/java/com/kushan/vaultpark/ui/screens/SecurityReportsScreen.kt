@@ -334,8 +334,6 @@ fun SecurityReportsScreen(
                 ) {
                     if (isLoading) {
                         ShimmerLoadingCard(height = 250)
-                    } else if (hourlyData.isEmpty()) {
-                        EmptyStateCard(message = "No hourly data available")
                     } else {
                         HourlyBarChart(hourlyData)
                     }
@@ -350,8 +348,6 @@ fun SecurityReportsScreen(
                 ) {
                     if (isLoading) {
                         ShimmerLoadingCard(height = 200)
-                    } else if (dailyTrendData.isEmpty()) {
-                        EmptyStateCard(message = "No trend data available")
                     } else {
                         DailyTrendLineChart(dailyTrendData)
                     }
