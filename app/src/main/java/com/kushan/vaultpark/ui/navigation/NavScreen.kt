@@ -3,6 +3,7 @@ package com.kushan.vaultpark.ui.navigation
 sealed class NavScreen(val route: String) {
     // Auth
     data object Login : NavScreen("login")
+    data object SignUp : NavScreen("signup")
     
     // Driver Screens
     data object Home : NavScreen("home")

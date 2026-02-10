@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
@@ -40,12 +41,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kushan.vaultpark.model.User
@@ -61,7 +65,8 @@ import com.kushan.vaultpark.viewmodel.AuthViewModel
 @Composable
 fun LoginScreen(
     authViewModel: AuthViewModel,
-    onLoginSuccess: (User) -> Unit
+    onLoginSuccess: (User) -> Unit,
+    onNavigateToSignUp: () -> Unit = {}
 ) {
     val isAuthenticated by authViewModel.isAuthenticated.collectAsState()
     val currentUser by authViewModel.currentUser.collectAsState()
@@ -268,6 +273,43 @@ fun LoginScreen(
                     )
                 }
             }
+            
+            // Don't have an account link
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            val annotatedText = buildAnnotatedString {
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        fontSize = 14.sp,
+                        fontFamily = Poppins
+                    )
+                ) {
+                    append("Don't have an account? ")
+                }
+                pushStringAnnotation(tag = "SIGNUP", annotation = "signup")
+                withStyle(
+                    style = SpanStyle(
+                        color = MaterialTheme.colorScheme.primary,
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.SemiBold,
+                        fontFamily = Poppins
+                    )
+                ) {
+                    append("Sign Up")
+                }
+                pop()
+            }
+            
+            ClickableText(
+                text = annotatedText,
+                onClick = { offset ->
+                    annotatedText.getStringAnnotations(tag = "SIGNUP", start = offset, end = offset)
+                        .firstOrNull()?.let {
+                            onNavigateToSignUp()
+                        }
+                }
+            )
         }
     }
 }

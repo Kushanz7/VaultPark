@@ -7,6 +7,7 @@ import androidx.navigation.compose.composable
 import com.kushan.vaultpark.model.User
 import com.kushan.vaultpark.model.UserRole
 import com.kushan.vaultpark.ui.screens.LoginScreen
+import com.kushan.vaultpark.ui.screens.SignUpScreen
 import com.kushan.vaultpark.viewmodel.AuthViewModel
 
 @Composable
@@ -42,6 +43,28 @@ fun VaultParkNavHost(
                     navController.navigate(destination) {
                         popUpTo(NavScreen.Login.route) { inclusive = true }
                     }
+                },
+                onNavigateToSignUp = {
+                    navController.navigate(NavScreen.SignUp.route)
+                }
+            )
+        }
+        
+        // Sign Up Screen
+        composable(NavScreen.SignUp.route) {
+            SignUpScreen(
+                authViewModel = authViewModel,
+                onSignUpSuccess = { user ->
+                    val destination = when (user.role) {
+                        UserRole.DRIVER -> DRIVER_GRAPH
+                        UserRole.SECURITY -> SECURITY_GRAPH
+                    }
+                    navController.navigate(destination) {
+                        popUpTo(NavScreen.SignUp.route) { inclusive = true }
+                    }
+                },
+                onNavigateToLogin = {
+                    navController.popBackStack()
                 }
             )
         }
