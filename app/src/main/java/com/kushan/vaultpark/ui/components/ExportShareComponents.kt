@@ -499,44 +499,15 @@ private fun exportToPDF(
     sessions: List<ParkingSession>,
     callback: (Boolean, String) -> Unit
 ) {
-    // Note: For a full PDF implementation, you would use a library like iText or PDFDocument
-    // This is a placeholder that exports as text file with .pdf extension
     try {
-        val fileName = "parking_report_${System.currentTimeMillis()}.txt"
-        val file = File(context.getExternalFilesDir(null), fileName)
+        val pdfFile = com.kushan.vaultpark.util.PdfGenerator.generateSessionReportPdf(context, sessions)
         
-        FileWriter(file).use { writer ->
-            writer.append("═══════════════════════════════════════\n")
-            writer.append("        VAULTPARK PARKING REPORT\n")
-            writer.append("═══════════════════════════════════════\n\n")
-            writer.append("Generated: ${formatDateTime(System.currentTimeMillis())}\n")
-            writer.append("Total Sessions: ${sessions.size}\n\n")
-            
-            sessions.forEachIndexed { index, session ->
-                writer.append("───────────────────────────────────────\n")
-                writer.append("Session ${index + 1}\n")
-                writer.append("───────────────────────────────────────\n")
-                writer.append("Gate: ${session.gateLocation}\n")
-                writer.append("Vehicle: ${session.vehicleNumber}\n")
-                writer.append("Entry: ${formatDateTime(session.entryTime)}\n")
-                if (session.exitTime != null) {
-                    writer.append("Exit: ${formatDateTime(session.exitTime)}\n")
-                    writer.append("Duration: ${calculateDuration(session.entryTime, session.exitTime)}\n")
-                } else {
-                    writer.append("Status: Active\n")
-                }
-                if (session.notes.isNotEmpty()) {
-                    writer.append("Notes: ${session.notes}\n")
-                }
-                if (session.tags.isNotEmpty()) {
-                    writer.append("Tags: ${session.tags.joinToString(", ")}\n")
-                }
-                writer.append("\n")
-            }
+        if (pdfFile != null) {
+            shareFile(context, pdfFile, "application/pdf")
+            callback(true, "PDF Report generated successfully")
+        } else {
+            callback(false, "Failed to generate PDF")
         }
-        
-        shareFile(context, file, "text/plain")
-        callback(true, "Report generated successfully")
         
     } catch (e: Exception) {
         callback(false, "Export failed: ${e.message}")

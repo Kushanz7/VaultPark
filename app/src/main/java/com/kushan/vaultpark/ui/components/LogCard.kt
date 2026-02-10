@@ -26,12 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kushan.vaultpark.model.ParkingSession
-import com.kushan.vaultpark.ui.theme.DarkSurface
 import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.TextLight
-import com.kushan.vaultpark.ui.theme.TextSecondaryDark
-import com.kushan.vaultpark.ui.theme.TextTertiaryDark
 import com.kushan.vaultpark.ui.theme.SecurityPurple
 import com.kushan.vaultpark.ui.utils.formatDateTime
 import com.kushan.vaultpark.ui.utils.formatDuration
@@ -53,7 +49,7 @@ fun LogCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = DarkSurface,
+                color = MaterialTheme.colorScheme.surface,
                 shape = MaterialTheme.shapes.medium
             )
             .clickable(
@@ -79,7 +75,7 @@ fun LogCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 16.sp,
-                    color = TextLight,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.weight(1f)
                 )
 
@@ -138,7 +134,7 @@ fun LogCard(
                 Icon(
                     imageVector = Icons.Default.AccessTime,
                     contentDescription = "Time",
-                    tint = TextSecondaryDark,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
@@ -146,7 +142,7 @@ fun LogCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
-                    color = TextLight
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -159,7 +155,7 @@ fun LogCard(
                 Icon(
                     imageVector = Icons.Default.LocationOn,
                     contentDescription = "Location",
-                    tint = TextSecondaryDark,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
@@ -167,7 +163,7 @@ fun LogCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
-                    color = TextSecondaryDark
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
@@ -200,7 +196,7 @@ fun LogCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(top = 4.dp),
-                color = TextTertiaryDark.copy(alpha = 0.2f),
+                color = MaterialTheme.colorScheme.outlineVariant.copy(alpha = 0.5f),
                 thickness = 1.dp
             )
         }

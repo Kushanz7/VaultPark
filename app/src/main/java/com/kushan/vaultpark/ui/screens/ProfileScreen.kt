@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.DarkMode
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.LightMode
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.Button
@@ -91,10 +92,17 @@ fun ProfileScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { }) {
+                    IconButton(onClick = {
+                        if (currentUser?.role?.name == "SECURITY") {
+                             onNavigateToSecurityProfile?.invoke()
+                        } else {
+                             onNavigateToDriverProfile?.invoke()
+                        }
+                    }) {
                         Icon(
-                            imageVector = Icons.Default.MoreVert,
-                            contentDescription = "More options"
+                            imageVector = Icons.Default.Edit,
+                            contentDescription = "Edit Profile",
+                            tint = MaterialTheme.colorScheme.primary
                         )
                     }
                 },
@@ -166,12 +174,14 @@ fun ProfileScreen(
                         ProfileInfoItem("Role", currentUser?.role?.name ?: "N/A")
                         Spacer(modifier = Modifier.height(12.dp))
                         
-                        if (currentUser?.vehicleNumber != null) {
-                            ProfileInfoItem("Vehicle", currentUser.vehicleNumber)
-                            Spacer(modifier = Modifier.height(12.dp))
+                        if (currentUser?.role?.name != "SECURITY") {
+                            if (currentUser?.vehicleNumber != null) {
+                                ProfileInfoItem("Vehicle", currentUser.vehicleNumber)
+                                Spacer(modifier = Modifier.height(12.dp))
+                            }
+                            
+                            ProfileInfoItem("Membership", currentUser?.membershipType ?: "Standard")
                         }
-                        
-                        ProfileInfoItem("Membership", currentUser?.membershipType ?: "Standard")
                     }
                 }
             }

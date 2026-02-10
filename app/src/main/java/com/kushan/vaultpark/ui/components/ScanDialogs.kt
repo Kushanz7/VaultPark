@@ -50,7 +50,7 @@ fun QRScanResultDialog(
     )
     
     val backgroundColor by animateColorAsState(
-        targetValue = Color(0xFF4CAF50).copy(alpha = 0.1f),
+        targetValue = MaterialTheme.colorScheme.surface,
         animationSpec = tween(400),
         label = "bg_color"
     )

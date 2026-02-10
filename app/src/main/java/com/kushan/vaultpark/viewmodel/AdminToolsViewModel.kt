@@ -646,11 +646,11 @@ class AdminToolsViewModel(
                 val notes = db.collection("shiftNotes")
                     .whereGreaterThanOrEqualTo("shiftDate", getDateDaysAgo(7))
                     .orderBy("shiftDate", Query.Direction.DESCENDING)
-                    .orderBy("createdAt", Query.Direction.DESCENDING)
                     .limit(50)
                     .get()
                     .await()
                     .toObjects(ShiftNote::class.java)
+                    .sortedByDescending { it.createdAt }
 
                 val unreadCount = guardId?.let { id ->
                     notes.count { !it.readBy.contains(id) }
@@ -661,7 +661,10 @@ class AdminToolsViewModel(
                     unreadNotesCount = unreadCount
                 )
             } catch (e: Exception) {
-                // Silent fail
+                _uiState.value = _uiState.value.copy(
+                    error = "Failed to load notes: \${e.message}"
+                )
+                Log.e(TAG, "Error loading notes", e)
             }
         }
     }

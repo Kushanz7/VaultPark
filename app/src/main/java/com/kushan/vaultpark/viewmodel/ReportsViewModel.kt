@@ -63,6 +63,11 @@ class ReportsViewModel : ViewModel() {
     
     private val _activeNow = MutableStateFlow(0)
     val activeNow: StateFlow<Int> = _activeNow
+
+    private val _currentSessions = MutableStateFlow<List<ParkingSession>>(emptyList())
+    val currentSessions: StateFlow<List<ParkingSession>> = _currentSessions
+
+
     
     init {
         fetchReportData(DateRangeFilter.TODAY)
@@ -107,7 +112,7 @@ class ReportsViewModel : ViewModel() {
                 
                 val guardId = auth.currentUser?.uid
                 val sessions = repository.fetchSessionsForDateRange(startTime, endTime, guardId)
-                
+                _currentSessions.value = sessions
                 calculateAndUpdateMetrics(sessions, startTime, endTime)
                 
             } catch (e: Exception) {
@@ -126,7 +131,7 @@ class ReportsViewModel : ViewModel() {
                 
                 val guardId = auth.currentUser?.uid
                 val sessions = repository.fetchSessionsForDateRange(startTime, endTime, guardId)
-                
+                _currentSessions.value = sessions
                 calculateAndUpdateMetrics(sessions, startTime, endTime)
                 
             } catch (e: Exception) {
@@ -207,9 +212,8 @@ class ReportsViewModel : ViewModel() {
         }
     }
     
-    fun exportReport(): String {
-        // Placeholder for PDF export
-        return "Report export feature coming soon"
+    fun exportReport() {
+        // Trigger export UI event if needed, but currently handled by UI observing sessions
     }
 }
 
