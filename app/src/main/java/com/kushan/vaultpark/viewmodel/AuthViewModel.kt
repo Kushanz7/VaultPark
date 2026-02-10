@@ -73,6 +73,52 @@ class AuthViewModel(
         }
     }
     
+    fun signUp(email: String, password: String, name: String, role: com.kushan.vaultpark.model.UserRole, vehicleNumber: String = "") {
+        viewModelScope.launch {
+            _isLoading.value = true
+            _errorMessage.value = null
+            
+            try {
+                // Create user with Firebase Auth
+                val authResult = authRepository.signUp(email, password)
+                
+                if (authResult.isSuccess) {
+                    val userId = authResult.getOrNull()
+                    if (userId != null) {
+                        // Create user document in Firestore
+                        val newUser = User(
+                            id = userId,
+                            name = name,
+                            email = email,
+                            phone = "",
+                            role = role,
+                            vehicleNumber = vehicleNumber,
+                            membershipType = if (role == com.kushan.vaultpark.model.UserRole.DRIVER) "Standard" else ""
+                        )
+                        
+                        // Save to Firestore
+                        val saveResult = firestoreRepository.saveUser(newUser)
+                        
+                        if (saveResult.isSuccess) {
+                            _currentUser.value = newUser
+                            _isAuthenticated.value = true
+                        } else {
+                            _errorMessage.value = "Failed to create user profile: ${saveResult.exceptionOrNull()?.message}"
+                        }
+                    } else {
+                        _errorMessage.value = "Sign up failed: User ID is null"
+                    }
+                } else {
+                    _errorMessage.value = authResult.exceptionOrNull()?.message ?: "Sign up failed"
+                }
+            } catch (e: Exception) {
+                _errorMessage.value = "Sign up error: ${e.message}"
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+    
     private suspend fun createNewUserInFirestore(userId: String, email: String) {
         try {
             // Determine user role based on email

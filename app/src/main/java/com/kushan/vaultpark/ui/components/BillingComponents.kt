@@ -20,6 +20,7 @@ import androidx.compose.material.icons.filled.Circle
 import androidx.compose.material.icons.filled.CreditCard
 import androidx.compose.material.icons.filled.LocalParking
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -131,7 +132,7 @@ fun InvoiceCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = DarkSurface,
+                color = MaterialTheme.colorScheme.surface,
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable { onTap() }
@@ -149,7 +150,7 @@ fun InvoiceCard(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.SemiBold,
                 fontSize = 16.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = "$${String.format("%.2f", invoice.totalAmount)}",
@@ -195,7 +196,7 @@ fun InvoiceCard(
             Icon(
                 imageVector = Icons.Default.Circle,
                 contentDescription = "Details",
-                tint = TextTertiaryDark,
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
                 modifier = Modifier.size(20.dp)
             )
         }
@@ -217,7 +218,7 @@ fun PaymentMethodCard(
             .width(200.dp)
             .height(120.dp)
             .background(
-                color = DarkSurfaceVariant,
+                color = MaterialTheme.colorScheme.surfaceVariant,
                 shape = RoundedCornerShape(16.dp)
             )
             .clickable { onSelect() }
@@ -245,7 +246,7 @@ fun PaymentMethodCard(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Medium,
                 fontSize = 14.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
             
             // Card type
@@ -254,7 +255,7 @@ fun PaymentMethodCard(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Normal,
                 fontSize = 12.sp,
-                color = TextSecondaryDark
+                color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
         
@@ -294,6 +295,7 @@ fun PaymentMethodCard(
         }
     }
 }
+
 
 /**
  * Status badge component

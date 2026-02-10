@@ -260,10 +260,7 @@ fun SecurityHomeScreen(
         }
     }
 
-    // Error Banner
-    if (uiState.error != null) {
-        OfflineBannerComponent()
-    }
+
 }
 
     // Scanner Bottom Sheet

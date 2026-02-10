@@ -26,6 +26,7 @@ import androidx.compose.material.icons.filled.QueryStats
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarDuration
 import androidx.compose.material3.SnackbarHost
@@ -61,13 +62,9 @@ import com.kushan.vaultpark.ui.components.MetricCard
 import com.kushan.vaultpark.ui.components.PulsingMetricCard
 import com.kushan.vaultpark.ui.components.ShimmerLoadingCard
 import com.kushan.vaultpark.ui.components.TopDriverItem
-import com.kushan.vaultpark.ui.theme.DarkBackground
 import com.kushan.vaultpark.ui.theme.PrimaryPurple
 import com.kushan.vaultpark.ui.theme.SecondaryGold
 import com.kushan.vaultpark.ui.theme.StatusSuccess
-import com.kushan.vaultpark.ui.theme.TextLight
-import com.kushan.vaultpark.ui.theme.TextSecondaryDark
-import com.kushan.vaultpark.ui.theme.TextTertiaryDark
 import com.kushan.vaultpark.ui.theme.RoleTheme
 import com.kushan.vaultpark.viewmodel.DateRangeFilter
 import com.kushan.vaultpark.viewmodel.ReportsViewModel
@@ -88,9 +85,11 @@ fun SecurityReportsScreen(
     val topDrivers = viewModel.topDrivers.collectAsState().value
     val isLoading = viewModel.isLoading.collectAsState().value
     val activeNow = viewModel.activeNow.collectAsState().value
+    val currentSessions = viewModel.currentSessions.collectAsState().value
     
     val snackbarHostState = remember { SnackbarHostState() }
     val showDatePicker = remember { mutableStateOf(false) }
+    val showExportDialog = remember { mutableStateOf(false) }
     val refreshRotation = remember { Animatable(0f) }
     
     LaunchedEffect(isLoading) {
@@ -117,8 +116,8 @@ fun SecurityReportsScreen(
     
     Scaffold(
         snackbarHost = { SnackbarHost(snackbarHostState) },
-        containerColor = DarkBackground,
-        contentColor = TextLight
+        containerColor = MaterialTheme.colorScheme.background,
+        contentColor = MaterialTheme.colorScheme.onBackground
     ) { paddingValues ->
         val refreshState = rememberPullToRefreshState()
         
@@ -133,7 +132,7 @@ fun SecurityReportsScreen(
             LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
-                    .background(DarkBackground)
+                    .background(MaterialTheme.colorScheme.background)
                     .padding(horizontal = 16.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
@@ -152,14 +151,14 @@ fun SecurityReportsScreen(
                     Column {
                         Text(
                             text = "Analytics & Reports",
-                            color = TextLight,
+                            color = MaterialTheme.colorScheme.onBackground,
                             fontSize = 28.sp,
                             fontWeight = FontWeight.Bold
                         )
                         
                         Text(
                             text = reportStats.dateRange,
-                            color = TextSecondaryDark,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontSize = 14.sp,
                             fontWeight = FontWeight.Normal
                         )
@@ -171,17 +170,18 @@ fun SecurityReportsScreen(
                             .size(40.dp)
                             .rotate(refreshRotation.value)
                     ) {
-                        if (isLoading) {
-                            CircularProgressIndicator(
-                                modifier = Modifier.size(24.dp),
-                                color = RoleTheme.securityColor,
-                                strokeWidth = 2.dp
-                            )
-                        } else {
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    modifier = Modifier.size(24.dp),
+                                    color = MaterialTheme.colorScheme.primary,
+                                    strokeWidth = 2.dp
+                                )
+                            }
+ else {
                             Icon(
                                 imageVector = Icons.Default.Refresh,
                                 contentDescription = "Refresh",
-                                tint = RoleTheme.securityColor,
+                                tint = MaterialTheme.colorScheme.primary,
                                 modifier = Modifier.size(24.dp)
                             )
                         }
@@ -247,7 +247,7 @@ fun SecurityReportsScreen(
                                     Icon(
                                         imageVector = Icons.Default.QueryStats,
                                         contentDescription = "Scans",
-                                        tint = RoleTheme.securityColor,
+                                        tint = MaterialTheme.colorScheme.primary,
                                         modifier = Modifier.size(24.dp)
                                     )
                                 },
@@ -264,7 +264,7 @@ fun SecurityReportsScreen(
                                 modifier = Modifier
                                     .weight(1f)
                                     .background(
-                                        color = androidx.compose.material3.MaterialTheme.colorScheme.surface,
+                                        color = MaterialTheme.colorScheme.surface,
                                         shape = RoundedCornerShape(20.dp)
                                     )
                                     .padding(20.dp)
@@ -334,8 +334,6 @@ fun SecurityReportsScreen(
                 ) {
                     if (isLoading) {
                         ShimmerLoadingCard(height = 250)
-                    } else if (hourlyData.isEmpty()) {
-                        EmptyStateCard(message = "No hourly data available")
                     } else {
                         HourlyBarChart(hourlyData)
                     }
@@ -350,8 +348,6 @@ fun SecurityReportsScreen(
                 ) {
                     if (isLoading) {
                         ShimmerLoadingCard(height = 200)
-                    } else if (dailyTrendData.isEmpty()) {
-                        EmptyStateCard(message = "No trend data available")
                     } else {
                         DailyTrendLineChart(dailyTrendData)
                     }
@@ -391,24 +387,9 @@ fun SecurityReportsScreen(
             
             // Export Button
             item {
-                val showExportMessage = remember { mutableStateOf(false) }
-                
                 ExportButton(
-                    onClick = {
-                        viewModel.exportReport()
-                        showExportMessage.value = true
-                    }
+                    onClick = { showExportDialog.value = true }
                 )
-                
-                LaunchedEffect(showExportMessage.value) {
-                    if (showExportMessage.value) {
-                        snackbarHostState.showSnackbar(
-                            message = "PDF export feature coming soon",
-                            duration = SnackbarDuration.Short
-                        )
-                        showExportMessage.value = false
-                    }
-                }
             }
             
             // Bottom spacing
@@ -417,5 +398,12 @@ fun SecurityReportsScreen(
             }
         }
     }
+    
+    if (showExportDialog.value) {
+        com.kushan.vaultpark.ui.components.ExportOptionsDialog(
+            sessions = currentSessions,
+            onDismiss = { showExportDialog.value = false }
+        )
     }
+}
 }

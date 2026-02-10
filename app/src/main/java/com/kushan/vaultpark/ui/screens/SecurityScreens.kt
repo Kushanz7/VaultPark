@@ -89,7 +89,7 @@ fun SecurityLogsScreenLegacy(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SecurityReportsScreen(
+fun SecurityReportsScreenLegacy(
     onBackPressed: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {

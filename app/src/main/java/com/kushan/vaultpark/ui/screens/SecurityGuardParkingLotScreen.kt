@@ -399,18 +399,45 @@ private fun ParkingLotFormMap(
                     }
                 },
                 update = { mapView ->
-                    mapView.overlays.removeAll { it is Marker && it.title == "Selected Location" }
-                    
-                    selectedLocation?.let { location ->
-                        mapView.controller.animateTo(location)
-                        val marker = Marker(mapView).apply {
-                            position = location
-                            setTitle("Selected Location")
-                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                    // Optimize marker updates to prevent flickering
+                    if (selectedLocation != null) {
+                        val location = selectedLocation
+                        
+                        // Find existing marker
+                        val existingMarker = mapView.overlays.find { 
+                            it is Marker && it.title == "Selected Location" 
+                        } as? Marker
+                        
+                        if (existingMarker != null) {
+                            // Update existing marker if position changed
+                            if (existingMarker.position.latitude != location.latitude || 
+                                existingMarker.position.longitude != location.longitude) {
+                                existingMarker.position = location
+                                existingMarker.snippet = locationAddress
+                                mapView.controller.animateTo(location)
+                                mapView.invalidate()
+                            }
+                        } else {
+                            // Create new marker
+                            val marker = Marker(mapView).apply {
+                                position = location
+                                setTitle("Selected Location")
+                                snippet = locationAddress
+                                setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
+                            }
+                            mapView.overlays.add(marker)
+                            mapView.controller.animateTo(location)
+                            mapView.invalidate()
                         }
-                        mapView.overlays.add(marker)
+                    } else {
+                        // Remove marker if no location selected
+                        val markerRemoved = mapView.overlays.removeIf { 
+                            it is Marker && it.title == "Selected Location" 
+                        }
+                        if (markerRemoved) {
+                            mapView.invalidate()
+                        }
                     }
-                    mapView.invalidate()
                 }
             )
             

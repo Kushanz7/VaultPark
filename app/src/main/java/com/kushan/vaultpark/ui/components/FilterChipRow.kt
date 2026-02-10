@@ -17,11 +17,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.kushan.vaultpark.ui.theme.DarkSurfaceVariant
 import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.TextSecondaryDark
-import com.kushan.vaultpark.ui.theme.TextLight
 import com.kushan.vaultpark.ui.theme.SecurityPurple
 import androidx.compose.ui.graphics.Color
 
@@ -70,7 +67,7 @@ fun FilterChip(
         modifier = modifier
             .height(40.dp)
             .background(
-                color = if (isSelected) selectedColor else DarkSurfaceVariant,
+                color = if (isSelected) selectedColor else MaterialTheme.colorScheme.surfaceVariant,
                 shape = MaterialTheme.shapes.extraLarge
             )
             .clickable { onClick() }
@@ -82,7 +79,7 @@ fun FilterChip(
             fontFamily = Poppins,
             fontWeight = FontWeight.Medium,
             fontSize = 14.sp,
-            color = if (isSelected) Color.White else TextSecondaryDark
+            color = if (isSelected) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
         )
     }
 }

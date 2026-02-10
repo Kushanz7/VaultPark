@@ -38,6 +38,19 @@ class AuthRepository(private val auth: FirebaseAuth = FirebaseAuth.getInstance()
     }
 
     /**
+     * Sign up new user with email and password
+     */
+    suspend fun signUp(email: String, password: String): Result<String> = try {
+        val result = auth.createUserWithEmailAndPassword(email, password).await()
+        val uid = result.user?.uid ?: throw Exception("User ID is null")
+        Result.success(uid)
+    } catch (e: FirebaseAuthException) {
+        Result.failure(handleAuthException(e))
+    } catch (e: Exception) {
+        Result.failure(e)
+    }
+
+    /**
      * Sign out current user
      */
     suspend fun signOut(): Result<Unit> = try {

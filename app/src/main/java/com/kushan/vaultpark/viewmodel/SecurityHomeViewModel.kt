@@ -130,7 +130,13 @@ class SecurityHomeViewModel(
                     .whereGreaterThanOrEqualTo("entryTime", startOfDay)
                     .whereLessThanOrEqualTo("entryTime", endOfDay)
                     .addSnapshotListener { snapshot, error ->
-                        if (error != null) return@addSnapshotListener
+                        if (error != null) {
+                            _uiState.value = _uiState.value.copy(
+                                isLoadingStats = false,
+                                error = "Failed to fetch today statistics: ${error.message}"
+                            )
+                            return@addSnapshotListener
+                        }
 
                         val sessions = snapshot?.toObjects(ParkingSession::class.java) ?: emptyList()
                         val entries = sessions.count { it.entryTime != 0L }

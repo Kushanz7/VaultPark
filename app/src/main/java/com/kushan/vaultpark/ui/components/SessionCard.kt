@@ -32,13 +32,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kushan.vaultpark.model.ParkingSession
-import com.kushan.vaultpark.ui.theme.DarkSurface
 import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
 import com.kushan.vaultpark.ui.theme.SoftMintGreen
-import com.kushan.vaultpark.ui.theme.TextLight
-import com.kushan.vaultpark.ui.theme.TextSecondaryDark
-import com.kushan.vaultpark.ui.theme.TextTertiaryDark
 import com.kushan.vaultpark.ui.utils.formatDate
 import com.kushan.vaultpark.ui.utils.formatTime
 import com.kushan.vaultpark.ui.utils.formatDuration
@@ -59,7 +55,7 @@ fun SessionCard(
         modifier = modifier
             .fillMaxWidth()
             .background(
-                color = DarkSurface,
+                color = MaterialTheme.colorScheme.surface,
                 shape = MaterialTheme.shapes.medium
             )
             .combinedClickable(
@@ -119,7 +115,7 @@ fun SessionCard(
                 Icon(
                     imageVector = Icons.Default.AccessTime,
                     contentDescription = "Date",
-                    tint = TextSecondaryDark,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(16.dp)
                 )
                 Text(
@@ -127,7 +123,7 @@ fun SessionCard(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.Normal,
                     fontSize = 14.sp,
-                    color = TextLight
+                    color = MaterialTheme.colorScheme.onSurface
                 )
             }
 
@@ -141,7 +137,7 @@ fun SessionCard(
                     Icon(
                         imageVector = Icons.Default.LocationOn,
                         contentDescription = "Location",
-                        tint = TextSecondaryDark,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(16.dp)
                     )
                     Text(
@@ -149,7 +145,7 @@ fun SessionCard(
                         fontFamily = Poppins,
                         fontWeight = FontWeight.Normal,
                         fontSize = 14.sp,
-                        color = TextLight,
+                        color = MaterialTheme.colorScheme.onSurface,
                         maxLines = 1
                     )
                 }
@@ -184,14 +180,14 @@ fun SessionCard(
                             fontFamily = Poppins,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp,
-                            color = TextTertiaryDark
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
                         Text(
                             text = formatTime(session.entryTime),
                             fontFamily = Poppins,
                             fontWeight = FontWeight.Normal,
                             fontSize = 14.sp,
-                            color = TextLight
+                            color = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 }
@@ -200,7 +196,7 @@ fun SessionCard(
                 Icon(
                     imageVector = Icons.Default.CallMade,
                     contentDescription = "Arrow",
-                    tint = TextSecondaryDark,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(20.dp)
                 )
 
@@ -228,14 +224,14 @@ fun SessionCard(
                                 fontFamily = Poppins,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 12.sp,
-                                color = TextTertiaryDark
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
                                 text = formatTime(session.exitTime),
                                 fontFamily = Poppins,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 14.sp,
-                                color = TextLight
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
@@ -262,7 +258,7 @@ fun SessionCard(
                                 fontFamily = Poppins,
                                 fontWeight = FontWeight.Normal,
                                 fontSize = 12.sp,
-                                color = TextTertiaryDark
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
                                 text = "Ongoing",
@@ -290,7 +286,7 @@ fun SessionCard(
                     Icon(
                         imageVector = Icons.Default.DirectionsCar,
                         contentDescription = "Vehicle",
-                        tint = TextSecondaryDark,
+                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
                         modifier = Modifier.size(14.dp)
                     )
                     Text(
@@ -298,7 +294,7 @@ fun SessionCard(
                         fontFamily = Poppins,
                         fontWeight = FontWeight.Normal,
                         fontSize = 12.sp,
-                        color = TextSecondaryDark
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
 
@@ -308,7 +304,7 @@ fun SessionCard(
                         fontFamily = Poppins,
                         fontWeight = FontWeight.Normal,
                         fontSize = 12.sp,
-                        color = TextTertiaryDark
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                 }
             }

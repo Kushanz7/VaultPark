@@ -26,12 +26,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.kushan.vaultpark.model.ParkingSession
-import com.kushan.vaultpark.ui.theme.DarkBackground
-import com.kushan.vaultpark.ui.theme.DarkSurface
 import com.kushan.vaultpark.ui.theme.NeonLime
 import com.kushan.vaultpark.ui.theme.Poppins
-import com.kushan.vaultpark.ui.theme.TextLight
-import com.kushan.vaultpark.ui.theme.TextSecondaryDark
 import com.kushan.vaultpark.ui.utils.formatDateTime
 import com.kushan.vaultpark.ui.utils.formatDuration
 
@@ -48,7 +44,7 @@ fun LogDetailBottomSheet(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                color = DarkBackground,
+                color = MaterialTheme.colorScheme.surface,
                 shape = MaterialTheme.shapes.large
             )
             .padding(20.dp)
@@ -65,13 +61,13 @@ fun LogDetailBottomSheet(
                 fontFamily = Poppins,
                 fontWeight = FontWeight.Bold,
                 fontSize = 22.sp,
-                color = TextLight
+                color = MaterialTheme.colorScheme.onSurface
             )
             IconButton(onClick = onDismiss) {
                 Icon(
                     imageVector = Icons.Default.Close,
                     contentDescription = "Close",
-                    tint = TextSecondaryDark,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
                     modifier = Modifier.size(24.dp)
                 )
             }
@@ -177,7 +173,7 @@ fun LogDetailBottomSheet(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,
-                    color = com.kushan.vaultpark.ui.theme.TextDarkLight
+                    color = Color.Black
                 )
             }
 
@@ -187,7 +183,7 @@ fun LogDetailBottomSheet(
                     .weight(1f)
                     .height(44.dp),
                 colors = androidx.compose.material3.ButtonDefaults.buttonColors(
-                    containerColor = DarkSurface
+                    containerColor = MaterialTheme.colorScheme.surfaceVariant
                 ),
                 shape = MaterialTheme.shapes.medium
             ) {
@@ -196,7 +192,7 @@ fun LogDetailBottomSheet(
                     fontFamily = Poppins,
                     fontWeight = FontWeight.SemiBold,
                     fontSize = 14.sp,
-                    color = TextLight
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
         }

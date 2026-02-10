@@ -223,6 +223,7 @@ data class ShiftNote(
         "sessionId" to sessionId,
         "readBy" to readBy,
         "acknowledgedBy" to acknowledgedBy,
+        "createdAt" to com.google.firebase.firestore.FieldValue.serverTimestamp(),
         "expiresAt" to expiresAt
     )
 }

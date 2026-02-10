@@ -14,7 +14,6 @@ import com.kushan.vaultpark.ui.screens.DriverHomeScreen
 import com.kushan.vaultpark.ui.screens.InvoiceDetailsScreen
 import com.kushan.vaultpark.ui.screens.ProfileScreen
 import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
-import com.kushan.vaultpark.ui.screens.SecurityLogsScreen
 import com.kushan.vaultpark.ui.screens.SecurityReportsScreen
 import com.kushan.vaultpark.ui.screens.admin.AdminOverdueScreen
 
@@ -202,8 +201,8 @@ fun NavGraphBuilder.securityNavGraph(
         
         composable(NavScreen.Reports.route) {
             SecurityReportsScreen(
-                onBackPressed = {
-                    navController.popBackStack()
+                onNavigateToDriverHistory = {
+                    // TODO: Implement navigation to driver history
                 }
             )
         }

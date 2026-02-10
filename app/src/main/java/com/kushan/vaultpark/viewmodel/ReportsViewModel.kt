@@ -63,6 +63,11 @@ class ReportsViewModel : ViewModel() {
     
     private val _activeNow = MutableStateFlow(0)
     val activeNow: StateFlow<Int> = _activeNow
+
+    private val _currentSessions = MutableStateFlow<List<ParkingSession>>(emptyList())
+    val currentSessions: StateFlow<List<ParkingSession>> = _currentSessions
+
+
     
     init {
         fetchReportData(DateRangeFilter.TODAY)
@@ -107,7 +112,7 @@ class ReportsViewModel : ViewModel() {
                 
                 val guardId = auth.currentUser?.uid
                 val sessions = repository.fetchSessionsForDateRange(startTime, endTime, guardId)
-                
+                _currentSessions.value = sessions
                 calculateAndUpdateMetrics(sessions, startTime, endTime)
                 
             } catch (e: Exception) {
@@ -126,7 +131,7 @@ class ReportsViewModel : ViewModel() {
                 
                 val guardId = auth.currentUser?.uid
                 val sessions = repository.fetchSessionsForDateRange(startTime, endTime, guardId)
-                
+                _currentSessions.value = sessions
                 calculateAndUpdateMetrics(sessions, startTime, endTime)
                 
             } catch (e: Exception) {
@@ -147,11 +152,49 @@ class ReportsViewModel : ViewModel() {
         _reportStats.value = stats
         
         // Aggregate by hour
-        val hourly = AnalyticsUtils.aggregateByHour(sessions)
+        var hourly = AnalyticsUtils.aggregateByHour(sessions)
+        if (hourly.isEmpty()) {
+            // Generate zero data for last 24 hours
+            val zeroHourly = mutableListOf<HourlyData>()
+            val cal = java.util.Calendar.getInstance()
+            val currentHour = cal.get(java.util.Calendar.HOUR_OF_DAY)
+            for (i in 0..23) {
+                // We want to show from 24 hours ago to now, or just 0-23 sorted?
+                // Usually charts expect chronological order.
+                // Let's generate for 0..23 to match typical daily view, or based on the range.
+                // If the range is TODAY, we should definitely show 0..currentHour or 0..23.
+                // The issue description says "show Is there is no stat... show 0".
+                // Simple approach: 0..23 hours
+                 zeroHourly.add(HourlyData(i, 0))
+            }
+            hourly = zeroHourly
+        }
         _hourlyData.value = hourly
         
         // Aggregate daily trend
-        val daily = AnalyticsUtils.aggregateDailyTrend(sessions)
+        var daily = AnalyticsUtils.aggregateDailyTrend(sessions)
+        if (daily.isEmpty()) {
+            // Generate zero data for last 7 days
+            val zeroDaily = mutableListOf<DailyTrendData>()
+            val cal = java.util.Calendar.getInstance()
+            // Reset to clean date
+            cal.set(java.util.Calendar.HOUR_OF_DAY, 0)
+            cal.set(java.util.Calendar.MINUTE, 0)
+            cal.set(java.util.Calendar.SECOND, 0)
+            cal.set(java.util.Calendar.MILLISECOND, 0)
+            
+            // Go back 6 days (total 7 days including today)
+            cal.add(java.util.Calendar.DAY_OF_YEAR, -6)
+            
+            for (i in 0..6) {
+                zeroDaily.add(DailyTrendData(
+                    date = cal.timeInMillis,
+                    scanCount = 0
+                ))
+                cal.add(java.util.Calendar.DAY_OF_YEAR, 1)
+            }
+            daily = zeroDaily
+        }
         _dailyTrendData.value = daily
         
         // Calculate top drivers
@@ -169,9 +212,8 @@ class ReportsViewModel : ViewModel() {
         }
     }
     
-    fun exportReport(): String {
-        // Placeholder for PDF export
-        return "Report export feature coming soon"
+    fun exportReport() {
+        // Trigger export UI event if needed, but currently handled by UI observing sessions
     }
 }
 

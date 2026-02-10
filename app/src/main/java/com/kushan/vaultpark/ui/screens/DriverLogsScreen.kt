@@ -87,7 +87,7 @@ fun SecurityLogsScreen(
 
     val currentUser = FirebaseAuth.getInstance().currentUser
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(currentUser) {
         if (currentUser != null) {
             viewModel.fetchScanLogs(currentUser.uid)
         }

@@ -184,24 +184,13 @@ private fun HandoverNoteCard(
     val isAcknowledged = note.acknowledgedBy.contains(currentGuardId)
     val priorityColor = Color(android.graphics.Color.parseColor(note.priority.colorHex))
 
-    Card(
+    // Use MindMirrorCard for consistent styling across the app
+    com.kushan.vaultpark.ui.components.MindMirrorCard(
         onClick = onToggleExpand,
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isUnread)
-                priorityColor.copy(alpha = 0.1f)
-            else
-                MaterialTheme.colorScheme.surface
-        ),
-        shape = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(
-            defaultElevation = if (isUnread) 4.dp else 2.dp
-        )
+        modifier = Modifier.fillMaxWidth()
     ) {
         Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
+            modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             // Header Row
@@ -308,7 +297,7 @@ private fun HandoverNoteCard(
                 Column(
                     verticalArrangement = Arrangement.spacedBy(12.dp)
                 ) {
-                    Divider()
+                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
 
                     // Type label
                     Row(
@@ -372,14 +361,14 @@ private fun HandoverNoteCard(
                             text = "Read by ${note.readBy.size}",
                             fontFamily = Poppins,
                             fontSize = 11.sp,
-                            color = TextSecondaryDark
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                        Text("•", fontSize = 11.sp, color = TextSecondaryDark)
+                        Text("•", fontSize = 11.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
                         Text(
                             text = "Acknowledged by ${note.acknowledgedBy.size}",
                             fontFamily = Poppins,
                             fontSize = 11.sp,
-                            color = if (note.acknowledgedBy.isNotEmpty()) StatusActive else TextSecondaryDark
+                            color = if (note.acknowledgedBy.isNotEmpty()) StatusActive else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
 
