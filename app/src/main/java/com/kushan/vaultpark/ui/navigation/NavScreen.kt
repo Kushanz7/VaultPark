@@ -1,7 +1,8 @@
 package com.kushan.vaultpark.ui.navigation
 
 sealed class NavScreen(val route: String) {
-    // Auth
+    // Auth (gate: welcome flow on first install, then login)
+    data object Auth : NavScreen("auth")
     data object Login : NavScreen("login")
     
     // Driver Screens

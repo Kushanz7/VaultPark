@@ -153,15 +153,19 @@ fun VaultParkApp(context: MainActivity) {
         }
     ) { paddingValues ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
         ) {
+            val hasCompletedOnboarding by com.kushan.vaultpark.util.DataStoreUtils
+                .hasOnboardingCompleted(context)
+                .collectAsState(initial = false)
             VaultParkNavHost(
                 navController = navController,
                 authViewModel = authViewModel,
                 isAuthenticated = isAuthenticated,
-                currentUser = currentUser
+                currentUser = currentUser,
+                hasCompletedOnboarding = hasCompletedOnboarding
             )
         }
     }
