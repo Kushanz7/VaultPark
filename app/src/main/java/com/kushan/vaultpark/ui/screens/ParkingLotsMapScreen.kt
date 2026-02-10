@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -150,37 +151,40 @@ fun ParkingLotsMapScreen(
                     }
                 },
                 update = { mapView ->
-                    // Clear old overlays (except maybe user location if we managed it separately, but simple is clear all)
-                    // Be careful not to clear custom click listeners if they are overlays
-                    // For simplicity, we can recreate markers.
-                    // Ideally, we manage markers more efficiently, but for this size, recreation is fine.
+                    // Clear old markers and polylines
+                    mapView.overlays.removeAll { it is Marker || it is org.osmdroid.views.overlay.Polyline }
                     
-                    // Keep existing events overlay if any, or just clear markers
-                    // Let's filter to remove only Markers
-                    mapView.overlays.removeAll { it is Marker }
+                    // Add route polyline if available
+                    uiState.routePoints?.let { points ->
+                        if (points.size >= 2) {
+                            val polyline = org.osmdroid.views.overlay.Polyline().apply {
+                                setPoints(points)
+                                outlinePaint.color = android.graphics.Color.rgb(0, 191, 255)
+                                outlinePaint.strokeWidth = 8f
+                            }
+                            mapView.overlays.add(0, polyline) // Add at bottom
+                        }
+                    }
                     
-                    // User Location Marker
+                    // User Location Marker with custom blue icon
                     uiState.userLocation?.let { loc ->
                         val marker = Marker(mapView).apply {
                             position = loc
-                            title = "Me"
-                            // Custom icon can be set here: icon = ...
-                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_CENTER)
+                            title = "My Location"
+                            icon = com.kushan.vaultpark.utils.CustomMarkerUtils.createUserLocationPin(context)
+                            setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
                         }
                         mapView.overlays.add(marker)
                     }
                     
-                    // Parking Lot Markers
-                    uiState.parkingLots.forEach { lot ->
+                    // Parking Lot Markers with custom green icons (use filtered list)
+                    uiState.filteredParkingLots.forEach { lot ->
                          val marker = Marker(mapView).apply {
                             position = GeoPoint(lot.latitude, lot.longitude)
                             title = lot.name
                             snippet = "${lot.availableSpaces} spots available"
+                            icon = com.kushan.vaultpark.utils.CustomMarkerUtils.createParkingLotPin(context, lot.availableSpaces)
                             setAnchor(Marker.ANCHOR_CENTER, Marker.ANCHOR_BOTTOM)
-                            
-                            // Determine color/icon based on availability (placeholder logic)
-                            // In OSMDroid, we need Drawables. For now, default marker is used.
-                            // To change color, we'd need custom Drawables.
                             
                             setOnMarkerClickListener { _, _ ->
                                 viewModel.onEvent(ParkingLotsMapEvent.ParkingLotSelected(lot))
@@ -200,7 +204,11 @@ fun ParkingLotsMapScreen(
                     .align(Alignment.TopCenter)
                     .padding(16.dp)
                     .fillMaxWidth(),
-                onMenuClick = onMenuClick
+                onMenuClick = onMenuClick,
+                searchQuery = uiState.searchQuery,
+                onSearchQueryChanged = { query ->
+                    viewModel.onEvent(ParkingLotsMapEvent.SearchQueryChanged(query))
+                }
             )
 
             // Bottom Sheet for Details
@@ -243,8 +251,12 @@ fun ParkingLotsMapScreen(
 @Composable
 fun SearchBar(
     modifier: Modifier = Modifier,
-    onMenuClick: () -> Unit
+    onMenuClick: () -> Unit,
+    searchQuery: String = "",
+    onSearchQueryChanged: (String) -> Unit = {}
 ) {
+    var isSearchActive by remember { mutableStateOf(false) }
+    
     Surface(
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
@@ -256,16 +268,51 @@ fun SearchBar(
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            IconButton(onClick = onMenuClick, modifier = Modifier.size(24.dp)) {
-                Icon(Icons.Default.Menu, contentDescription = "Menu")
+            if (!isSearchActive) {
+                IconButton(onClick = onMenuClick, modifier = Modifier.size(24.dp)) {
+                    Icon(Icons.Default.Menu, contentDescription = "Menu")
+                }
+                Spacer(modifier = Modifier.width(16.dp))
             }
-            Spacer(modifier = Modifier.width(16.dp))
-            Text(
-                text = "Search parking...",
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
-                modifier = Modifier.weight(1f)
-            )
-            Icon(Icons.Default.Search, contentDescription = "Search", tint = MaterialTheme.colorScheme.primary)
+            
+            if (isSearchActive) {
+                androidx.compose.material3.TextField(
+                    value = searchQuery,
+                    onValueChange = onSearchQueryChanged,
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Search parking lots...") },
+                    singleLine = true,
+                    colors = androidx.compose.material3.TextFieldDefaults.colors(
+                        focusedContainerColor = Color.Transparent,
+                        unfocusedContainerColor = Color.Transparent,
+                        disabledContainerColor = Color.Transparent,
+                        focusedIndicatorColor = Color.Transparent,
+                        unfocusedIndicatorColor = Color.Transparent,
+                    )
+                )
+                
+                if (searchQuery.isNotEmpty()) {
+                    IconButton(onClick = { onSearchQueryChanged("") }) {
+                        Icon(Icons.Default.Close, contentDescription = "Clear", tint = MaterialTheme.colorScheme.onSurfaceVariant)
+                    }
+                }
+            } else {
+                Text(
+                    text = "Search parking...",
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier
+                        .weight(1f)
+                        .clickable { isSearchActive = true }
+                )
+            }
+            
+            IconButton(onClick = { isSearchActive = !isSearchActive }) {
+                Icon(
+                    if (isSearchActive) Icons.Default.Close else Icons.Default.Search,
+                    contentDescription = if (isSearchActive) "Close search" else "Search",
+                    tint = MaterialTheme.colorScheme.primary
+                )
+            }
         }
     }
 }

@@ -110,7 +110,7 @@ fun VaultParkApp(context: MainActivity) {
 
          currentRoute == NavScreen.Reports.route ||
          currentRoute == NavScreen.HandoverNotes.route ||
-         currentRoute == NavScreen.Notifications.route)
+         currentRoute == NavScreen.ParkingLotsMap.route)
 
     Scaffold(
         modifier = Modifier.fillMaxSize(),
@@ -124,7 +124,8 @@ fun VaultParkApp(context: MainActivity) {
                     NavScreen.Billing.route, NavScreen.Reports.route -> BottomNavItem.Billing
 
                     NavScreen.Profile.route -> BottomNavItem.Profile
-                    NavScreen.HandoverNotes.route, NavScreen.Notifications.route -> BottomNavItem.Handover
+                    NavScreen.HandoverNotes.route -> BottomNavItem.Map // Handover for security
+                    NavScreen.ParkingLotsMap.route -> BottomNavItem.Map // Map for driver
                     else -> BottomNavItem.Home // Home or Scanner
                 }
                 
@@ -138,7 +139,7 @@ fun VaultParkApp(context: MainActivity) {
                             BottomNavItem.Billing -> if (currentUser?.role == UserRole.SECURITY) NavScreen.Reports else NavScreen.Billing
 
                             BottomNavItem.Profile -> NavScreen.Profile
-                            BottomNavItem.Handover -> if (currentUser?.role == UserRole.SECURITY) NavScreen.HandoverNotes else NavScreen.Notifications
+                            BottomNavItem.Map -> if (currentUser?.role == UserRole.SECURITY) NavScreen.HandoverNotes else NavScreen.ParkingLotsMap
                         }
                         navController.navigate(navScreen.route) {
                             popUpTo(navController.graph.startDestinationId) {

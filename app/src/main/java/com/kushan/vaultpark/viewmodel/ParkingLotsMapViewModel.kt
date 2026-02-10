@@ -10,6 +10,7 @@ import com.google.firebase.firestore.ktx.firestore
 import com.google.firebase.ktx.Firebase
 import com.kushan.vaultpark.model.ParkingLot
 import com.kushan.vaultpark.utils.MapUtils
+import com.kushan.vaultpark.data.repository.RoutingRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,6 +20,7 @@ import org.osmdroid.util.GeoPoint
 
 class ParkingLotsMapViewModel : ViewModel() {
     private val firestore = Firebase.firestore
+    private val routingRepository = RoutingRepository()
     
     // No Retrofit needed for OSM/External Nav
 
@@ -34,16 +36,21 @@ class ParkingLotsMapViewModel : ViewModel() {
             is ParkingLotsMapEvent.ParkingLotSelected -> {
                 _uiState.value = _uiState.value.copy(selectedParkingLot = event.parkingLot)
                 calculateDistance(event.parkingLot)
+                calculateRoute(event.parkingLot)
             }
             ParkingLotsMapEvent.ClearSelection -> {
+                // Only clear the selection (hides bottom sheet) but keep the route visible on map
+                // as per user request: "keep it until we click on another parking lot pin"
                 _uiState.value = _uiState.value.copy(
-                    selectedParkingLot = null,
-                    distance = null,
-                    duration = null
+                    selectedParkingLot = null
                 )
             }
             is ParkingLotsMapEvent.LocationUpdated -> {
                 _uiState.value = _uiState.value.copy(userLocation = event.location)
+            }
+            is ParkingLotsMapEvent.SearchQueryChanged -> {
+                _uiState.value = _uiState.value.copy(searchQuery = event.query)
+                filterParkingLots(event.query)
             }
             is ParkingLotsMapEvent.GetDirections -> {
                  // Trigger external intent
@@ -63,6 +70,7 @@ class ParkingLotsMapViewModel : ViewModel() {
                 val lots = snapshot.toObjects(ParkingLot::class.java)
                 _uiState.value = _uiState.value.copy(
                     parkingLots = lots,
+                    filteredParkingLots = lots,
                     isLoading = false
                 )
             } catch (e: Exception) {
@@ -113,12 +121,90 @@ class ParkingLotsMapViewModel : ViewModel() {
             duration = durationText
         )
     }
+    
+    private fun filterParkingLots(query: String) {
+        val filtered = if (query.isBlank()) {
+            _uiState.value.parkingLots
+        } else {
+            _uiState.value.parkingLots.filter { lot ->
+                lot.name.contains(query, ignoreCase = true) ||
+                lot.location.contains(query, ignoreCase = true) ||
+                lot.facilities.any { it.contains(query, ignoreCase = true) }
+            }
+        }
+        _uiState.value = _uiState.value.copy(filteredParkingLots = filtered)
+    }
+    
+    private fun calculateRoute(destinationLot: ParkingLot) {
+        val userLoc = _uiState.value.userLocation ?: return
+        
+        viewModelScope.launch {
+            // Set loading state
+            _uiState.value = _uiState.value.copy(isLoading = true)
+            
+            try {
+                // Get real route from OSRM
+                val routeResult = routingRepository.getRoute(
+                    start = userLoc,
+                    end = GeoPoint(destinationLot.latitude, destinationLot.longitude)
+                )
+                
+                if (routeResult != null) {
+                    // Use real route points
+                    _uiState.value = _uiState.value.copy(
+                        routePoints = routeResult.points,
+                        isLoading = false
+                    )
+                    
+                    // Update distance and duration with accurate values from routing
+                    val distanceText = if (routeResult.distanceMeters > 1000) {
+                        String.format("%.1f km", routeResult.distanceMeters / 1000)
+                    } else {
+                        "${routeResult.distanceMeters.toInt()} m"
+                    }
+                    
+                    val durationInMins = (routeResult.durationSeconds / 60).toInt()
+                    val durationText = "$durationInMins mins"
+                    
+                    _uiState.value = _uiState.value.copy(
+                        distance = distanceText,
+                        duration = durationText
+                    )
+                } else {
+                    // Fallback to straight line if routing fails
+                    val fallbackRoute = listOf(
+                        userLoc,
+                        GeoPoint(destinationLot.latitude, destinationLot.longitude)
+                    )
+                    _uiState.value = _uiState.value.copy(
+                        routePoints = fallbackRoute,
+                        isLoading = false
+                    )
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+                // Fallback to straight line on error
+                val fallbackRoute = listOf(
+                    userLoc,
+                    GeoPoint(destinationLot.latitude, destinationLot.longitude)
+                )
+                _uiState.value = _uiState.value.copy(
+                    routePoints = fallbackRoute,
+                    isLoading = false,
+                    error = "Could not calculate route"
+                )
+            }
+        }
+    }
 }
 
 data class ParkingLotsMapUiState(
     val parkingLots: List<ParkingLot> = emptyList(),
+    val filteredParkingLots: List<ParkingLot> = emptyList(),
+    val searchQuery: String = "",
     val userLocation: GeoPoint? = null,
     val selectedParkingLot: ParkingLot? = null,
+    val routePoints: List<GeoPoint>? = null,
     val distance: String? = null,
     val duration: String? = null,
     val isLoading: Boolean = false,
@@ -129,5 +215,6 @@ sealed class ParkingLotsMapEvent {
     data class ParkingLotSelected(val parkingLot: ParkingLot) : ParkingLotsMapEvent()
     object ClearSelection : ParkingLotsMapEvent()
     data class LocationUpdated(val location: GeoPoint) : ParkingLotsMapEvent()
+    data class SearchQueryChanged(val query: String) : ParkingLotsMapEvent()
     object GetDirections : ParkingLotsMapEvent()
 }
